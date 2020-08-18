@@ -1,7 +1,11 @@
 plugins {
     id 'org.jetbrains.intellij' version '0.4.21'
     id 'org.jetbrains.kotlin.jvm' version '1.3.72'
+    id 'org.jetbrains.grammarkit' version '2020.2.1'
+    id 'idea'
 }
+
+import org.jetbrains.grammarkit.tasks.*
 
 group 'com.mdrobnak'
 version '0.1.0'
@@ -14,9 +18,25 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
 }
 
+// Add the generated source files into the build
+sourceSets.main.java.srcDirs 'src/main/gen'
+idea.module.generatedSourceDirs.add(file('src/main/gen'))
+
+task generateParser(type: GenerateParser) {
+    source = "src/main/grammars/LalrpopParser.bnf"
+    targetRoot = "src/main/gen/"
+    pathToParser = "/com/mdrobnak/lalrpop/parser/LalrpopParser.java"
+    pathToPsiRoot = "/com/mdrobnak/lalrpop/psi"
+    purgeOldFiles = true
+}
+
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     version '2020.2'
+}
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+    dependsOn(generateParser)
 }
 patchPluginXml {
     changeNotes """

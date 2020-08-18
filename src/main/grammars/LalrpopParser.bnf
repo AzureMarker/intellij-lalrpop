@@ -1,0 +1,22 @@
+{
+  parserClass="com.mdrobnak.lalrpop.parser.LalrpopParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Lalrpop"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.mdrobnak.lalrpop.psi"
+  psiImplPackage="com.mdrobnak.lalrpop.psi.impl"
+
+  elementTypeHolderClass="com.mdrobnak.lalrpop.psi.LalrpopTypes"
+  elementTypeClass="com.mdrobnak.lalrpop.psi.LalrpopElementType"
+  tokenTypeClass="com.mdrobnak.lalrpop.psi.LalrpopTokenType"
+}
+
+// FIXME: use real LALRPOP grammar
+
+simpleFile ::= item_*
+
+private item_ ::= (property|COMMENT|CRLF)
+
+property ::= (KEY? SEPARATOR VALUE?) | KEY
