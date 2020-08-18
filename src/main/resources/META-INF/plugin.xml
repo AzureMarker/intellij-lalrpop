@@ -12,10 +12,9 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
+        <fileType name="LALRPOP"
+                  language="LALRPOP"
+                  extensions="lalrpop"
+                  implementationClass="com.mdrobnak.lalrpop.LalrpopFileType"/>
     </extensions>
-
-    <actions>
-        <!-- Add your actions here -->
-    </actions>
 </idea-plugin>
