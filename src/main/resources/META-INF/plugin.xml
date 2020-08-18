@@ -1,11 +1,10 @@
 <idea-plugin>
     <id>com.mdrobnak.intellij-lalrpop</id>
-    <name>Plugin display name here</name>
-    <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+    <name>LALRPOP</name>
+    <vendor>Mark Drobnak</vendor>
 
     <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
+        Adds support for the <a href="https://github.com/lalrpop/lalrpop">LALRPOP</a> parser-generator.
     ]]></description>
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html

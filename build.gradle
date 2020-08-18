@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.mdrobnak'
-version '1.0'
+version '0.1.0'
 
 repositories {
     mavenCentral()
@@ -20,6 +20,7 @@ intellij {
 }
 patchPluginXml {
     changeNotes """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
+      <b>0.1.0</b><br>
+      Initial release of the LALRPOP plugin
+      """
 }
