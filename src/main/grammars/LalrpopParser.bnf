@@ -13,10 +13,127 @@
   tokenTypeClass="com.mdrobnak.lalrpop.psi.LalrpopTokenType"
 }
 
-// FIXME: use real LALRPOP grammar
+grammar ::= SHEBANG_ATTRIBUTE* use_stmt* annotation*
+    GRAMMAR grammar_type_params? grammar_params? grammar_where_clauses? SEMICOLON
+    grammar_item*
 
-simpleFile ::= item_*
+private meta comma ::= (<<param>> COMMA)* <<param>>?
 
-private item_ ::= (property|COMMENT|CRLF)
+private meta plus ::= (<<param>> PLUS)* <<param>>?
 
-property ::= (KEY? SEPARATOR VALUE?) | KEY
+grammar_type_params ::= LESSTHAN <<comma type_param>> GREATERTHAN
+
+type_param ::= LIFETIME | id
+
+grammar_where_clauses ::= WHERE <<comma grammar_where_clause>>
+
+grammar_where_clause ::= LIFETIME COLON <<plus LIFETIME>> | forall type_ref COLON type_bounds
+
+forall ::= FOR LESSTHAN <<comma type_param>> GREATERTHAN |
+
+type_bounds ::= <<plus type_bound>>
+
+type_bound ::= LIFETIME
+    // Function
+    | forall PATH LPAREN <<comma type_ref>> RPAREN (RSINGLEARROW type_ref)?
+    // Trait
+    | forall PATH (LESSTHAN <<comma type_bound_param>> GREATERTHAN)?
+
+type_bound_param ::= LIFETIME | type_ref | id EQUALS type_ref
+
+grammar_params ::= LPAREN <<comma grammar_param>> RPAREN
+
+grammar_param ::= id COLON type_ref
+
+grammar_item ::= use_stmt | match_token | extern_token | nonterminal | COMMENT
+
+use_stmt ::= USE PATH SEMICOLON
+
+visibility ::= PUB LPAREN PATH RPAREN | PUB |
+
+nonterminal ::= annotation* visibility nonterminal_name (COLON type_ref)? EQUALS alternatives
+
+annotation_arg ::= LPAREN id EQUALS STR_LITERAL RPAREN
+
+annotation ::= POUND LBRACKET ID annotation_arg? RBRACKET
+
+nonterminal_name ::= ID LESSTHAN <<comma ID>> GREATERTHAN | ID
+
+alternatives ::= alternative SEMICOLON | LBRACE <<comma alternative>> RBRACE SEMICOLON?
+
+alternative ::= symbol+ (IF cond)? action?
+    | (IF cond)? action
+
+action ::= LOOKAHEAD_ACTION | LOOKBEHIND_ACTION | USER_ACTION | FALLIBLE_ACTION
+
+cond ::= ID cond_op STR_LITERAL
+
+cond_op ::= EQUALS_EQUALS | NOT_EQUALS | MATCH_OP | NOT_MATCH_OP
+
+expr_symbol ::= symbol*
+
+symbol ::= LESSTHAN MUT? ID COLON symbol0 GREATERTHAN
+    | LESSTHAN symbol0 GREATERTHAN
+    | symbol0
+
+symbol0 ::= symbol1 | symbol0 repeat_op
+
+repeat_op ::= PLUS | MULTIPLY | QUESTION
+
+symbol1 ::= ID LESSTHAN <<comma symbol>> GREATERTHAN
+    | quoted_terminal
+    | ID
+    | LPAREN expr_symbol RPAREN
+    | LOOKAHEAD
+    | LOOKBEHIND
+    | NOT
+
+type_ref ::= LPAREN <<comma type_ref>> RPAREN
+    | LBRACKET type_ref RBRACKET
+    | POUND symbol POUND
+    | AND LIFETIME? MUT? type_ref
+    | PATH LESSTHAN <<comma type_ref_or_lifetime>> GREATERTHAN
+    | PATH
+    | DYN PATH LESSTHAN <<comma type_ref_or_lifetime>> GREATERTHAN
+    | DYN PATH
+    | DYN forall PATH LPAREN <<comma type_ref>> RPAREN (RSINGLEARROW type_ref)?
+
+type_ref_or_lifetime ::= type_ref | LIFETIME
+
+extern_token ::= EXTERN LBRACE associated_type* enum_token associated_type* RBRACE
+    | EXTERN LBRACE associated_type* RBRACE
+
+match_token ::= MATCH LBRACE match_contents RBRACE
+    | match_token ELSE LBRACE match_contents RBRACE
+
+match_contents ::= <<comma match_item>>
+
+match_item ::= UNDERSCORE
+    | match_symbol
+    | match_symbol USER_ACTION
+
+match_symbol ::= quoted_literal
+
+enum_token ::= ENUM type_ref LBRACE <<comma conversion>> RBRACE
+
+associated_type ::= TYPE ID EQUALS type_ref SEMICOLON
+
+conversion ::= terminal USER_ACTION
+
+pattern ::= PATH LPAREN <<comma pattern>> RPAREN
+    | PATH LBRACE (field_pattern COMMA)* field_pattern? RBRACE
+    | PATH RBRACE (field_pattern COMMA)* DOTDOT RBRACE
+    | UNDERSCORE
+    | DOTDOT
+    | LESSTHAN type_ref GREATERTHAN
+    | LPAREN <<comma pattern>> RPAREN
+    | CHAR_LITERAL
+    | PATH
+
+field_pattern ::= ID COLON pattern
+
+terminal ::= quoted_terminal | ID
+
+quoted_terminal ::= quoted_literal
+
+quoted_literal ::= STR_LITERAL | REGEX_LITERAL

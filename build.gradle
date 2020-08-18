@@ -22,6 +22,13 @@ dependencies {
 sourceSets.main.java.srcDirs 'src/main/gen'
 idea.module.generatedSourceDirs.add(file('src/main/gen'))
 
+task generateLexer(type: GenerateLexer) {
+    source = "src/main/grammars/LalrpopLexer.flex"
+    targetDir = "src/main/gen/com/mdrobnak/lalrpop/lexer"
+    targetClass = "LalrpopLexer"
+    purgeOldFiles = true
+}
+
 task generateParser(type: GenerateParser) {
     source = "src/main/grammars/LalrpopParser.bnf"
     targetRoot = "src/main/gen/"
@@ -33,10 +40,11 @@ task generateParser(type: GenerateParser) {
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     version '2020.2'
+    plugins = ['PsiViewer:202-SNAPSHOT.3']
 }
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
-    dependsOn(generateParser)
+    dependsOn(generateLexer, generateParser)
 }
 patchPluginXml {
     changeNotes """
