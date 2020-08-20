@@ -103,8 +103,7 @@ type_ref_or_lifetime ::= type_ref | LIFETIME
 extern_token ::= EXTERN LBRACE associated_type* enum_token associated_type* RBRACE
     | EXTERN LBRACE associated_type* RBRACE
 
-match_token ::= MATCH LBRACE match_contents RBRACE
-    | match_token ELSE LBRACE match_contents RBRACE
+match_token ::= MATCH LBRACE match_contents RBRACE (ELSE LBRACE match_contents RBRACE)*
 
 match_contents ::= <<comma match_item>>
 
