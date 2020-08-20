@@ -26,6 +26,7 @@ import static com.mdrobnak.lalrpop.psi.LalrpopTypes.*;
 %function advance
 %type IElementType
 %unicode
+%x PRE_RUST_CODE
 %x RUST_CODE
 
 WHITE_SPACE=\s+
@@ -85,8 +86,8 @@ RustCode = [^(\[{)\]},;]+
   "->"               { return RSINGLEARROW; }
   "=>@L"             { return LOOKAHEAD_ACTION; }
   "=>@R"             { return LOOKBEHIND_ACTION; }
-  "=>?"              { yybegin(RUST_CODE); return FALLIBLE_ACTION; }
-  "=>"               { yybegin(RUST_CODE); return USER_ACTION; }
+  "=>?"              { yybegin(PRE_RUST_CODE); return FALLIBLE_ACTION; }
+  "=>"               { yybegin(PRE_RUST_CODE); return USER_ACTION; }
   "@L"               { return LOOKAHEAD; }
   "@R"               { return LOOKBEHIND; }
   "+"                { return PLUS; }
@@ -104,6 +105,12 @@ RustCode = [^(\[{)\]},;]+
   {RegexLiteral}     { return REGEX_LITERAL; }
 }
 
+// This small state handles the whitespace between the =>/=>? and the Rust code
+<PRE_RUST_CODE> {
+  {WHITE_SPACE}      { return WHITE_SPACE; }
+  .                  { yybegin(RUST_CODE); yypushback(1); continue; }
+}
+
 <RUST_CODE> {
   "(" | "[" | "{"        { rust_bracket_count++; continue; }
   ")" | "]" | "}"        {
@@ -112,7 +119,7 @@ RustCode = [^(\[{)\]},;]+
               // character is part of the LALRPOP code.
               yybegin(YYINITIAL);
               yypushback(1);
-              continue;
+              return CODE;
           }
 
           rust_bracket_count--;
