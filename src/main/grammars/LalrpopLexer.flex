@@ -10,6 +10,11 @@ import static com.mdrobnak.lalrpop.psi.LalrpopTypes.*;
 %%
 
 %{
+  /**
+   * Count brackets in Rust code to know when the code block ends
+   */
+  int rust_bracket_count = 0;
+
   public LalrpopLexer() {
     this((java.io.Reader)null);
   }
@@ -21,6 +26,7 @@ import static com.mdrobnak.lalrpop.psi.LalrpopTypes.*;
 %function advance
 %type IElementType
 %unicode
+%x RUST_CODE
 
 WHITE_SPACE=\s+
 
@@ -36,6 +42,10 @@ Path = (::)? {Id} (:: {Id})* (::\*)?
 Id = [a-zA-Z][a-zA-Z0-9_]*
 Lifetime = \' {Id}
 ShebangAttribute = #\!\[.*\]
+
+// Eat everything except for brackets and punctuation, which are matched by the
+// other RUST_CODE rules.
+RustCode = [^(\[{)\]},;]+
 
 %%
 <YYINITIAL> {
@@ -75,8 +85,8 @@ ShebangAttribute = #\!\[.*\]
   "->"               { return RSINGLEARROW; }
   "=>@L"             { return LOOKAHEAD_ACTION; }
   "=>@R"             { return LOOKBEHIND_ACTION; }
-  "=>?"              { return FALLIBLE_ACTION; }
-  "=>"               { return USER_ACTION; }
+  "=>?"              { yybegin(RUST_CODE); return FALLIBLE_ACTION; }
+  "=>"               { yybegin(RUST_CODE); return USER_ACTION; }
   "@L"               { return LOOKAHEAD; }
   "@R"               { return LOOKBEHIND; }
   "+"                { return PLUS; }
@@ -92,6 +102,40 @@ ShebangAttribute = #\!\[.*\]
   {StrLiteral}       { return STR_LITERAL; }
   {CharLiteral}      { return CHAR_LITERAL; }
   {RegexLiteral}     { return REGEX_LITERAL; }
+}
+
+<RUST_CODE> {
+  "(" | "[" | "{"        { rust_bracket_count++; continue; }
+  ")" | "]" | "}"        {
+          if (rust_bracket_count == 0) {
+              // There were no opening brackets in the Rust code, so this
+              // character is part of the LALRPOP code.
+              yybegin(YYINITIAL);
+              yypushback(1);
+              continue;
+          }
+
+          rust_bracket_count--;
+          if (rust_bracket_count == 0) {
+              // At the end of the Rust code, so switch state
+              yybegin(YYINITIAL);
+              return CODE;
+          }
+
+          continue;
+      }
+  "," | ";"             {
+          if (rust_bracket_count == 0) {
+              // There were no opening brackets in the Rust code, so this
+              // character is part of the LALRPOP code.
+              yybegin(YYINITIAL);
+              yypushback(1);
+              return CODE;
+          }
+          continue;
+      }
+
+  {RustCode}             { continue; }
 }
 
 [^] { return BAD_CHARACTER; }
