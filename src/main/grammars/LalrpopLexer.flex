@@ -123,12 +123,6 @@ RustCode = [^(\[{)\]},;]+
           }
 
           rust_bracket_count--;
-          if (rust_bracket_count == 0) {
-              // At the end of the Rust code, so switch state
-              yybegin(YYINITIAL);
-              return CODE;
-          }
-
           continue;
       }
   "," | ";"             {

@@ -49,9 +49,9 @@ grammar_item ::= use_stmt | match_token | extern_token | nonterminal | COMMENT
 
 use_stmt ::= USE path SEMICOLON
 
-visibility ::= PUB LPAREN path RPAREN | PUB |
+visibility ::= PUB LPAREN path RPAREN | PUB
 
-nonterminal ::= annotation* visibility nonterminal_name (COLON type_ref)? EQUALS alternatives
+nonterminal ::= annotation* visibility? nonterminal_name (COLON type_ref)? EQUALS alternatives
 
 annotation_arg ::= LPAREN id EQUALS STR_LITERAL RPAREN
 
