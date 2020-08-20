@@ -21,5 +21,9 @@
         <lang.parserDefinition
                 language="LALRPOP"
                 implementationClass="com.mdrobnak.lalrpop.LalrpopParserDefinition"/>
+
+        <lang.syntaxHighlighter
+            language="LALRPOP"
+            implementationClass="com.mdrobnak.lalrpop.LalrpopSyntaxHighlighter"/>
     </extensions>
 </idea-plugin>
