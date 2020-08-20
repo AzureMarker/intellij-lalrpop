@@ -86,7 +86,7 @@ ShebangAttribute = #\!\[.*\]
   "&"                { return AND; }
 
   {Id}               { return ID; }
-  {Path}             { return PATH; }
+  {Path}             { return PATH_REF; }
   {Lifetime}         { return LIFETIME; }
   {ShebangAttribute} { return SHEBANG_ATTRIBUTE; }
   {StrLiteral}       { return STR_LITERAL; }
