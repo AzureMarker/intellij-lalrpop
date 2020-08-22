@@ -24,7 +24,7 @@ class LalrpopRustInjector : LanguageInjector {
         val nonterminal = host.parentOfType<LalrpopNonterminal>()!!
         val returnType = nonterminal.typeRef?.text ?: nonterminal.nonterminalName
 
-        val prefix = "$imports\nfn main() -> $returnType { "
+        val prefix = "$imports\nfn __intellij_lalrpop() -> $returnType { "
         val suffix = " }"
 
         places.addPlace(RsLanguage, host.code.textRangeInParent, prefix, suffix)
