@@ -64,7 +64,9 @@ alternatives ::= alternative SEMICOLON | LBRACE <<comma alternative>> RBRACE SEM
 alternative ::= symbol+ (IF cond)? action?
     | (IF cond)? action
 
-action ::= (LOOKAHEAD_ACTION | LOOKBEHIND_ACTION | USER_ACTION | FALLIBLE_ACTION) CODE
+action ::= (LOOKAHEAD_ACTION | LOOKBEHIND_ACTION | USER_ACTION | FALLIBLE_ACTION) CODE {
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LalrpopActionMixin"
+}
 
 cond ::= ID cond_op STR_LITERAL
 
