@@ -16,7 +16,8 @@
                 name="LALRPOP"
                 language="LALRPOP"
                 extensions="lalrpop"
-                implementationClass="com.mdrobnak.lalrpop.LalrpopFileType"/>
+                implementationClass="com.mdrobnak.lalrpop.LalrpopFileType"
+                fieldName="INSTANCE"/>
 
         <lang.parserDefinition
                 language="LALRPOP"
