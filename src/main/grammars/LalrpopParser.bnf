@@ -135,6 +135,8 @@ terminal ::= quoted_terminal | ID
 
 quoted_terminal ::= quoted_literal
 
-quoted_literal ::= STR_LITERAL | REGEX_LITERAL
+quoted_literal ::= STR_LITERAL | REGEX_LITERAL {
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LalrpopQuotedLiteralMixin"
+}
 
 path ::= PATH_REF | ID

@@ -26,5 +26,7 @@
         <lang.syntaxHighlighter
             language="LALRPOP"
             implementationClass="com.mdrobnak.lalrpop.LalrpopSyntaxHighlighter"/>
+
+        <languageInjector implementation="com.mdrobnak.lalrpop.injectors.LalrpopRegexInjector"/>
     </extensions>
 </idea-plugin>
