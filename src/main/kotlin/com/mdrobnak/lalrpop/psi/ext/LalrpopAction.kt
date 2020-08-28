@@ -2,6 +2,7 @@ package com.mdrobnak.lalrpop.psi.ext
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
+import com.intellij.lang.psi.SimpleMultiLineTextEscaper
 import com.intellij.psi.LiteralTextEscaper
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiLanguageInjectionHost
@@ -27,6 +28,6 @@ abstract class LalrpopActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), L
     }
 
     override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> {
-        return LiteralTextEscaper.createSimple(this)
+        return SimpleMultiLineTextEscaper(this)
     }
 }
