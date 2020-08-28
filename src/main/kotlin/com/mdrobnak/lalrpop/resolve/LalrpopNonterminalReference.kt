@@ -15,4 +15,8 @@ class LalrpopNonterminalReference(element: LalrpopNonterminalRef) : PsiReference
         element.firstChild.replace(newNode)
         return element
     }
+
+    override fun getVariants(): Array<Any> {
+        return LalrpopResolveUtil.findNonterminals(element.containingFile).toTypedArray()
+    }
 }
