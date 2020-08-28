@@ -57,7 +57,10 @@ annotation_arg ::= LPAREN id EQUALS STR_LITERAL RPAREN
 
 annotation ::= POUND LBRACKET ID annotation_arg? RBRACKET
 
-nonterminal_name ::= ID LESSTHAN <<comma ID>> GREATERTHAN | ID
+nonterminal_name ::= ID LESSTHAN <<comma ID>> GREATERTHAN | ID {
+    implements = "com.mdrobnak.lalrpop.psi.LalrpopNamedElement"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LalrpopNonterminalNameMixin"
+}
 
 alternatives ::= alternative SEMICOLON | LBRACE <<comma alternative>> RBRACE SEMICOLON?
 
