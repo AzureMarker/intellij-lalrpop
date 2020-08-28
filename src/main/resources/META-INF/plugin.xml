@@ -28,8 +28,8 @@
             language="LALRPOP"
             implementationClass="com.mdrobnak.lalrpop.LalrpopSyntaxHighlighter"/>
 
-        <languageInjector implementation="com.mdrobnak.lalrpop.injectors.LalrpopRegexInjector"/>
+        <multiHostInjector implementation="com.mdrobnak.lalrpop.injectors.LalrpopRegexInjector"/>
 
-        <languageInjector implementation="com.mdrobnak.lalrpop.injectors.LalrpopRustInjector"/>
+        <multiHostInjector implementation="com.mdrobnak.lalrpop.injectors.LalrpopRustInjector"/>
     </extensions>
 </idea-plugin>

@@ -1,22 +1,26 @@
 package com.mdrobnak.lalrpop.injectors
 
+import com.intellij.lang.injection.MultiHostInjector
+import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.InjectedLanguagePlaces
-import com.intellij.psi.LanguageInjector
-import com.intellij.psi.PsiLanguageInjectionHost
+import com.intellij.psi.PsiElement
+import com.mdrobnak.lalrpop.psi.LalrpopQuotedLiteral
 import com.mdrobnak.lalrpop.psi.impl.LalrpopQuotedLiteralImpl
 import org.intellij.lang.regexp.RegExpLanguage
 
-class LalrpopRegexInjector : LanguageInjector {
-    override fun getLanguagesToInject(
-        host: PsiLanguageInjectionHost,
-        places: InjectedLanguagePlaces
-    ) {
-        if (!host.isValidHost || host !is LalrpopQuotedLiteralImpl || !host.isRegex()) {
+class LalrpopRegexInjector : MultiHostInjector {
+    override fun getLanguagesToInject(registrar: MultiHostRegistrar, context: PsiElement) {
+        if (!context.isValid || context !is LalrpopQuotedLiteralImpl || !context.isRegex()) {
             return
         }
 
-        val range = TextRange(2, host.textLength - 1)
-        places.addPlace(RegExpLanguage.INSTANCE, range, null, null)
+        val range = TextRange(2, context.textLength - 1)
+        registrar
+            .startInjecting(RegExpLanguage.INSTANCE)
+            .addPlace(null, null, context, range)
+            .doneInjecting()
     }
+
+    override fun elementsToInjectIn(): List<Class<out PsiElement>> =
+        listOf(LalrpopQuotedLiteral::class.java)
 }
