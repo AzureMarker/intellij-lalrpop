@@ -9,7 +9,7 @@ import com.intellij.psi.util.elementType
 import com.mdrobnak.lalrpop.psi.LalrpopQuotedLiteral
 import com.mdrobnak.lalrpop.psi.LalrpopTypes
 
-abstract class LalrpopQuotedLiteralMixin(node: ASTNode) : ASTWrapperPsiElement(node), LalrpopQuotedLiteral, PsiLanguageInjectionHost {
+abstract class LalrpopQuotedLiteralMixin(node: ASTNode) : ASTWrapperPsiElement(node), LalrpopQuotedLiteral {
     override fun isValidHost(): Boolean = true
 
     override fun updateText(text: String): PsiLanguageInjectionHost {

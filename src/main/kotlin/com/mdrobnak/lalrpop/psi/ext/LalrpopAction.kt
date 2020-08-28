@@ -11,7 +11,7 @@ import com.intellij.psi.util.elementType
 import com.mdrobnak.lalrpop.psi.LalrpopAction
 import com.mdrobnak.lalrpop.psi.LalrpopTypes
 
-abstract class LalrpopActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LalrpopAction, PsiLanguageInjectionHost {
+abstract class LalrpopActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LalrpopAction {
     val code: PsiElement
         get() {
             assert(lastChild.elementType == LalrpopTypes.CODE)

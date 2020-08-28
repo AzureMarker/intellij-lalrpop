@@ -68,6 +68,7 @@ alternative ::= symbol+ (IF cond)? action?
     | (IF cond)? action
 
 action ::= (LOOKAHEAD_ACTION | LOOKBEHIND_ACTION | USER_ACTION | FALLIBLE_ACTION) CODE {
+    implements = "com.intellij.psi.PsiLanguageInjectionHost"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LalrpopActionMixin"
 }
 
@@ -141,6 +142,7 @@ terminal ::= quoted_terminal | ID
 quoted_terminal ::= quoted_literal
 
 quoted_literal ::= STR_LITERAL | REGEX_LITERAL {
+    implements = "com.intellij.psi.PsiLanguageInjectionHost"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LalrpopQuotedLiteralMixin"
 }
 
