@@ -25,11 +25,15 @@
                 implementationClass="com.mdrobnak.lalrpop.LalrpopParserDefinition"/>
 
         <lang.syntaxHighlighter
-            language="LALRPOP"
-            implementationClass="com.mdrobnak.lalrpop.LalrpopSyntaxHighlighter"/>
+                language="LALRPOP"
+                implementationClass="com.mdrobnak.lalrpop.LalrpopSyntaxHighlighter"/>
 
         <multiHostInjector implementation="com.mdrobnak.lalrpop.injectors.LalrpopRegexInjector"/>
 
         <multiHostInjector implementation="com.mdrobnak.lalrpop.injectors.LalrpopRustInjector"/>
+
+        <lang.findUsagesProvider
+                language="LALRPOP"
+                implementationClass="com.mdrobnak.lalrpop.resolve.LalrpopFindUsagesProvider"/>
     </extensions>
 </idea-plugin>
