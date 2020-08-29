@@ -5,7 +5,6 @@ import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
-import com.mdrobnak.lalrpop.psi.LalrpopAction
 import com.mdrobnak.lalrpop.psi.LalrpopNonterminal
 import com.mdrobnak.lalrpop.psi.LalrpopUseStmt
 import com.mdrobnak.lalrpop.psi.impl.LalrpopActionImpl
@@ -32,5 +31,5 @@ class LalrpopRustInjector : MultiHostInjector {
     }
 
     override fun elementsToInjectIn(): List<Class<out PsiElement>> =
-        listOf(LalrpopAction::class.java)
+        listOf(LalrpopActionImpl::class.java)
 }
