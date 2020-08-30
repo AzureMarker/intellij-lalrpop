@@ -8,6 +8,6 @@ A Jetbrains plugin for the [LALRPOP] parser-generator.
 - [X] Renaming nonterminals
 - [X] Regex language injection for regex terminals
 - [ ] Rust language injection for user action code
-    - WIP
+    - WIP, supports everything except variables from the grammar, e.g. `<>`
 
 [LALRPOP]: https://github.com/lalrpop/lalrpop
