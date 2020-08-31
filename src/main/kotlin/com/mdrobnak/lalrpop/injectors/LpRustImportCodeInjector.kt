@@ -15,8 +15,11 @@ class LpRustImportCodeInjector : MultiHostInjector {
             return
         }
 
+        val prefix = "mod __intellij_lalrpop { use "
+        val suffix = "; }"
+
         registrar.startInjecting(RsLanguage)
-            .addPlace("use ", ";", context, context.importCode.textRangeInParent)
+            .addPlace(prefix, suffix, context, context.importCode.textRangeInParent)
             .doneInjecting()
 
         attachInjectedCodeToCrate(context)
