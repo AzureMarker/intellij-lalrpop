@@ -4,12 +4,12 @@ import com.intellij.lang.injection.MultiHostInjector
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import com.mdrobnak.lalrpop.psi.impl.LalrpopQuotedLiteralImpl
+import com.mdrobnak.lalrpop.psi.impl.LpQuotedLiteralImpl
 import org.intellij.lang.regexp.RegExpLanguage
 
-class LalrpopRegexInjector : MultiHostInjector {
+class LpRegexInjector : MultiHostInjector {
     override fun getLanguagesToInject(registrar: MultiHostRegistrar, context: PsiElement) {
-        if (!context.isValid || context !is LalrpopQuotedLiteralImpl || !context.isRegex()) {
+        if (!context.isValid || context !is LpQuotedLiteralImpl || !context.isRegex()) {
             return
         }
 
@@ -21,5 +21,5 @@ class LalrpopRegexInjector : MultiHostInjector {
     }
 
     override fun elementsToInjectIn(): List<Class<out PsiElement>> =
-        listOf(LalrpopQuotedLiteralImpl::class.java)
+        listOf(LpQuotedLiteralImpl::class.java)
 }

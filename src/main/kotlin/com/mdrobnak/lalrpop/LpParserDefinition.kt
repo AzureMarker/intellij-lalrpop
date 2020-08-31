@@ -11,15 +11,17 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
 import com.mdrobnak.lalrpop.parser.LalrpopParser
-import com.mdrobnak.lalrpop.psi.LalrpopFile
-import com.mdrobnak.lalrpop.psi.LalrpopTypes
+import com.mdrobnak.lalrpop.psi.LpElementTypes
+import com.mdrobnak.lalrpop.psi.LpFile
 
-class LalrpopParserDefinition: ParserDefinition {
-    private val COMMENTS = TokenSet.create(LalrpopTypes.COMMENT)
-    private val STR_LITERALS = TokenSet.create(LalrpopTypes.STR_LITERAL)
-    private val FILE = IFileElementType(LalrpopLanguage)
+class LpParserDefinition : ParserDefinition {
+    companion object {
+        private val COMMENTS = TokenSet.create(LpElementTypes.COMMENT)
+        private val STR_LITERALS = TokenSet.create(LpElementTypes.STR_LITERAL)
+        private val FILE = IFileElementType(LpLanguage)
+    }
 
-    override fun createLexer(project: Project?): Lexer = LalrpopLexerAdaptor()
+    override fun createLexer(project: Project?): Lexer = LpLexerAdaptor()
 
     override fun createParser(project: Project?): PsiParser = LalrpopParser()
 
@@ -29,7 +31,7 @@ class LalrpopParserDefinition: ParserDefinition {
 
     override fun getStringLiteralElements(): TokenSet = STR_LITERALS
 
-    override fun createElement(node: ASTNode?): PsiElement = LalrpopTypes.Factory.createElement(node)
+    override fun createElement(node: ASTNode?): PsiElement = LpElementTypes.Factory.createElement(node)
 
-    override fun createFile(viewProvider: FileViewProvider): PsiFile = LalrpopFile(viewProvider)
+    override fun createFile(viewProvider: FileViewProvider): PsiFile = LpFile(viewProvider)
 }

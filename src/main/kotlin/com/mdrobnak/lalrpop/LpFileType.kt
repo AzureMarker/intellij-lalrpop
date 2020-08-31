@@ -4,7 +4,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.fileTypes.LanguageFileType
 import javax.swing.Icon
 
-object LalrpopFileType: LanguageFileType(LalrpopLanguage) {
+object LpFileType : LanguageFileType(LpLanguage) {
     override fun getName(): String = language.displayName
 
     override fun getDescription(): String = language.displayName

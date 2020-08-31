@@ -5,42 +5,40 @@ import com.intellij.lang.cacheBuilder.WordsScanner
 import com.intellij.lang.findUsages.FindUsagesProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
-import com.mdrobnak.lalrpop.LalrpopLexerAdaptor
-import com.mdrobnak.lalrpop.psi.LalrpopNamedElement
-import com.mdrobnak.lalrpop.psi.LalrpopNonterminalName
-import com.mdrobnak.lalrpop.psi.LalrpopTypes
+import com.mdrobnak.lalrpop.LpLexerAdaptor
+import com.mdrobnak.lalrpop.psi.LpElementTypes
+import com.mdrobnak.lalrpop.psi.LpNamedElement
+import com.mdrobnak.lalrpop.psi.LpNonterminalName
 
-class LalrpopFindUsagesProvider : FindUsagesProvider {
+class LpFindUsagesProvider : FindUsagesProvider {
     override fun getWordsScanner(): WordsScanner? {
         return DefaultWordsScanner(
-                LalrpopLexerAdaptor(),
-                TokenSet.create(LalrpopTypes.ID),
-                TokenSet.create(LalrpopTypes.COMMENT),
-                TokenSet.EMPTY,
-                TokenSet.create(LalrpopTypes.CODE)
+            LpLexerAdaptor(),
+            TokenSet.create(LpElementTypes.ID),
+            TokenSet.create(LpElementTypes.COMMENT),
+            TokenSet.EMPTY,
+            TokenSet.create(LpElementTypes.CODE)
         )
     }
 
     override fun canFindUsagesFor(psiElement: PsiElement): Boolean {
-        return psiElement is LalrpopNamedElement
+        return psiElement is LpNamedElement
     }
 
     override fun getHelpId(psiElement: PsiElement): String? = null
 
     override fun getType(element: PsiElement): String {
-        return if(element is LalrpopNonterminalName) {
+        return if (element is LpNonterminalName) {
             "Nonterminal"
-        }
-        else {
+        } else {
             ""
         }
     }
 
     override fun getDescriptiveName(element: PsiElement): String {
-        return if(element is LalrpopNonterminalName) {
+        return if (element is LpNonterminalName) {
             element.name!!
-        }
-        else {
+        } else {
             ""
         }
     }

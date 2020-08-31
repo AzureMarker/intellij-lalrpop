@@ -11,9 +11,9 @@ import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
-import com.mdrobnak.lalrpop.psi.LalrpopNonterminal
-import com.mdrobnak.lalrpop.psi.LalrpopUseStmt
-import com.mdrobnak.lalrpop.psi.impl.LalrpopActionImpl
+import com.mdrobnak.lalrpop.psi.LpNonterminal
+import com.mdrobnak.lalrpop.psi.LpUseStmt
+import com.mdrobnak.lalrpop.psi.impl.LpActionImpl
 import org.rust.lang.RsFileType
 import org.rust.lang.RsLanguage
 import org.rust.lang.core.macros.RsExpandedElement
@@ -25,15 +25,15 @@ import org.rust.lang.core.psi.ext.containingCargoPackage
 import org.rust.lang.core.psi.ext.expandedItemsExceptImplsAndUses
 import org.rust.lang.core.psi.ext.findCargoPackage
 
-class LalrpopRustInjector : MultiHostInjector {
+class LpRustInjector : MultiHostInjector {
     override fun getLanguagesToInject(registrar: MultiHostRegistrar, context: PsiElement) {
-        if (!context.isValid || context !is LalrpopActionImpl) {
+        if (!context.isValid || context !is LpActionImpl) {
             return
         }
 
-        val imports = PsiTreeUtil.findChildrenOfType(context.containingFile, LalrpopUseStmt::class.java)
+        val imports = PsiTreeUtil.findChildrenOfType(context.containingFile, LpUseStmt::class.java)
             .joinToString("\n") { it.text }
-        val nonterminal = context.parentOfType<LalrpopNonterminal>()!!
+        val nonterminal = context.parentOfType<LpNonterminal>()!!
         val returnType = nonterminal.typeRef?.text ?: nonterminal.nonterminalName
 
         val prefix = "mod __intellij_lalrpop { $imports\nfn __intellij_lalrpop() -> $returnType { "
@@ -54,7 +54,7 @@ class LalrpopRustInjector : MultiHostInjector {
     }
 
     override fun elementsToInjectIn(): List<Class<out PsiElement>> =
-        listOf(LalrpopActionImpl::class.java)
+        listOf(LpActionImpl::class.java)
 
     companion object {
         /**

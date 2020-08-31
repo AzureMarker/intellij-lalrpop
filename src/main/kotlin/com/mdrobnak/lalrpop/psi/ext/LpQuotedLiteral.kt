@@ -2,22 +2,14 @@ package com.mdrobnak.lalrpop.psi.ext
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
-import com.intellij.lang.psi.SimpleMultiLineTextEscaper
 import com.intellij.psi.LiteralTextEscaper
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiLanguageInjectionHost
 import com.intellij.psi.impl.source.tree.LeafElement
 import com.intellij.psi.util.elementType
-import com.mdrobnak.lalrpop.psi.LalrpopAction
-import com.mdrobnak.lalrpop.psi.LalrpopTypes
+import com.mdrobnak.lalrpop.psi.LpElementTypes
+import com.mdrobnak.lalrpop.psi.LpQuotedLiteral
 
-abstract class LalrpopActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LalrpopAction {
-    val code: PsiElement
-        get() {
-            assert(lastChild.elementType == LalrpopTypes.CODE)
-            return lastChild
-        }
-
+abstract class LpQuotedLiteralMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpQuotedLiteral {
     override fun isValidHost(): Boolean = true
 
     override fun updateText(text: String): PsiLanguageInjectionHost {
@@ -28,6 +20,8 @@ abstract class LalrpopActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), L
     }
 
     override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> {
-        return SimpleMultiLineTextEscaper(this)
+        return LiteralTextEscaper.createSimple(this)
     }
+
+    fun isRegex(): Boolean = firstChild.elementType == LpElementTypes.REGEX_LITERAL
 }

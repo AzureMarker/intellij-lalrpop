@@ -3,13 +3,13 @@ package com.mdrobnak.lalrpop.psi.ext
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
-import com.mdrobnak.lalrpop.psi.LalrpopElementFactory
-import com.mdrobnak.lalrpop.psi.LalrpopNonterminalName
-import com.mdrobnak.lalrpop.psi.LalrpopTypes
+import com.mdrobnak.lalrpop.psi.LpElementFactory
+import com.mdrobnak.lalrpop.psi.LpElementTypes
+import com.mdrobnak.lalrpop.psi.LpNonterminalName
 
-abstract class LalrpopNonterminalNameMixin(node: ASTNode) : ASTWrapperPsiElement(node), LalrpopNonterminalName {
+abstract class LpNonterminalNameMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpNonterminalName {
     override fun getNameIdentifier(): PsiElement {
-        return node.findChildByType(LalrpopTypes.ID)!!.psi
+        return node.findChildByType(LpElementTypes.ID)!!.psi
     }
 
     override fun getName(): String {
@@ -17,7 +17,7 @@ abstract class LalrpopNonterminalNameMixin(node: ASTNode) : ASTWrapperPsiElement
     }
 
     override fun setName(name: String): PsiElement {
-        val newNode = LalrpopElementFactory(project).createIdentifier(name)
+        val newNode = LpElementFactory(project).createIdentifier(name)
         nameIdentifier.replace(newNode)
         return this
     }

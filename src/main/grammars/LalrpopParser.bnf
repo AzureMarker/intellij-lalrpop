@@ -3,14 +3,14 @@
 
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
-  psiClassPrefix="Lalrpop"
+  psiClassPrefix="Lp"
   psiImplClassSuffix="Impl"
   psiPackage="com.mdrobnak.lalrpop.psi"
   psiImplPackage="com.mdrobnak.lalrpop.psi.impl"
 
-  elementTypeHolderClass="com.mdrobnak.lalrpop.psi.LalrpopTypes"
-  elementTypeClass="com.mdrobnak.lalrpop.psi.LalrpopElementType"
-  tokenTypeClass="com.mdrobnak.lalrpop.psi.LalrpopTokenType"
+  elementTypeHolderClass="com.mdrobnak.lalrpop.psi.LpElementTypes"
+  elementTypeClass="com.mdrobnak.lalrpop.psi.LpElementType"
+  tokenTypeClass="com.mdrobnak.lalrpop.psi.LpTokenType"
 }
 
 grammar ::= SHEBANG_ATTRIBUTE* use_stmt* annotation*
@@ -58,12 +58,12 @@ annotation_arg ::= LPAREN id EQUALS STR_LITERAL RPAREN
 annotation ::= POUND LBRACKET ID annotation_arg? RBRACKET
 
 nonterminal_name ::= ID LESSTHAN <<comma ID>> GREATERTHAN | ID {
-    implements = "com.mdrobnak.lalrpop.psi.LalrpopNamedElement"
-    mixin = "com.mdrobnak.lalrpop.psi.ext.LalrpopNonterminalNameMixin"
+    implements = "com.mdrobnak.lalrpop.psi.LpNamedElement"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpNonterminalNameMixin"
 }
 
 nonterminal_ref ::= ID {
-    mixin = "com.mdrobnak.lalrpop.psi.ext.LalrpopNonterminalRefMixin"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpNonterminalRefMixin"
 }
 
 alternatives ::= alternative SEMICOLON | LBRACE <<comma alternative>> RBRACE SEMICOLON?
@@ -73,7 +73,7 @@ alternative ::= symbol+ (IF cond)? action?
 
 action ::= (LOOKAHEAD_ACTION | LOOKBEHIND_ACTION | USER_ACTION | FALLIBLE_ACTION) CODE {
     implements = "com.intellij.psi.PsiLanguageInjectionHost"
-    mixin = "com.mdrobnak.lalrpop.psi.ext.LalrpopActionMixin"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpActionMixin"
 }
 
 cond ::= ID cond_op STR_LITERAL
@@ -147,7 +147,7 @@ quoted_terminal ::= quoted_literal
 
 quoted_literal ::= STR_LITERAL | REGEX_LITERAL {
     implements = "com.intellij.psi.PsiLanguageInjectionHost"
-    mixin = "com.mdrobnak.lalrpop.psi.ext.LalrpopQuotedLiteralMixin"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpQuotedLiteralMixin"
 }
 
 path ::= PATH_REF | ID
