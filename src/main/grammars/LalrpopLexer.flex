@@ -26,6 +26,8 @@ import static com.mdrobnak.lalrpop.psi.LpElementTypes.*;
 %function advance
 %type IElementType
 %unicode
+%x PRE_RUST_IMPORT
+%x RUST_IMPORT
 %x PRE_RUST_CODE
 %x RUST_CODE
 
@@ -44,6 +46,7 @@ Id = [a-zA-Z][a-zA-Z0-9_]*
 Lifetime = \' {Id}
 ShebangAttribute = #\!\[.*\]
 
+RustImport = [^;]+
 // Eat everything except for brackets and punctuation, which are matched by the
 // other RUST_CODE rules.
 RustCode = [^(\[{)\]},;]+
@@ -59,7 +62,7 @@ RustCode = [^(\[{)\]},;]+
   ","                { return COMMA; }
   ".."               { return DOTDOT; }
   "_"                { return UNDERSCORE; }
-  "use"              { return USE; }
+  "use"              { yybegin(PRE_RUST_IMPORT); return USE; }
   "pub"              { return PUB; }
   "if"               { return IF; }
   "mut"              { return MUT; }
@@ -103,6 +106,16 @@ RustCode = [^(\[{)\]},;]+
   {StrLiteral}       { return STR_LITERAL; }
   {CharLiteral}      { return CHAR_LITERAL; }
   {RegexLiteral}     { return REGEX_LITERAL; }
+}
+
+// This small state handles the whitespace between "use" and the Rust import
+<PRE_RUST_IMPORT> {
+  {WHITE_SPACE}      { return WHITE_SPACE; }
+  .                  { yybegin(RUST_IMPORT); yypushback(1); continue; }
+}
+
+<RUST_IMPORT> {
+  {RustImport}       { yybegin(YYINITIAL); return IMPORT_CODE; }
 }
 
 // This small state handles the whitespace between the =>/=>? and the Rust code

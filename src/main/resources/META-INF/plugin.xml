@@ -29,8 +29,8 @@
                 implementationClass="com.mdrobnak.lalrpop.LpSyntaxHighlighter"/>
 
         <multiHostInjector implementation="com.mdrobnak.lalrpop.injectors.LpRegexInjector"/>
-
-        <multiHostInjector implementation="com.mdrobnak.lalrpop.injectors.LpRustInjector"/>
+        <multiHostInjector implementation="com.mdrobnak.lalrpop.injectors.LpRustActionCodeInjector"/>
+        <multiHostInjector implementation="com.mdrobnak.lalrpop.injectors.LpRustImportCodeInjector"/>
 
         <lang.findUsagesProvider
                 language="LALRPOP"

@@ -47,7 +47,10 @@ grammar_param ::= id COLON type_ref
 
 grammar_item ::= use_stmt | match_token | extern_token | nonterminal | COMMENT
 
-use_stmt ::= USE path SEMICOLON
+use_stmt ::= USE IMPORT_CODE SEMICOLON {
+    implements = "com.intellij.psi.PsiLanguageInjectionHost"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpUseStmtMixin"
+}
 
 visibility ::= PUB LPAREN path RPAREN | PUB
 
