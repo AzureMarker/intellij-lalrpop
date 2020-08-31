@@ -33,7 +33,7 @@ class LpSyntaxHighlighter : SyntaxHighlighterBase() {
                 LpElementTypes.LBRACKET, LpElementTypes.RBRACKET -> LpColor.BRACKETS
                 LpElementTypes.LPAREN, LpElementTypes.RPAREN -> LpColor.PARENTHESIS
                 LpElementTypes.SEMICOLON -> LpColor.SEMICOLON
-                LpElementTypes.STR_LITERAL -> LpColor.STRING
+                LpElementTypes.STR_LITERAL, LpElementTypes.REGEX_LITERAL -> LpColor.STRING
                 in LP_OPERATORS -> LpColor.OPERATION_SIGN
                 in LP_KEYWORDS -> LpColor.KEYWORD
                 else -> null
