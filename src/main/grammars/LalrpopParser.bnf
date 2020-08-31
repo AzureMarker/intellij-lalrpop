@@ -84,7 +84,9 @@ expr_symbol ::= symbol*
 
 symbol ::= LESSTHAN MUT? ID COLON symbol0 GREATERTHAN
     | LESSTHAN symbol0 GREATERTHAN
-    | symbol0
+    | symbol0 {
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpSymbolMixin"
+}
 
 symbol0 ::= symbol1 repeat_op*
 

@@ -11,9 +11,12 @@ import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
+import com.mdrobnak.lalrpop.psi.LpAlternative
 import com.mdrobnak.lalrpop.psi.LpNonterminal
+import com.mdrobnak.lalrpop.psi.LpSelectedType
 import com.mdrobnak.lalrpop.psi.LpUseStmt
 import com.mdrobnak.lalrpop.psi.impl.LpActionImpl
+import com.mdrobnak.lalrpop.psi.impl.LpSymbolImpl
 import org.rust.lang.RsFileType
 import org.rust.lang.RsLanguage
 import org.rust.lang.core.macros.RsExpandedElement
@@ -34,10 +37,23 @@ class LpRustInjector : MultiHostInjector {
         val imports = PsiTreeUtil.findChildrenOfType(context.containingFile, LpUseStmt::class.java)
             .joinToString("\n") { it.text }
         val nonterminal = context.parentOfType<LpNonterminal>()!!
+        val alternative = context.parentOfType<LpAlternative>()!!
+        val inputs = alternative.symbolList
+            .filterIsInstance<LpSymbolImpl>()
+            .mapNotNull { it.getSelectedType() }
         val returnType = nonterminal.typeRef?.text ?: nonterminal.nonterminalName
 
-        val prefix = "mod __intellij_lalrpop { $imports\nfn __intellij_lalrpop() -> $returnType { "
-        val suffix = " } }"
+        val arguments = inputs.joinToString(", ") {
+            when (it) {
+                is LpSelectedType.WithName -> it.name + ": " + it.type
+                // FIXME: do something with unnamed argument?
+                is LpSelectedType.WithoutName -> "intellij_lalrpop_noname: " + it.type
+            }
+        }
+        val prefix = "mod __intellij_lalrpop {\n" +
+            "$imports\n" +
+            "fn __intellij_lalrpop($arguments) -> $returnType {\n"
+        val suffix = "\n}\n}"
 
         registrar
             .startInjecting(RsLanguage)

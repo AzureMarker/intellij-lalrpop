@@ -6,8 +6,11 @@ import com.intellij.psi.PsiElement
 import com.mdrobnak.lalrpop.psi.LpElementFactory
 import com.mdrobnak.lalrpop.psi.LpElementTypes
 import com.mdrobnak.lalrpop.psi.LpNonterminalName
+import com.mdrobnak.lalrpop.psi.impl.LpNonterminalImpl
 
 abstract class LpNonterminalNameMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpNonterminalName {
+    val nonterminal get() = parent as LpNonterminalImpl
+
     override fun getNameIdentifier(): PsiElement {
         return node.findChildByType(LpElementTypes.ID)!!.psi
     }
