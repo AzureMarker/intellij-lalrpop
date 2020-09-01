@@ -38,7 +38,6 @@ TraditionalComment   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 EndOfLineComment     = "//" .* [^\r\n]*
 
 StrLiteral = \" [^\"]* \"
-CharLiteral = \' [^\'] \'
 RegexLiteral = r \" ([^\"]* [^\\])? \"
 
 Path = (::)? {Id} (:: {Id})* (::\*)?
@@ -60,7 +59,6 @@ RustCode = [^(\[{)\]},;]+
   ":"                { return COLON; }
   ";"                { return SEMICOLON; }
   ","                { return COMMA; }
-  ".."               { return DOTDOT; }
   "_"                { return UNDERSCORE; }
   "use"              { yybegin(PRE_RUST_IMPORT); return USE; }
   "pub"              { return PUB; }
@@ -104,7 +102,6 @@ RustCode = [^(\[{)\]},;]+
   {Lifetime}         { return LIFETIME; }
   {ShebangAttribute} { return SHEBANG_ATTRIBUTE; }
   {StrLiteral}       { return STR_LITERAL; }
-  {CharLiteral}      { return CHAR_LITERAL; }
   {RegexLiteral}     { return REGEX_LITERAL; }
 }
 

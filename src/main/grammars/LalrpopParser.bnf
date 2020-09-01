@@ -134,18 +134,6 @@ associated_type ::= TYPE ID EQUALS type_ref SEMICOLON
 
 conversion ::= terminal USER_ACTION
 
-pattern ::= path LPAREN <<comma pattern>> RPAREN
-    | path LBRACE (field_pattern COMMA)* field_pattern? RBRACE
-    | path RBRACE (field_pattern COMMA)* DOTDOT RBRACE
-    | UNDERSCORE
-    | DOTDOT
-    | LESSTHAN type_ref GREATERTHAN
-    | LPAREN <<comma pattern>> RPAREN
-    | CHAR_LITERAL
-    | path
-
-field_pattern ::= ID COLON pattern
-
 terminal ::= quoted_terminal | ID
 
 quoted_terminal ::= quoted_literal
