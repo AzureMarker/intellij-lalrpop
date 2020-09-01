@@ -38,7 +38,7 @@ TraditionalComment   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 EndOfLineComment     = "//" .* [^\r\n]*
 
 StrLiteral = \" [^\"]* \"
-CharLiteral = \' [^\']* \'
+CharLiteral = \' [^\'] \'
 RegexLiteral = r \" ([^\"]* [^\\])? \"
 
 Path = (::)? {Id} (:: {Id})* (::\*)?
