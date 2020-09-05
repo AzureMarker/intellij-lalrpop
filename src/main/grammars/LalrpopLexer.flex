@@ -37,8 +37,8 @@ Comment = {TraditionalComment} | {EndOfLineComment}
 TraditionalComment   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 EndOfLineComment     = "//" .* [^\r\n]*
 
-StrLiteral = \" [^\"]* \"
-RegexLiteral = r \" ([^\"]* [^\\])? \"
+StrLiteral = \" ([^\\\"] | \\. )* \"
+RegexLiteral = r {StrLiteral}
 
 Path = (::)? {Id} (:: {Id})* (::\*)?
 Id = [a-zA-Z][a-zA-Z0-9_]*
