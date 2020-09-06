@@ -15,6 +15,11 @@ import static com.mdrobnak.lalrpop.psi.LpElementTypes.*;
    */
   int rust_bracket_count = 0;
 
+  /**
+   * Count hashs in regex literals, i.e. r##""## has two hashes
+   */
+  int regex_hash_count = 0;
+
   public LalrpopLexer() {
     this((java.io.Reader)null);
   }
@@ -30,6 +35,7 @@ import static com.mdrobnak.lalrpop.psi.LpElementTypes.*;
 %x RUST_IMPORT
 %x PRE_RUST_CODE
 %x RUST_CODE
+%x IN_REGEX_LITERAL
 
 WHITE_SPACE=\s+
 
@@ -38,7 +44,6 @@ TraditionalComment   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 EndOfLineComment     = "//" .* [^\r\n]*
 
 StrLiteral = \" ([^\\\"] | \\. )* \"
-RegexLiteral = r {StrLiteral}
 
 Path = (::)? {Id} (:: {Id})* (::\*)?
 Id = [a-zA-Z][a-zA-Z0-9_]*
@@ -102,13 +107,13 @@ RustCode = [^(\[{)\]},;]+
   {Lifetime}         { return LIFETIME; }
   {ShebangAttribute} { return SHEBANG_ATTRIBUTE; }
   {StrLiteral}       { return STR_LITERAL; }
-  {RegexLiteral}     { return REGEX_LITERAL; }
+  "r" #* \"          { yybegin(IN_REGEX_LITERAL); regex_hash_count = yylength() - 2; }
 }
 
 // This small state handles the whitespace between "use" and the Rust import
 <PRE_RUST_IMPORT> {
   {WHITE_SPACE}      { return WHITE_SPACE; }
-  .                  { yybegin(RUST_IMPORT); yypushback(1); continue; }
+  .                  { yybegin(RUST_IMPORT); yypushback(1); }
 }
 
 <RUST_IMPORT> {
@@ -118,12 +123,12 @@ RustCode = [^(\[{)\]},;]+
 // This small state handles the whitespace between the =>/=>? and the Rust code
 <PRE_RUST_CODE> {
   {WHITE_SPACE}      { return WHITE_SPACE; }
-  .                  { yybegin(RUST_CODE); yypushback(1); continue; }
+  .                  { yybegin(RUST_CODE); yypushback(1); }
 }
 
 <RUST_CODE> {
-  "(" | "[" | "{"        { rust_bracket_count++; continue; }
-  ")" | "]" | "}"        {
+  "(" | "[" | "{"    { rust_bracket_count++; }
+  ")" | "]" | "}"    {
           if (rust_bracket_count == 0) {
               // There were no opening brackets in the Rust code, so this
               // character is part of the LALRPOP code.
@@ -133,9 +138,8 @@ RustCode = [^(\[{)\]},;]+
           }
 
           rust_bracket_count--;
-          continue;
       }
-  "," | ";"             {
+  "," | ";"          {
           if (rust_bracket_count == 0) {
               // There were no opening brackets in the Rust code, so this
               // character is part of the LALRPOP code.
@@ -143,10 +147,21 @@ RustCode = [^(\[{)\]},;]+
               yypushback(1);
               return CODE;
           }
-          continue;
       }
 
-  {RustCode}             { continue; }
+  {RustCode}         { }
 }
 
-[^] { return BAD_CHARACTER; }
+<IN_REGEX_LITERAL> {
+  \" #*              {
+          int trailing_hashes = yylength() - 1;
+          if (trailing_hashes == regex_hash_count) {
+              yybegin(YYINITIAL);
+              return REGEX_LITERAL;
+          }
+      }
+
+  .                  { }
+}
+
+. { return BAD_CHARACTER; }

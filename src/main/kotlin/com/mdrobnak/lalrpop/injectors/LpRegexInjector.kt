@@ -13,7 +13,9 @@ class LpRegexInjector : MultiHostInjector {
             return
         }
 
-        val range = TextRange(2, context.textLength - 1)
+        val indexOfFirstQuote = context.text.indexOf('"')
+        val indexOfLastQuote = context.text.lastIndexOf('"')
+        val range = TextRange(indexOfFirstQuote + 1, indexOfLastQuote)
         registrar
             .startInjecting(RegExpLanguage.INSTANCE)
             .addPlace(null, null, context, range)
