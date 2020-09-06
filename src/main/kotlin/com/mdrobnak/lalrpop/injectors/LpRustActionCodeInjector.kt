@@ -22,6 +22,7 @@ class LpRustActionCodeInjector : MultiHostInjector {
             return
         }
 
+        val codeNode = context.code ?: return
         val imports = PsiTreeUtil.findChildrenOfType(context.containingFile, LpUseStmt::class.java)
             .joinToString("\n") { it.text }
         val nonterminal = context.parentOfType<LpNonterminal>()!!
@@ -45,7 +46,7 @@ class LpRustActionCodeInjector : MultiHostInjector {
 
         registrar
             .startInjecting(RsLanguage)
-            .addPlace(prefix, suffix, context, context.code.textRangeInParent)
+            .addPlace(prefix, suffix, context, codeNode.textRangeInParent)
             .doneInjecting()
 
         attachInjectedCodeToCrate(context)

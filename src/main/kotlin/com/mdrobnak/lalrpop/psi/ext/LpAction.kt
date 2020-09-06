@@ -12,10 +12,11 @@ import com.mdrobnak.lalrpop.psi.LpAction
 import com.mdrobnak.lalrpop.psi.LpElementTypes
 
 abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpAction {
-    val code: PsiElement
-        get() {
-            assert(lastChild.elementType == LpElementTypes.CODE)
-            return lastChild
+    val code: PsiElement?
+        get() = if (lastChild?.elementType == LpElementTypes.CODE) {
+            lastChild
+        } else {
+            null
         }
 
     override fun isValidHost(): Boolean = true
