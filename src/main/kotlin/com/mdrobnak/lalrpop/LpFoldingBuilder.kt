@@ -13,8 +13,8 @@ import com.mdrobnak.lalrpop.psi.LpFoldable
 object LpFoldingBuilder : FoldingBuilderEx(), DumbAware {
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         return PsiTreeUtil.findChildrenOfType(root, LpFoldable::class.java).stream()
-            .map { it.getFoldRegions(document, quick) }
-            .flatMap { (List<FoldingDescriptor>::stream)(it) }.toArray { arrayOfNulls<FoldingDescriptor>(it) }
+            .flatMap { it.getFoldRegions(document, quick).stream() }
+            .toArray { arrayOfNulls(it) }
     }
 
     override fun getPlaceholderText(node: ASTNode): String? = when (val nodePsi = node.psi) {

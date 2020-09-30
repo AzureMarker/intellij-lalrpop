@@ -23,11 +23,16 @@ object LpBraceMatcher : PairedBraceMatcher {
     }
 
     override fun getCodeConstructStart(file: PsiFile, openingBraceOffset: Int): Int {
-        for (element in file.elementsAtOffsetUp(openingBraceOffset)) {
-            when (element.first) {
-                is LpGrammarItem, is LpEnumToken -> return element.first.startOffset
+        // walk up the tree and look for a LpGrammarItem or an LpEnumToken
+        // which cover the only constructs(aside action code) in a lalrpop file that may have braces.
+        var element = file.findElementAt(openingBraceOffset)
+        while (element != null) {
+            when (element) {
+                is LpGrammarItem, is LpEnumToken -> return element.startOffset
             }
+
+            element = element.parent
         }
-        return 0
+        return openingBraceOffset
     }
 }
