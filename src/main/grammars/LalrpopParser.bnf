@@ -132,8 +132,7 @@ match_token ::= MATCH LBRACE match_contents RBRACE (ELSE LBRACE match_contents R
 match_contents ::= <<comma match_item>>
 
 match_item ::= UNDERSCORE
-    | match_symbol
-    | match_symbol USER_ACTION
+    | match_symbol (USER_ACTION CODE)?
 
 match_symbol ::= quoted_literal
 
