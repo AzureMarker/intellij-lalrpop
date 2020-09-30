@@ -9,7 +9,6 @@ object LpCommenter : Commenter {
 
     override fun getBlockCommentSuffix(): String? = "*/"
 
-    // TODO: not sure what "commented beginning/end of a block comment" mean so might want to change?
     override fun getCommentedBlockCommentPrefix(): String? = null
 
     override fun getCommentedBlockCommentSuffix(): String? = null

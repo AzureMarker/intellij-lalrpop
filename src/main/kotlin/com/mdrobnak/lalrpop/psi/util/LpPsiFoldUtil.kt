@@ -24,7 +24,8 @@ fun braceMatcherFoldDescriptors(element: PsiElement): List<FoldingDescriptor> {
             braces.push(it.startOffset)
         } else if (it.elementType == LpElementTypes.RBRACE) {
             if (braces.empty()) {
-                // malformed? what to do?
+                // There are more opening braces than closing braces.
+                // We will just ignore them (IntelliJ will do the right thing).
             } else {
                 descriptors.add(FoldingDescriptor(element, TextRange(braces.pop(), element.endOffset)))
             }
