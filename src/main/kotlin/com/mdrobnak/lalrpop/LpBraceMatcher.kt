@@ -4,12 +4,13 @@ import com.intellij.lang.BracePair
 import com.intellij.lang.PairedBraceMatcher
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IElementType
-import com.intellij.psi.util.elementsAtOffsetUp
-import com.mdrobnak.lalrpop.psi.*
+import com.mdrobnak.lalrpop.psi.LpElementTypes
+import com.mdrobnak.lalrpop.psi.LpEnumToken
+import com.mdrobnak.lalrpop.psi.LpGrammarItem
 import org.rust.lang.core.psi.ext.startOffset
 
 object LpBraceMatcher : PairedBraceMatcher {
-    val pairsArray = arrayOf(
+    private val pairsArray = arrayOf(
         BracePair(LpElementTypes.LBRACE, LpElementTypes.RBRACE, true),
         BracePair(LpElementTypes.LBRACKET, LpElementTypes.RBRACKET, false),
         BracePair(LpElementTypes.LPAREN, LpElementTypes.RPAREN, false),
