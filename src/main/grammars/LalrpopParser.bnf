@@ -69,7 +69,10 @@ nonterminal_ref ::= ID {
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpNonterminalRefMixin"
 }
 
-alternatives ::= alternative SEMICOLON | LBRACE <<comma alternative>> RBRACE SEMICOLON?
+alternatives ::= alternative SEMICOLON | LBRACE <<comma alternative>> RBRACE SEMICOLON? {
+    implements = "com.mdrobnak.lalrpop.psi.LpFoldable"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpAlternativesMixin"
+}
 
 alternative ::= symbol+ (IF cond)? action?
     | (IF cond)? action
@@ -116,9 +119,15 @@ type_ref ::= LPAREN <<comma type_ref>> RPAREN
 type_ref_or_lifetime ::= type_ref | LIFETIME
 
 extern_token ::= EXTERN LBRACE associated_type* enum_token associated_type* RBRACE
-    | EXTERN LBRACE associated_type* RBRACE
+    | EXTERN LBRACE associated_type* RBRACE {
+    implements = "com.mdrobnak.lalrpop.psi.LpFoldable"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpExternTokenMixin"
+}
 
-match_token ::= MATCH LBRACE match_contents RBRACE (ELSE LBRACE match_contents RBRACE)*
+match_token ::= MATCH LBRACE match_contents RBRACE (ELSE LBRACE match_contents RBRACE)* {
+    implements = "com.mdrobnak.lalrpop.psi.LpFoldable"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpMatchTokenMixin"
+}
 
 match_contents ::= <<comma match_item>>
 
@@ -128,7 +137,10 @@ match_item ::= UNDERSCORE
 
 match_symbol ::= quoted_literal
 
-enum_token ::= ENUM type_ref LBRACE <<comma conversion>> RBRACE
+enum_token ::= ENUM type_ref LBRACE <<comma conversion>> RBRACE {
+    implements = "com.mdrobnak.lalrpop.psi.LpFoldable"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpEnumTokenMixin"
+}
 
 associated_type ::= TYPE ID EQUALS type_ref SEMICOLON
 

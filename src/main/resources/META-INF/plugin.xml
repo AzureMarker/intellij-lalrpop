@@ -36,5 +36,10 @@
         <lang.findUsagesProvider
                 language="LALRPOP"
                 implementationClass="com.mdrobnak.lalrpop.resolve.LpFindUsagesProvider"/>
+
+        <lang.braceMatcher language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpBraceMatcher"/>
+        <lang.commenter language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpCommenter"/>
+        <lang.quoteHandler language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpQuoteHandler"/>
+        <lang.foldingBuilder language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpFoldingBuilder"/>
     </extensions>
 </idea-plugin>
