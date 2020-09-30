@@ -144,7 +144,7 @@ enum_token ::= ENUM type_ref LBRACE <<comma conversion>> RBRACE {
 
 associated_type ::= TYPE ID EQUALS type_ref SEMICOLON
 
-conversion ::= terminal USER_ACTION
+conversion ::= terminal USER_ACTION CODE
 
 terminal ::= quoted_terminal | ID
 
