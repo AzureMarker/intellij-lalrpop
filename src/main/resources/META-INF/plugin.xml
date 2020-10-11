@@ -41,5 +41,6 @@
         <lang.commenter language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpCommenter"/>
         <lang.quoteHandler language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpQuoteHandler"/>
         <lang.foldingBuilder language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpFoldingBuilder"/>
+        <lang.formatter language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.formatter.LpFormattingModelBuilder"/>
     </extensions>
 </idea-plugin>

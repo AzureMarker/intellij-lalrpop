@@ -13,13 +13,15 @@
   tokenTypeClass="com.mdrobnak.lalrpop.psi.LpTokenType"
 }
 
-grammar ::= SHEBANG_ATTRIBUTE* use_stmt* annotation*
-    GRAMMAR grammar_type_params? grammar_params? grammar_where_clauses? SEMICOLON
+grammar ::= SHEBANG_ATTRIBUTE* use_stmt*
+    annotation* grammar_decl
     grammar_item*
 
 private meta comma ::= (<<param>> COMMA)* <<param>>?
 
 private meta plus ::= (<<param>> PLUS)* <<param>>?
+
+grammar_decl ::= GRAMMAR grammar_type_params? grammar_params? grammar_where_clauses? SEMICOLON
 
 grammar_type_params ::= LESSTHAN <<comma type_param>> GREATERTHAN
 
@@ -118,11 +120,12 @@ type_ref ::= LPAREN <<comma type_ref>> RPAREN
 
 type_ref_or_lifetime ::= type_ref | LIFETIME
 
-extern_token ::= EXTERN LBRACE associated_type* enum_token associated_type* RBRACE
-    | EXTERN LBRACE associated_type* RBRACE {
+extern_token ::= EXTERN LBRACE extern_contents RBRACE {
     implements = "com.mdrobnak.lalrpop.psi.LpFoldable"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpExternTokenMixin"
 }
+
+extern_contents ::= associated_type* enum_token associated_type* | associated_type*
 
 match_token ::= MATCH LBRACE match_contents RBRACE (ELSE LBRACE match_contents RBRACE)* {
     implements = "com.mdrobnak.lalrpop.psi.LpFoldable"
