@@ -31,16 +31,16 @@ class LpBlock(
                 LpElementTypes.GRAMMAR_PARAMS -> {
                     LpBlock(
                         child,
-                        Wrap.createWrap(WrapType.CHOP_DOWN_IF_LONG, true),
+                        Wrap.createWrap(WrapType.NONE, false),
                         null,
                         spacingBuilder
                     )
                 }
                 LpElementTypes.GRAMMAR_PARAM -> {
-                    LpBlock(child, Wrap.createWrap(WrapType.NONE, true), null, spacingBuilder)
+                    LpBlock(child, Wrap.createWrap(WrapType.CHOP_DOWN_IF_LONG, true), null, spacingBuilder)
                 }
-                LpElementTypes.TYPE_REF, LpElementTypes.NONTERMINAL_NAME, LpElementTypes.PATH, LpElementTypes.PATH_REF,
-                LpElementTypes.SYMBOL, LpElementTypes.SYMBOL_0, LpElementTypes.SYMBOL_1, LpElementTypes.EXPR_SYMBOL,
+                LpElementTypes.TYPE_REF, LpElementTypes.NONTERMINAL_NAME, LpElementTypes.NONTERMINAL_REF, LpElementTypes.PATH,
+                LpElementTypes.PATH_REF, LpElementTypes.SYMBOL, LpElementTypes.SYMBOL_0, LpElementTypes.SYMBOL_1, LpElementTypes.EXPR_SYMBOL,
                 LpElementTypes.REPEAT_OP -> {
                     LpBlock(child, null, null, spacingBuilder)
                 }
@@ -48,13 +48,13 @@ class LpBlock(
                     LpBlock(child.firstChildNode, null, null, spacingBuilder)
                 }
                 LpElementTypes.GRAMMAR_WHERE_CLAUSE -> {
-                    LpBlock(child, Wrap.createWrap(WrapType.ALWAYS, true), null, spacingBuilder)
+                    LpBlock(child, Wrap.createWrap(WrapType.NONE, true), null, spacingBuilder)
                 }
                 LpElementTypes.TYPE_BOUNDS -> {
-                    LpBlock(child, Wrap.createWrap(WrapType.ALWAYS, true), null, spacingBuilder)
+                    LpBlock(child, Wrap.createWrap(WrapType.NONE, false), null, spacingBuilder)
                 }
                 LpElementTypes.TYPE_BOUND, LpElementTypes.TYPE_BOUND_PARAM -> {
-                    LpBlock(child, Wrap.createWrap(WrapType.NORMAL, false), null, spacingBuilder)
+                    LpBlock(child, Wrap.createWrap(WrapType.NONE, false), null, spacingBuilder)
                 }
                 LpElementTypes.ENUM_TOKEN -> {
                     LpBlock(
@@ -72,7 +72,7 @@ class LpBlock(
                         spacingBuilder
                     )
                 }
-                LpElementTypes.MATCH_ITEM -> {
+                LpElementTypes.MATCH_ITEM, LpElementTypes.CONVERSION, LpElementTypes.TERMINAL -> {
                     LpBlock(
                         child,
                         Wrap.createWrap(WrapType.ALWAYS, true),
@@ -95,7 +95,7 @@ class LpBlock(
                 /// match all single tokens here
                 LpElementTypes.EXTERN, LpElementTypes.MATCH, LpElementTypes.ENUM, LpElementTypes.GRAMMAR,
                 LpElementTypes.PUB, LpElementTypes.USE, LpElementTypes.DYN, LpElementTypes.MUT,
-                LpElementTypes.IF, LpElementTypes.ELSE, LpElementTypes.FOR,
+                LpElementTypes.IF, LpElementTypes.ELSE, LpElementTypes.FOR, LpElementTypes.WHERE,
                 LpElementTypes.LBRACE, LpElementTypes.RBRACE,
                 LpElementTypes.LBRACKET, LpElementTypes.RBRACKET,
                 LpElementTypes.LPAREN, LpElementTypes.RPAREN,
@@ -127,7 +127,9 @@ class LpBlock(
     }
 
     override fun getIndent(): Indent = when (node.elementType) {
-        LpElementTypes.ALTERNATIVE, LpElementTypes.MATCH_ITEM, LpElementTypes.ASSOCIATED_TYPE, LpElementTypes.ENUM_TOKEN -> Indent.getNormalIndent()
+        LpElementTypes.ALTERNATIVE, LpElementTypes.MATCH_ITEM, LpElementTypes.ASSOCIATED_TYPE, LpElementTypes.ENUM_TOKEN,
+        LpElementTypes.GRAMMAR_WHERE_CLAUSE, LpElementTypes.CODE,
+        LpElementTypes.GRAMMAR_PARAM, LpElementTypes.CONVERSION -> Indent.getNormalIndent()
         LpElementTypes.GRAMMAR -> Indent.getAbsoluteNoneIndent()
         else -> Indent.getNoneIndent()
     }
