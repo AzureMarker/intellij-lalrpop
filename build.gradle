@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.intellij' version '0.4.26'
+    id 'org.jetbrains.intellij' version '0.5.0'
     id 'org.jetbrains.kotlin.jvm' version '1.4.10'
     id 'org.jetbrains.grammarkit' version '2020.2.1'
     id 'idea'
@@ -36,11 +36,13 @@ task generateParser(type: GenerateParser) {
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     // Test with 2020.3 EAP
+    // Note: Rust plugin v132 is incompatible with the recent EAP versions (fix to be released in 133).
+    //       https://github.com/intellij-rust/intellij-rust/pull/6223
     version '203.3645-EAP-CANDIDATE-SNAPSHOT'
-    plugins = ['PsiViewer:203-SNAPSHOT', 'org.rust.lang:0.3.131.3366-202', 'org.toml.lang:0.2.131.3366-202']
+    plugins = ['PsiViewer:203-SNAPSHOT', 'org.rust.lang:0.3.132.3395-203', 'org.toml.lang:0.2.132.3395-203']
 }
 compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "11"
     dependsOn(generateLexer, generateParser)
 }
 patchPluginXml {
