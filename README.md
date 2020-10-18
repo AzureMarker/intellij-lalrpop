@@ -1,5 +1,7 @@
 # IntelliJ-LALRPOP
 
+[![Version](https://img.shields.io/jetbrains/plugin/v/15229-lalrpop)](https://plugins.jetbrains.com/plugin/15229-lalrpop)
+
 A Jetbrains plugin for the [LALRPOP] parser-generator.
 
 ## Features
