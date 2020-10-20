@@ -14,14 +14,14 @@
 }
 
 grammar ::= SHEBANG_ATTRIBUTE* use_stmt*
-    annotation* grammar_decl
+    grammar_decl
     grammar_item*
 
 private meta comma ::= (<<param>> COMMA)* <<param>>?
 
 private meta plus ::= (<<param>> PLUS)* <<param>>?
 
-grammar_decl ::= GRAMMAR grammar_type_params? grammar_params? grammar_where_clauses? SEMICOLON
+grammar_decl ::= annotation* GRAMMAR grammar_type_params? grammar_params? grammar_where_clauses? SEMICOLON
 
 grammar_type_params ::= LESSTHAN <<comma type_param>> GREATERTHAN
 
@@ -31,7 +31,7 @@ grammar_where_clauses ::= WHERE <<comma grammar_where_clause>>
 
 grammar_where_clause ::= LIFETIME COLON <<plus LIFETIME>> | forall type_ref COLON type_bounds
 
-forall ::= (FOR LESSTHAN <<comma type_param>> GREATERTHAN)?
+forall ::= FOR LESSTHAN <<comma type_param>> GREATERTHAN | ()
 
 type_bounds ::= <<plus type_bound>>
 
@@ -43,11 +43,11 @@ type_bound ::= LIFETIME
 
 type_bound_param ::= LIFETIME | type_ref | id EQUALS type_ref
 
-grammar_params ::= LPAREN <<comma grammar_param>> RPAREN
+private grammar_params ::= LPAREN <<comma grammar_param>> RPAREN
 
 grammar_param ::= id COLON type_ref
 
-grammar_item ::= use_stmt | match_token | extern_token | nonterminal | COMMENT
+private grammar_item ::= use_stmt | match_token | extern_token | nonterminal | COMMENT
 
 use_stmt ::= USE IMPORT_CODE SEMICOLON {
     implements = "com.intellij.psi.PsiLanguageInjectionHost"

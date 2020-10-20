@@ -2,135 +2,76 @@ package com.mdrobnak.lalrpop.formatter
 
 import com.intellij.formatting.*
 import com.intellij.lang.ASTNode
+import com.intellij.psi.TokenType
 import com.intellij.psi.formatter.common.AbstractBlock
+import com.intellij.psi.tree.IElementType
+import com.intellij.psi.tree.TokenSet
 import com.mdrobnak.lalrpop.psi.LpElementTypes
 import java.util.*
+
 
 class LpBlock(
     node: ASTNode, wrap: Wrap?, alignment: Alignment?,
     private val spacingBuilder: SpacingBuilder
 ) : AbstractBlock(node, wrap, alignment) {
     override fun buildChildren(): List<Block> {
+        if (isLeaf) return listOf()
         val blocks: MutableList<Block> = ArrayList()
+        val wraps = hashMapOf<IElementType, Wrap>()
+        val alignments = mapOf(
+            TokenSet.create(LpElementTypes.SHEBANG_ATTRIBUTE, LpElementTypes.USE_STMT) to Alignment.createAlignment(),
+            TokenSet.create(
+                LpElementTypes.ALTERNATIVE,
+            ) to Alignment.createAlignment(),
+            TokenSet.create(
+                LpElementTypes.GRAMMAR_PARAM
+            ) to Alignment.createAlignment(),
+            TokenSet.create(LpElementTypes.GRAMMAR_WHERE_CLAUSE) to Alignment.createAlignment(),
+            TokenSet.create(LpElementTypes.GRAMMAR_WHERE_CLAUSES) to Alignment.createAlignment(),
+            TokenSet.create(LpElementTypes.MATCH_TOKEN) to Alignment.createAlignment(),
+            TokenSet.create(
+                LpElementTypes.CONVERSION
+            ) to Alignment.createAlignment(),
+            TokenSet.create(
+                LpElementTypes.ASSOCIATED_TYPE, LpElementTypes.ENUM_TOKEN
+            ) to Alignment.createAlignment(),
+            TokenSet.create(LpElementTypes.ANNOTATION) to Alignment.createAlignment(),
+            TokenSet.create(LpElementTypes.WHERE) to Alignment.createAlignment(),
+            TokenSet.create(LpElementTypes.NONTERMINAL) to Alignment.createAlignment(),
+            TokenSet.create(LpElementTypes.EQUALS) to Alignment.createAlignment(),
+            TokenSet.create(LpElementTypes.LBRACE) to Alignment.createChildAlignment(this.alignment),
+            TokenSet.create(LpElementTypes.LPAREN) to Alignment.createChildAlignment(this.alignment),
+            TokenSet.create(LpElementTypes.EXTERN) to Alignment.createAlignment(),
+            TokenSet.create(LpElementTypes.ENUM) to Alignment.createAlignment(),
+            TokenSet.create(LpElementTypes.GRAMMAR) to Alignment.createAlignment(),
+        )
         var child = myNode.firstChildNode
         while (child != null) {
-            val block: Block? = when (child.elementType) {
-                LpElementTypes.SHEBANG_ATTRIBUTE, LpElementTypes.USE_STMT, LpElementTypes.GRAMMAR_DECL, LpElementTypes.GRAMMAR_ITEM,
-                LpElementTypes.VISIBILITY, LpElementTypes.GRAMMAR_TYPE_PARAMS, LpElementTypes.TYPE_PARAM, LpElementTypes.FORALL,
-                LpElementTypes.MATCH_TOKEN, LpElementTypes.EXTERN_TOKEN, LpElementTypes.NONTERMINAL -> {
-                    LpBlock(child, null, null, spacingBuilder)
-                }
-                LpElementTypes.GRAMMAR_WHERE_CLAUSES -> {
-                    LpBlock(
-                        child,
-                        Wrap.createWrap(WrapType.ALWAYS, true),
-                        null,
-                        spacingBuilder
-                    )
-                }
-                LpElementTypes.GRAMMAR_PARAMS -> {
-                    LpBlock(
-                        child,
-                        Wrap.createWrap(WrapType.NONE, false),
-                        null,
-                        spacingBuilder
-                    )
-                }
-                LpElementTypes.GRAMMAR_PARAM -> {
-                    LpBlock(child, Wrap.createWrap(WrapType.CHOP_DOWN_IF_LONG, true), null, spacingBuilder)
-                }
-                LpElementTypes.TYPE_REF, LpElementTypes.NONTERMINAL_NAME, LpElementTypes.NONTERMINAL_REF, LpElementTypes.PATH,
-                LpElementTypes.PATH_REF, LpElementTypes.SYMBOL, LpElementTypes.SYMBOL_0, LpElementTypes.SYMBOL_1, LpElementTypes.EXPR_SYMBOL,
-                LpElementTypes.REPEAT_OP -> {
-                    LpBlock(child, null, null, spacingBuilder)
-                }
-                LpElementTypes.TYPE_REF_OR_LIFETIME -> {
-                    LpBlock(child.firstChildNode, null, null, spacingBuilder)
-                }
-                LpElementTypes.GRAMMAR_WHERE_CLAUSE -> {
-                    LpBlock(child, Wrap.createWrap(WrapType.NONE, true), null, spacingBuilder)
-                }
-                LpElementTypes.TYPE_BOUNDS -> {
-                    LpBlock(child, Wrap.createWrap(WrapType.NONE, false), null, spacingBuilder)
-                }
-                LpElementTypes.TYPE_BOUND, LpElementTypes.TYPE_BOUND_PARAM -> {
-                    LpBlock(child, Wrap.createWrap(WrapType.NONE, false), null, spacingBuilder)
-                }
-                LpElementTypes.ENUM_TOKEN -> {
-                    LpBlock(
-                        child,
-                        Wrap.createWrap(WrapType.ALWAYS, true),
-                        null,
-                        spacingBuilder
-                    )
-                }
-                LpElementTypes.ASSOCIATED_TYPE -> {
-                    LpBlock(
-                        child,
-                        Wrap.createWrap(WrapType.ALWAYS, false),
-                        null,
-                        spacingBuilder
-                    )
-                }
-                LpElementTypes.MATCH_ITEM, LpElementTypes.CONVERSION, LpElementTypes.TERMINAL -> {
-                    LpBlock(
-                        child,
-                        Wrap.createWrap(WrapType.ALWAYS, true),
-                        null,
-                        spacingBuilder
-                    )
-                }
-                LpElementTypes.ALTERNATIVES, LpElementTypes.EXTERN_CONTENTS, LpElementTypes.MATCH_CONTENTS -> {
-                    LpBlock(child, Wrap.createWrap(WrapType.ALWAYS, false), null, spacingBuilder)
-                }
-                LpElementTypes.ALTERNATIVE -> {
-                    LpBlock(
-                        child,
-                        Wrap.createWrap(WrapType.ALWAYS, true),
-                        null,
-                        spacingBuilder
-                    )
-                }
-                LpElementTypes.COMMENT -> LpBlock(child, null, null, spacingBuilder)
-                /// match all single tokens here
-                LpElementTypes.EXTERN, LpElementTypes.MATCH, LpElementTypes.ENUM, LpElementTypes.GRAMMAR,
-                LpElementTypes.PUB, LpElementTypes.USE, LpElementTypes.DYN, LpElementTypes.MUT,
-                LpElementTypes.IF, LpElementTypes.ELSE, LpElementTypes.FOR, LpElementTypes.WHERE,
-                LpElementTypes.LBRACE, LpElementTypes.RBRACE,
-                LpElementTypes.LBRACKET, LpElementTypes.RBRACKET,
-                LpElementTypes.LPAREN, LpElementTypes.RPAREN,
-                LpElementTypes.GREATERTHAN, LpElementTypes.LESSTHAN,
-                LpElementTypes.IMPORT_CODE,
-                LpElementTypes.QUESTION, LpElementTypes.MULTIPLY, LpElementTypes.PLUS,
-                LpElementTypes.AND, LpElementTypes.NOT, LpElementTypes.POUND,
-                LpElementTypes.ANNOTATION, LpElementTypes.ACTION,
-                LpElementTypes.COLON, LpElementTypes.COMMA, LpElementTypes.SEMICOLON,
-                LpElementTypes.CODE, LpElementTypes.TYPE,
-                LpElementTypes.ID, LpElementTypes.LIFETIME,
-                LpElementTypes.PATH_REF,
-                LpElementTypes.LOOKAHEAD, LpElementTypes.LOOKAHEAD_ACTION,
-                LpElementTypes.LOOKBEHIND, LpElementTypes.LOOKBEHIND_ACTION,
-                LpElementTypes.USER_ACTION, LpElementTypes.FALLIBLE_ACTION,
-                LpElementTypes.RSINGLEARROW, LpElementTypes.UNDERSCORE,
-                LpElementTypes.EQUALS, LpElementTypes.EQUALS_EQUALS, LpElementTypes.NOT_EQUALS,
-                LpElementTypes.MATCH_OP, LpElementTypes.NOT_MATCH_OP, LpElementTypes.MATCH_SYMBOL,
-                LpElementTypes.QUOTED_LITERAL, LpElementTypes.QUOTED_TERMINAL, LpElementTypes.STR_LITERAL,
-                -> {
-                    LpBlock(child, null, null, spacingBuilder)
-                }
-                else -> null
+            if (child.elementType !== TokenType.WHITE_SPACE) {
+                val block: Block = LpBlock(
+                    child, wraps.computeIfAbsent(child.elementType) {
+                        when (it) {
+                            LpElementTypes.GRAMMAR_PARAM, LpElementTypes.GRAMMAR_WHERE_CLAUSE -> Wrap.createWrap(
+                                WrapType.CHOP_DOWN_IF_LONG,
+                                true
+                            )
+                            else -> Wrap.createWrap(WrapType.NONE, false)
+                        }
+                    },
+                    alignments.entries.find { it.key.contains(child.elementType) }?.value,
+                    spacingBuilder
+                )
+                blocks.add(block)
             }
-            if (block != null) blocks.add(block)
             child = child.treeNext
         }
         return blocks
     }
 
     override fun getIndent(): Indent = when (node.elementType) {
-        LpElementTypes.ALTERNATIVE, LpElementTypes.MATCH_ITEM, LpElementTypes.ASSOCIATED_TYPE, LpElementTypes.ENUM_TOKEN,
-        LpElementTypes.GRAMMAR_WHERE_CLAUSE, LpElementTypes.CODE,
-        LpElementTypes.GRAMMAR_PARAM, LpElementTypes.CONVERSION -> Indent.getNormalIndent()
-        LpElementTypes.GRAMMAR -> Indent.getAbsoluteNoneIndent()
+        LpElementTypes.MATCH_ITEM, LpElementTypes.ASSOCIATED_TYPE, LpElementTypes.ENUM_TOKEN,
+        LpElementTypes.CODE, LpElementTypes.CONVERSION, LpElementTypes.ALTERNATIVE,
+        LpElementTypes.GRAMMAR_PARAM, LpElementTypes.GRAMMAR_WHERE_CLAUSE -> Indent.getNormalIndent()
         else -> Indent.getNoneIndent()
     }
 
