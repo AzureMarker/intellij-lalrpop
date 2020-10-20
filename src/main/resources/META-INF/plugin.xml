@@ -41,5 +41,9 @@
         <lang.commenter language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpCommenter"/>
         <lang.quoteHandler language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpQuoteHandler"/>
         <lang.foldingBuilder language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpFoldingBuilder"/>
+        <localInspection language="LALRPOP" id="MissingTerminals" groupName="Terminals" displayName="Missing terminals"
+                         implementationClass="com.mdrobnak.lalrpop.inspections.MissingTerminalsInspection"
+                         enabledByDefault="true"
+                         level="ERROR"/>
     </extensions>
 </idea-plugin>

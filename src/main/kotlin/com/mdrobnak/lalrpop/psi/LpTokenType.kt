@@ -21,7 +21,8 @@ val LP_KEYWORDS = TokenSet.create(
     LpElementTypes.MATCH,
     LpElementTypes.ELSE,
     LpElementTypes.ENUM,
-    LpElementTypes.TYPE
+    LpElementTypes.TYPE,
+    LpElementTypes.WHERE,
 )
 
 val LP_OPERATORS = TokenSet.create(

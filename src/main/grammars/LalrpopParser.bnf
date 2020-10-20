@@ -29,7 +29,7 @@ grammar_where_clauses ::= WHERE <<comma grammar_where_clause>>
 
 grammar_where_clause ::= LIFETIME COLON <<plus LIFETIME>> | forall type_ref COLON type_bounds
 
-forall ::= FOR LESSTHAN <<comma type_param>> GREATERTHAN |
+forall ::= FOR LESSTHAN <<comma type_param>> GREATERTHAN | ()
 
 type_bounds ::= <<plus type_bound>>
 

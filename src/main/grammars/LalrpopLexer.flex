@@ -47,7 +47,7 @@ StrLiteral = \" ([^\\\"] | \\. )* \"
 
 Path = (::)? {Id} (:: {Id})* (::\*)?
 Id = [a-zA-Z][a-zA-Z0-9_]*
-Lifetime = \' {Id}
+Lifetime = \' {Id} | \' _
 ShebangAttribute = #\!\[.*\]
 
 RustImport = [^;]+
@@ -75,6 +75,7 @@ RustCode = [^(\[{)\]},;]+
   "else"             { return ELSE; }
   "enum"             { return ENUM; }
   "type"             { return TYPE; }
+  "where"            { return WHERE; }
   "=="               { return EQUALS_EQUALS; }
   "!="               { return NOT_EQUALS; }
   "="                { return EQUALS; }
