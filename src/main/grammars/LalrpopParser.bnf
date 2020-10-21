@@ -11,11 +11,15 @@
   elementTypeHolderClass="com.mdrobnak.lalrpop.psi.LpElementTypes"
   elementTypeClass="com.mdrobnak.lalrpop.psi.LpElementType"
   tokenTypeClass="com.mdrobnak.lalrpop.psi.LpTokenType"
+
+  psiImplUtilClass="com.mdrobnak.lalrpop.psi.util.LpPsiUtil.Companion"
 }
 
-grammar ::= SHEBANG_ATTRIBUTE* use_stmt* annotation*
-    GRAMMAR grammar_type_params? grammar_params? grammar_where_clauses? SEMICOLON
+grammar ::= SHEBANG_ATTRIBUTE* use_stmt*
+    grammar_decl
     grammar_item*
+
+grammar_decl ::= annotation* GRAMMAR grammar_type_params? grammar_params? grammar_where_clauses? SEMICOLON
 
 private meta comma ::= (<<param>> COMMA)* <<param>>?
 
@@ -43,7 +47,10 @@ type_bound_param ::= LIFETIME | type_ref | id EQUALS type_ref
 
 grammar_params ::= LPAREN <<comma grammar_param>> RPAREN
 
-grammar_param ::= id COLON type_ref
+grammar_param ::= id COLON type_ref {
+    // FIXME: figure out why it doesn't generate those calls properly(maybe because kotlin instead of java?)
+    methods=[getName]
+}
 
 grammar_item ::= use_stmt | match_token | extern_token | nonterminal | COMMENT
 
@@ -77,10 +84,12 @@ alternatives ::= alternative SEMICOLON | LBRACE <<comma alternative>> RBRACE SEM
 alternative ::= symbol+ (IF cond)? action?
     | (IF cond)? action
 
-action ::= (LOOKAHEAD_ACTION | LOOKBEHIND_ACTION | USER_ACTION | FALLIBLE_ACTION) CODE {
+action ::= action_type CODE {
     implements = "com.intellij.psi.PsiLanguageInjectionHost"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpActionMixin"
 }
+
+action_type ::= LOOKAHEAD_ACTION | LOOKBEHIND_ACTION | USER_ACTION | FALLIBLE_ACTION
 
 cond ::= ID cond_op STR_LITERAL
 
