@@ -62,8 +62,6 @@ class LpRustActionCodeInjector : MultiHostInjector {
                 "fn __intellij_lalrpop $grammarTypeParamsString ($grammarParametersString $arguments) -> $returnType $grammarWhereClausesString {\n"
         val suffix = "\n}\n}"
 
-        println("Injecting with prefix: $prefix")
-
         registrar
             .startInjecting(RsLanguage)
             .addPlace(prefix, suffix, context, codeNode.textRangeInParent)
