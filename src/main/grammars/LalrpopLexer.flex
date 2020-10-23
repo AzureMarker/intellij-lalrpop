@@ -46,8 +46,8 @@ EndOfLineComment     = "//" .* [^\r\n]*
 StrLiteral = \" ([^\\\"] | \\. )* \"
 
 Path = (::)? {Id} (:: {Id})* (::\*)?
-Id = [a-zA-Z][a-zA-Z0-9_]*
-Lifetime = \' {Id} | \' _
+Id = [a-zA-Z_][a-zA-Z0-9_]*
+Lifetime = \' {Id}
 ShebangAttribute = #\!\[.*\]
 
 RustImport = [^;]+
