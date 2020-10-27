@@ -46,7 +46,7 @@ EndOfLineComment     = "//" .* [^\r\n]*
 StrLiteral = \" ([^\\\"] | \\. )* \"
 
 Path = (::)? {Id} (:: {Id})* (::\*)?
-Id = [a-zA-Z][a-zA-Z0-9_]*
+Id = [a-zA-Z_][a-zA-Z0-9_]*
 Lifetime = \' {Id}
 ShebangAttribute = #\!\[.*\]
 
@@ -75,6 +75,7 @@ RustCode = [^(\[{)\]},;]+
   "else"             { return ELSE; }
   "enum"             { return ENUM; }
   "type"             { return TYPE; }
+  "where"            { return WHERE; }
   "=="               { return EQUALS_EQUALS; }
   "!="               { return NOT_EQUALS; }
   "="                { return EQUALS; }
