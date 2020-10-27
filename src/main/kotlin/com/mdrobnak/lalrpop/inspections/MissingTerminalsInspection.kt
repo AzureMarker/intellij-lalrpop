@@ -16,16 +16,19 @@ object MissingTerminalsInspection : LocalInspectionTool() {
 
     // true if it found an enum / match token
     lateinit var check: AtomicBoolean
+    // true if the match has a _
+    lateinit var matchHasWildcard: AtomicBoolean
 
     override fun inspectionStarted(session: LocalInspectionToolSession, isOnTheFly: Boolean) {
         super.inspectionStarted(session, isOnTheFly)
         unresolved = ConcurrentLinkedQueue()
         terminalDefs = ConcurrentLinkedQueue()
         check = AtomicBoolean(false)
+        matchHasWildcard = AtomicBoolean(false)
     }
 
     override fun inspectionFinished(session: LocalInspectionToolSession, problemsHolder: ProblemsHolder) {
-        if (check.get())
+        if (check.get() && !matchHasWildcard.get())
             unresolved.forEach { unresolvedElement ->
                 if (unresolvedElement !is LpQuotedTerminal) return@forEach
                 if (!terminalDefs.any {
@@ -55,7 +58,7 @@ object MissingTerminalsInspection : LocalInspectionTool() {
                         terminalDefs.add(terminal)
                     } else {
                         // is _ => there cannot be any unresolved terminals, so don't check.
-                        check.set(false)
+                        matchHasWildcard.set(true)
                     }
                 } else if (element is LpTerminal && element.parent is LpConversion) {
                     val terminal = element.quotedTerminal
