@@ -60,9 +60,16 @@ annotation_arg ::= LPAREN id EQUALS STR_LITERAL RPAREN
 
 annotation ::= POUND LBRACKET ID annotation_arg? RBRACKET
 
-nonterminal_name ::= ID LESSTHAN <<comma ID>> GREATERTHAN | ID {
+nonterminal_name ::= ID nonterminal_params? {
     implements = "com.mdrobnak.lalrpop.psi.LpNamedElement"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpNonterminalNameMixin"
+}
+
+nonterminal_params ::= LESSTHAN <<comma nonterminal_param>> GREATERTHAN
+
+nonterminal_param ::= ID {
+    implements = "com.mdrobnak.lalrpop.psi.LpNamedElement"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpNonterminalParamMixin"
 }
 
 nonterminal_ref ::= ID {
@@ -98,13 +105,14 @@ symbol0 ::= symbol1 repeat_op*
 
 repeat_op ::= PLUS | MULTIPLY | QUESTION
 
-symbol1 ::= nonterminal_ref LESSTHAN <<comma symbol>> GREATERTHAN
+symbol1 ::= nonterminal_ref nonterminal_arguments?
     | quoted_terminal
-    | nonterminal_ref
     | LPAREN expr_symbol RPAREN
     | LOOKAHEAD
     | LOOKBEHIND
     | NOT
+
+nonterminal_arguments ::= LESSTHAN <<comma symbol>> GREATERTHAN
 
 type_ref ::= LPAREN <<comma type_ref>> RPAREN
     | LBRACKET type_ref RBRACKET
@@ -154,4 +162,8 @@ quoted_literal ::= STR_LITERAL | REGEX_LITERAL {
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpQuotedLiteralMixin"
 }
 
-path ::= PATH_REF | ID
+path ::= PATH_REF | path_id
+
+path_id ::= ID {
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpPathIdMixin"
+}

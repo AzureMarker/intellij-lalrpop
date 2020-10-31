@@ -26,11 +26,29 @@ val LP_KEYWORDS = TokenSet.create(
 )
 
 val LP_OPERATORS = TokenSet.create(
+    LpElementTypes.COLON,
+    LpElementTypes.SEMICOLON,
+    LpElementTypes.COMMA,
     LpElementTypes.EQUALS_EQUALS,
     LpElementTypes.NOT_EQUALS,
+    LpElementTypes.EQUALS,
     LpElementTypes.MATCH_OP,
     LpElementTypes.NOT_MATCH_OP,
+    LpElementTypes.LESSTHAN,
+    LpElementTypes.GREATERTHAN,
+    LpElementTypes.RSINGLEARROW,
+    LpElementTypes.LOOKAHEAD_ACTION,
+    LpElementTypes.LOOKBEHIND_ACTION,
+    LpElementTypes.FALLIBLE_ACTION,
+    LpElementTypes.USER_ACTION,
     LpElementTypes.PLUS,
     LpElementTypes.MULTIPLY,
-    LpElementTypes.QUESTION
+    LpElementTypes.QUESTION,
+    LpElementTypes.NOT,
+    LpElementTypes.AND,
+)
+
+val LP_PREDEFINED_SYMBOLS = TokenSet.create(
+    LpElementTypes.LOOKAHEAD,
+    LpElementTypes.LOOKBEHIND,
 )
