@@ -162,8 +162,13 @@ quoted_literal ::= STR_LITERAL | REGEX_LITERAL {
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpQuotedLiteralMixin"
 }
 
-path ::= PATH_REF | path_id
+path ::= PATH_REF | path_id | rust_primitive
 
 path_id ::= ID {
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpPathIdMixin"
 }
+
+rust_primitive ::= I8 | I16 | I32 | I64 | I128 | ISIZE |
+                   U8 | U16 | U32 | U64 | U128 | USIZE |
+                              F32 | F64 |
+                   CHAR | BOOL | STR;

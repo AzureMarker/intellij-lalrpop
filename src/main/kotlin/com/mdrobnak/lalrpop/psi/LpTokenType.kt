@@ -25,6 +25,28 @@ val LP_KEYWORDS = TokenSet.create(
     LpElementTypes.WHERE,
 )
 
+val RUST_PRIMITIVE_TYPES = TokenSet.create(
+    LpElementTypes.I8,
+    LpElementTypes.I16,
+    LpElementTypes.I32,
+    LpElementTypes.I64,
+    LpElementTypes.I128,
+    LpElementTypes.ISIZE,
+    LpElementTypes.U8,
+    LpElementTypes.U16,
+    LpElementTypes.U32,
+    LpElementTypes.U64,
+    LpElementTypes.U128,
+    LpElementTypes.USIZE,
+
+    LpElementTypes.F32,
+    LpElementTypes.F64,
+
+    LpElementTypes.CHAR,
+    LpElementTypes.BOOL,
+    LpElementTypes.STR,
+)
+
 val LP_OPERATORS = TokenSet.create(
     LpElementTypes.COLON,
     LpElementTypes.SEMICOLON,
