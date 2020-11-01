@@ -11,8 +11,6 @@
   elementTypeHolderClass="com.mdrobnak.lalrpop.psi.LpElementTypes"
   elementTypeClass="com.mdrobnak.lalrpop.psi.LpElementType"
   tokenTypeClass="com.mdrobnak.lalrpop.psi.LpTokenType"
-
-  psiImplUtilClass="com.mdrobnak.lalrpop.psi.util.LpPsiUtil.Companion"
 }
 
 grammar ::= SHEBANG_ATTRIBUTE* use_stmt*
@@ -47,10 +45,7 @@ type_bound_param ::= LIFETIME | type_ref | id EQUALS type_ref
 
 grammar_params ::= LPAREN <<comma grammar_param>> RPAREN
 
-grammar_param ::= id COLON type_ref {
-    // FIXME: figure out why it doesn't generate those calls properly(maybe because kotlin instead of java?)
-    methods=[getName]
-}
+grammar_param ::= id COLON type_ref
 
 grammar_item ::= use_stmt | match_token | extern_token | nonterminal | COMMENT
 

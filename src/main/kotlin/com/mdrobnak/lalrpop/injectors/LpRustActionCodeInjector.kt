@@ -8,7 +8,7 @@ import com.intellij.psi.util.parentOfType
 import com.mdrobnak.lalrpop.psi.*
 import com.mdrobnak.lalrpop.psi.impl.LpActionImpl
 import com.mdrobnak.lalrpop.psi.impl.LpSymbolImpl
-import com.mdrobnak.lalrpop.psi.util.LpPsiUtil
+import com.mdrobnak.lalrpop.psi.util.getName
 import org.rust.lang.RsLanguage
 
 /**
@@ -34,7 +34,7 @@ class LpRustActionCodeInjector : MultiHostInjector {
 
         val grammarParams = grammarDecl?.grammarParams
         val grammarParametersString = if (grammarParams != null && grammarParams.grammarParamList.isNotEmpty()) {
-            grammarParams.grammarParamList.joinToString(separator = "") { "${LpPsiUtil.getName(it)}: ${it.typeRef.text}," }
+            grammarParams.grammarParamList.joinToString(separator = "") { "${it.getName()}: ${it.typeRef.text}," }
         } else {
             ""
         }
