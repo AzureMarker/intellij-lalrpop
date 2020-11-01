@@ -2,7 +2,6 @@ package com.mdrobnak.lalrpop.psi.ext
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
-import com.intellij.lang.psi.SimpleMultiLineTextEscaper
 import com.intellij.psi.LiteralTextEscaper
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiLanguageInjectionHost
@@ -29,6 +28,7 @@ abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpActi
     }
 
     override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> {
-        return SimpleMultiLineTextEscaper(this)
+        // TODO: Change the evalOfAngleBracketsExpression to a list of the selected symbols in the alternative so it can be evaluated based on context
+        return LpActionLiteralTextEscaper(this, "abcdefghij")
     }
 }
