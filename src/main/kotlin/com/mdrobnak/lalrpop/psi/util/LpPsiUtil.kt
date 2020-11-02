@@ -1,13 +1,11 @@
 package com.mdrobnak.lalrpop.psi.util
 
-import com.mdrobnak.lalrpop.psi.LpGrammarParam
-import com.intellij.psi.util.PsiTreeUtil
 import com.mdrobnak.lalrpop.psi.*
 import org.rust.lang.core.psi.ext.childrenWithLeaves
 import org.rust.lang.core.psi.ext.elementType
 
-fun LpGrammarParam.name: String
-        get() = this.firstChild.text
+val LpGrammarParam.name: String
+    get() = this.firstChild.text
 
 val LpNonterminalName.nonterminal: LpNonterminal
     get() = parent as LpNonterminal
@@ -17,19 +15,6 @@ val LpSymbol.isExplicitlySelected: Boolean
 val LpSymbol.isSelected: Boolean
     get() = (this.parent as LpAlternative).selected.any { it == this }
 
-
-val LpNonterminal.typeOrCompute: String?
-    get() {
-        val typeRef = this.typeRef
-        if (typeRef != null) return typeRef.text
-        return this.computeType()
-    }
-
-fun LpNonterminal.computeType(): String? {
-    val alternative: LpAlternative =
-        PsiTreeUtil.findChildOfType(this.alternatives, LpAlternative::class.java) ?: return null
-    return alternative.computeType()
-}
 
 val LpAlternative.selected: List<LpSymbol>
     get() {
@@ -45,6 +30,15 @@ val LpNonterminalRef.arguments: LpNonterminalArguments?
 
 val LpNonterminalName.nonterminalParent: LpNonterminal
     get() = this.parent as LpNonterminal
+
+val LpTypeRef.lifetime: String?
+    get() = this.childrenWithLeaves.find { it.elementType == LpElementTypes.LIFETIME }?.text
+
+val LpTypeRef.lifetimeOrInfer: String
+    get() = this.lifetime ?: "'_"
+
+val LpTypeRef.isRefMut: Boolean
+    get() = this.childrenWithLeaves.find { it.elementType == LpElementTypes.MUT } != null
 
 fun LpAlternative.computeType(): String {
     val selectedList = this.selected

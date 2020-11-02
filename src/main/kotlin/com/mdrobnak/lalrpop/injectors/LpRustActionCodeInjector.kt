@@ -8,7 +8,7 @@ import com.intellij.psi.util.parentOfType
 import com.mdrobnak.lalrpop.psi.*
 import com.mdrobnak.lalrpop.psi.impl.LpActionImpl
 import com.mdrobnak.lalrpop.psi.impl.LpSymbolImpl
-import com.mdrobnak.lalrpop.psi.util.getName
+import com.mdrobnak.lalrpop.psi.util.name
 import org.rust.lang.RsLanguage
 
 /**
@@ -30,12 +30,12 @@ class LpRustActionCodeInjector : MultiHostInjector {
             .mapNotNull { it.getSelectedType() }
         // If there's custom action code but no return type, lalrpop will have
         // a compile time error. Use `()` until the user fixes the issue.
-        val returnType = nonterminal.typeRef?.text ?: "()"
+        val returnType = nonterminal.resolveType()
 
         val grammarDecl = PsiTreeUtil.findChildOfType(context.containingFile, LpGrammarDecl::class.java)
 
         val grammarParams = grammarDecl?.grammarParams
-        val grammarParametersString = grammarParams?.grammarParamList?.joinToString(separator = "") { "${it.getName()}: ${it.typeRef.text}," }
+        val grammarParametersString = grammarParams?.grammarParamList?.joinToString(separator = "") { "${it.name}: ${it.typeRef.text}," }
                 ?: ""
 
         val grammarTypeParams = grammarDecl?.grammarTypeParams

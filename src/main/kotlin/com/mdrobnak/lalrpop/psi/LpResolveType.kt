@@ -16,6 +16,7 @@ interface LpResolveType : PsiElement {
      * And referenced with Nonterminal<A, B> in another symbol, the list of arguments should be the resolved types of
      * "A" and "B", in this order.
      */
+    @JvmDefault
     fun resolveType(arguments: List<NonterminalGenericArgument> = listOf()): String {
         if (needsParameterNames && arguments.any { it.name == null }) {
             completeParameterNames(arguments)

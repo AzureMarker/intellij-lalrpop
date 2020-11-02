@@ -139,19 +139,21 @@ parenthesis_expr_symbol ::= LPAREN expr_symbol RPAREN {
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpParenthesisExprSymbolMixin"
 }
 
-nonterminal_arguments ::= LESSTHAN <<comma symbol>> GREATERTHAN
-
 type_ref ::= LPAREN <<comma type_ref>> RPAREN
     | LBRACKET type_ref RBRACKET
     | POUND symbol POUND
     | AND LIFETIME? MUT? type_ref
-    | path LESSTHAN <<comma type_ref_or_lifetime>> GREATERTHAN
-    | path
-    | DYN path LESSTHAN <<comma type_ref_or_lifetime>> GREATERTHAN
-    | DYN path
-    | DYN forall path LPAREN <<comma type_ref>> RPAREN (RSINGLEARROW type_ref)?
+    | DYN? path type_generic_arguments?
+    | DYN forall path LPAREN <<comma type_ref>> RPAREN (RSINGLEARROW type_ref)? {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpTypeRefMixin"
+}
 
-type_ref_or_lifetime ::= type_ref | LIFETIME
+type_generic_arguments ::= LESSTHAN <<comma type_ref_or_lifetime>> GREATERTHAN
+
+private type_ref_or_lifetime ::= type_ref | lifetime_rule
+
+lifetime_rule ::= LIFETIME
 
 extern_token ::= EXTERN LBRACE associated_type* enum_token associated_type* RBRACE
     | EXTERN LBRACE associated_type* RBRACE {
@@ -192,5 +194,6 @@ quoted_literal ::= STR_LITERAL | REGEX_LITERAL {
 path ::= PATH_REF | path_id
 
 path_id ::= ID {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpPathIdMixin"
 }

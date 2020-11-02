@@ -3,10 +3,7 @@ package com.mdrobnak.lalrpop.psi.ext
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiReference
-import com.mdrobnak.lalrpop.psi.LpNonterminalName
-import com.mdrobnak.lalrpop.psi.LpNonterminalRef
-import com.mdrobnak.lalrpop.psi.LpResolveType
-import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
+import com.mdrobnak.lalrpop.psi.*
 import com.mdrobnak.lalrpop.psi.util.arguments
 import com.mdrobnak.lalrpop.psi.util.nonterminalParent
 import com.mdrobnak.lalrpop.resolve.LpNonterminalReference
@@ -28,20 +25,24 @@ abstract class LpNonterminalRefMixin(node: ASTNode) : ASTWrapperPsiElement(node)
                 val nonterminalParams = ref.nonterminalParams
                     ?: return ref.nonterminalParent.resolveType(listOf())
 
-                val nonterminalParent = ref.nonterminalParent
+                val nonterminal = ref.nonterminalParent
 
                 val nonterminalArguments = this.arguments
+                println("Nonterminal arguments: $nonterminalArguments")
                 if (nonterminalArguments != null) {
-                    nonterminalParent.resolveType(nonterminalArguments.symbolList.map {
+                    nonterminal.resolveType(nonterminalArguments.symbolList.map {
                         NonterminalGenericArgument(it.resolveType(arguments))
                     })
                 } else {
-                    nonterminalParent.resolveType(nonterminalParams.nonterminalParamList.map {
-                        NonterminalGenericArgument(
-                            "()"
-                        )
+                    nonterminal.resolveType(nonterminalParams.nonterminalParamList.map {
+                        NonterminalGenericArgument("()")
                     })
                 }
+            }
+            is LpNonterminalParam -> {
+                val result = arguments.find { it.name == ref.text }?.rustType ?: "()"
+                println("Found nonterminal param ${ref.text}, replaced with $result")
+                result
             }
             else -> "()"
         }
