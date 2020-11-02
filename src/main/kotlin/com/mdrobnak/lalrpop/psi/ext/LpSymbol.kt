@@ -4,11 +4,9 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
-import com.mdrobnak.lalrpop.psi.LpElementTypes
-import com.mdrobnak.lalrpop.psi.LpNonterminalRef
-import com.mdrobnak.lalrpop.psi.LpSelectedType
-import com.mdrobnak.lalrpop.psi.LpSymbol
+import com.mdrobnak.lalrpop.psi.*
 import com.mdrobnak.lalrpop.psi.impl.LpNonterminalNameImpl
+import com.mdrobnak.lalrpop.psi.util.nonterminal
 import org.rust.lang.core.psi.ext.childrenWithLeaves
 
 abstract class LpSymbolMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSymbol {
@@ -28,4 +26,10 @@ abstract class LpSymbolMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSymb
             LpSelectedType.WithoutName(type)
         }
     }
+
+    override fun internalResolveType(arguments: List<NonterminalGenericArgument>): String = symbol0.resolveType(arguments)
+    override fun completeParameterNames(arguments: List<NonterminalGenericArgument>) =
+        (parent as LpResolveType).completeParameterNames(arguments)
+
+    override val needsParameterNames: Boolean = true
 }

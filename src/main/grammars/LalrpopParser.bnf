@@ -56,7 +56,10 @@ use_stmt ::= USE IMPORT_CODE SEMICOLON {
 
 visibility ::= PUB LPAREN path RPAREN | PUB
 
-nonterminal ::= annotation* visibility? nonterminal_name (COLON type_ref)? EQUALS alternatives
+nonterminal ::= annotation* visibility? nonterminal_name (COLON type_ref)? EQUALS alternatives {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpNonterminalMixin"
+}
 
 annotation_arg ::= LPAREN id EQUALS STR_LITERAL RPAREN
 
@@ -75,6 +78,7 @@ nonterminal_param ::= ID {
 }
 
 nonterminal_ref ::= ID {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpNonterminalRefMixin"
 }
 
@@ -84,7 +88,10 @@ alternatives ::= alternative SEMICOLON | LBRACE <<comma alternative>> RBRACE SEM
 }
 
 alternative ::= symbol+ (IF cond)? action?
-    | (IF cond)? action
+    | (IF cond)? action {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpAlternativeMixin"
+}
 
 action ::= action_type CODE {
     implements = "com.intellij.psi.PsiLanguageInjectionHost"
@@ -97,24 +104,40 @@ cond ::= ID cond_op STR_LITERAL
 
 cond_op ::= EQUALS_EQUALS | NOT_EQUALS | MATCH_OP | NOT_MATCH_OP
 
-expr_symbol ::= symbol*
+expr_symbol ::= symbol* {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpExprSymbolMixin"
+}
 
 symbol ::= LESSTHAN MUT? ID COLON symbol0 GREATERTHAN
     | LESSTHAN symbol0 GREATERTHAN
     | symbol0 {
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpSymbolMixin"
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
 }
 
-symbol0 ::= symbol1 repeat_op*
+symbol0 ::= symbol1 repeat_op* {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpSymbol0Mixin"
+}
 
 repeat_op ::= PLUS | MULTIPLY | QUESTION
 
 symbol1 ::= nonterminal_ref nonterminal_arguments?
     | quoted_terminal
-    | LPAREN expr_symbol RPAREN
+    | parenthesis_expr_symbol
     | LOOKAHEAD
     | LOOKBEHIND
-    | NOT
+    | NOT {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpSymbol1Mixin"
+}
+
+nonterminal_arguments ::= LESSTHAN <<comma symbol>> GREATERTHAN
+parenthesis_expr_symbol ::= LPAREN expr_symbol RPAREN {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpParenthesisExprSymbolMixin"
+}
 
 nonterminal_arguments ::= LESSTHAN <<comma symbol>> GREATERTHAN
 
