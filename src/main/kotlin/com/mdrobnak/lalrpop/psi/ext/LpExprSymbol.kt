@@ -8,11 +8,7 @@ import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
 import com.mdrobnak.lalrpop.psi.util.computeType
 
 abstract class LpExprSymbolMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpExprSymbol {
-    override fun internalResolveType(arguments: List<NonterminalGenericArgument>): String {
-        return this.symbolList.computeType()
+    override fun resolveType(arguments: List<NonterminalGenericArgument>): String {
+        return this.symbolList.computeType(arguments)
     }
-
-    override val needsParameterNames: Boolean = true
-    override fun completeParameterNames(arguments: List<NonterminalGenericArgument>) =
-        (this.parent as LpResolveType).completeParameterNames()
 }

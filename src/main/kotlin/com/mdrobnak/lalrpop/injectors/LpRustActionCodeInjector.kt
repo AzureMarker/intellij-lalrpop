@@ -9,6 +9,7 @@ import com.mdrobnak.lalrpop.psi.*
 import com.mdrobnak.lalrpop.psi.impl.LpActionImpl
 import com.mdrobnak.lalrpop.psi.impl.LpSymbolImpl
 import com.mdrobnak.lalrpop.psi.util.name
+import com.mdrobnak.lalrpop.psi.util.selected
 import org.rust.lang.RsLanguage
 
 /**
@@ -25,12 +26,11 @@ class LpRustActionCodeInjector : MultiHostInjector {
             .joinToString("\n") { it.text }
         val nonterminal = context.parentOfType<LpNonterminal>()!!
         val alternative = context.parentOfType<LpAlternative>()!!
-        val inputs = alternative.symbolList
-            .filterIsInstance<LpSymbolImpl>()
-            .mapNotNull { it.getSelectedType() }
+
+        val inputs = alternative.selected.mapNotNull { (it as LpSymbolImpl).getSelectedType() }
         // If there's custom action code but no return type, lalrpop will have
         // a compile time error. Use `()` until the user fixes the issue.
-        val returnType = nonterminal.resolveType()
+        val returnType = nonterminal.resolveType(listOf())
 
         val grammarDecl = PsiTreeUtil.findChildOfType(context.containingFile, LpGrammarDecl::class.java)
 

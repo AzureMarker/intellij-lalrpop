@@ -10,13 +10,9 @@ import com.mdrobnak.lalrpop.resolve.LpPathIdReference
 
 open class LpPathIdMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpPathId {
     override fun getReference(): PsiReference? = LpPathIdReference(this)
-    override val needsParameterNames: Boolean = true
-    override fun internalResolveType(arguments: List<NonterminalGenericArgument>): String {
+
+    override fun resolveType(arguments: List<NonterminalGenericArgument>): String {
         val id = this.text
-        println("Trying to find parameter for $id in $arguments")
         return arguments.find { it.name == id }?.rustType ?: id
     }
-
-    override fun completeParameterNames(arguments: List<NonterminalGenericArgument>): List<NonterminalGenericArgument> =
-        (parent as LpResolveType).completeParameterNames(arguments)
 }

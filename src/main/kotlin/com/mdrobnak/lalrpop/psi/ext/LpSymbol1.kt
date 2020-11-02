@@ -2,14 +2,18 @@ package com.mdrobnak.lalrpop.psi.ext
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
-import com.mdrobnak.lalrpop.psi.*
+import com.mdrobnak.lalrpop.psi.LpElementTypes
+import com.mdrobnak.lalrpop.psi.LpSymbol1
+import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
 import com.mdrobnak.lalrpop.psi.util.computeType
+import org.rust.lang.core.psi.ext.childrenWithLeaves
+import org.rust.lang.core.psi.ext.elementType
 
 abstract class LpSymbol1Mixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSymbol1 {
-    override fun internalResolveType(arguments: List<NonterminalGenericArgument>): String {
+    override fun resolveType(arguments: List<NonterminalGenericArgument>): String {
         val nonterminalRef = this.nonterminalRef
         if (nonterminalRef != null) {
-            return (nonterminalRef.reference?.resolve()?.parent as? LpNonterminal)?.resolveType(arguments) ?: "()"
+            return nonterminalRef.resolveType(arguments)
         }
 
         val quotedTerminal = this.quotedTerminal
@@ -23,16 +27,10 @@ abstract class LpSymbol1Mixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSym
             return (parenthesisExprSymbol.exprSymbol.symbolList.computeType())
         }
 
-        return when (this.firstChild) {
+        return when (this.childrenWithLeaves.first().elementType) {
             LpElementTypes.LOOKAHEAD, LpElementTypes.LOOKBEHIND -> "usize"
             LpElementTypes.NOT -> "()"
             else -> "()"
         }
-    }
-
-    override val needsParameterNames: Boolean = true
-
-    override fun completeParameterNames(arguments: List<NonterminalGenericArgument>): List<NonterminalGenericArgument> {
-        return (parent as LpResolveType).completeParameterNames(arguments)
     }
 }

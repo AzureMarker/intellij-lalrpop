@@ -2,7 +2,7 @@ package com.mdrobnak.lalrpop.psi
 
 import com.intellij.psi.PsiElement
 
-data class NonterminalGenericArgument(val rustType: String, var name: String? = null)
+data class NonterminalGenericArgument(val rustType: String, var name: String)
 
 interface LpResolveType : PsiElement {
     /**
@@ -16,19 +16,5 @@ interface LpResolveType : PsiElement {
      * And referenced with Nonterminal<A, B> in another symbol, the list of arguments should be the resolved types of
      * "A" and "B", in this order.
      */
-    @JvmDefault
-    fun resolveType(arguments: List<NonterminalGenericArgument> = listOf()): String {
-        if (needsParameterNames && arguments.any { it.name == null }) {
-            completeParameterNames(arguments)
-        }
-
-        return internalResolveType(arguments)
-    }
-
-    fun internalResolveType(arguments: List<NonterminalGenericArgument> = listOf()): String
-
-    fun completeParameterNames(arguments: List<NonterminalGenericArgument> = listOf()): List<NonterminalGenericArgument> =
-        listOf()
-
-    val needsParameterNames: Boolean
+    fun resolveType(arguments: List<NonterminalGenericArgument>): String
 }

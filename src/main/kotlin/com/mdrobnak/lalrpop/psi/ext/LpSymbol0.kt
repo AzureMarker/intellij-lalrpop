@@ -9,7 +9,7 @@ import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
 import org.rust.lang.core.psi.ext.elementType
 
 abstract class LpSymbol0Mixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSymbol0 {
-    override fun internalResolveType(arguments: List<NonterminalGenericArgument>): String {
+    override fun resolveType(arguments: List<NonterminalGenericArgument>): String {
         var tp = symbol1.resolveType(arguments)
         for (repeatOp in repeatOpList) {
             tp = when (repeatOp.elementType) {
@@ -19,11 +19,5 @@ abstract class LpSymbol0Mixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSym
             }
         }
         return tp
-    }
-
-    override val needsParameterNames: Boolean = true
-
-    override fun completeParameterNames(arguments: List<NonterminalGenericArgument>): List<NonterminalGenericArgument> {
-        return (parent as LpResolveType).completeParameterNames(arguments)
     }
 }

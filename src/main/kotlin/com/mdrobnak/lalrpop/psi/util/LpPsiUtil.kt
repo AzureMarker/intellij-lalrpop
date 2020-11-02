@@ -45,11 +45,11 @@ fun LpAlternative.computeType(): String {
     return selectedList.computeType()
 }
 
-fun List<LpSymbol>.computeType(): String {
+fun List<LpSymbol>.computeType(arguments: List<NonterminalGenericArgument> = listOf()): String {
     return joinToString(
         prefix = if (size != 1) "(" else "",
         postfix = if (size != 1) ")" else ""
     ) {
-        it.resolveType()
+        it.resolveType(arguments)
     }
 }
