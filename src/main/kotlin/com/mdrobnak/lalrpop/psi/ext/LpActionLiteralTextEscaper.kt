@@ -4,6 +4,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.LiteralTextEscaper
 import com.mdrobnak.lalrpop.psi.LpAction
 import com.mdrobnak.lalrpop.psi.LpSelectedType
+import java.util.*
 
 private data class Mapping(val sourceRange: TextRange, val targetRange: TextRange, val context: Context)
 
@@ -72,16 +73,17 @@ private fun String.findAllRanges(text: String, replacementLength: List<LpSelecte
     var decodedOffset = 0
     while (index != -1) {
         val decodedStart = decodedOffset + index - (prevIndex + text.length)
+        val context = findContext(index)
         ranges.add(
             Mapping(
                 TextRange(index, index + text.length), TextRange(
                     decodedStart,
-                    decodedStart + replacementLength.lengthFor(Context.Parentheses)
+                    decodedStart + replacementLength.lengthFor(context)
                 ),
-                Context.Parentheses
+                context
             )
         )
-        decodedOffset = decodedStart + replacementLength.lengthFor(Context.Parentheses)
+        decodedOffset = decodedStart + replacementLength.lengthFor(context)
         prevIndex = index
         index = this.indexOf(text, index + text.length)
     }
@@ -89,6 +91,28 @@ private fun String.findAllRanges(text: String, replacementLength: List<LpSelecte
 //    println("Text: $this, ranges: $ranges")
 
     return ranges
+}
+
+private fun String.findContext(index: Int): Context {
+    val s = Stack<Unit>()
+    var i = index - 1
+    while (i >= 0) {
+        when (this[i]) {
+            '{' -> if (s.empty()) {
+                return Context.Braces
+            } else {
+                s.pop()
+            }
+            '(' -> if (s.empty()) {
+                return Context.Parentheses
+            } else {
+                s.pop()
+            }
+            '}', ')' -> s.push(Unit)
+        }
+        i--
+    }
+    return Context.Parentheses
 }
 
 private enum class Context {
