@@ -9,6 +9,8 @@ import com.intellij.psi.impl.source.tree.LeafElement
 import com.intellij.psi.util.elementType
 import com.mdrobnak.lalrpop.psi.LpAction
 import com.mdrobnak.lalrpop.psi.LpElementTypes
+import com.mdrobnak.lalrpop.psi.util.alternativeParent
+import com.mdrobnak.lalrpop.psi.util.selected
 
 abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpAction {
     val code: PsiElement?
@@ -28,7 +30,8 @@ abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpActi
     }
 
     override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> {
-        // TODO: Change the evalOfAngleBracketsExpression to a list of the selected symbols in the alternative so it can be evaluated based on context
-        return LpActionLiteralTextEscaper(this, "abcdefghij")
+        return LpActionLiteralTextEscaper(
+            this,
+            this.alternativeParent.selected.mapNotNull { (it as LpSymbolMixin).getSelectedType() })
     }
 }

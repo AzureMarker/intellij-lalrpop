@@ -43,13 +43,12 @@ class LpRustActionCodeInjector : MultiHostInjector {
             grammarTypeParams?.typeParamList?.joinToString(prefix = "<", separator = ", ", postfix = ">") { it.text }
                 ?: ""
 
-        val arguments = inputs.joinToString(", ") {
+        val arguments = inputs.mapIndexed { index, it ->
             when (it) {
-                is LpSelectedType.WithName -> (if (it.isMutable) "mut " else "") + it.name + ": " + it.type
-                // FIXME: do something with unnamed argument?
-                is LpSelectedType.WithoutName -> "intellij_lalrpop_noname: " + it.type
+                is LpSelectedType.WithName -> it.name + ": " + it.type
+                is LpSelectedType.WithoutName -> "__intellij_lalrpop_noname_$index: " + it.type
             }
-        }
+        }.joinToString(", ")
 
         val grammarWhereClauses = grammarDecl?.grammarWhereClauses
         val grammarWhereClausesString =

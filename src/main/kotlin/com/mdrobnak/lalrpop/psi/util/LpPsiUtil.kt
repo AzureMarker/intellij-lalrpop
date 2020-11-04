@@ -53,3 +53,6 @@ fun List<LpSymbol>.computeType(arguments: List<NonterminalGenericArgument> = lis
         it.resolveType(arguments)
     }
 }
+
+val LpAction.alternativeParent: LpAlternative
+    get() = this.parent as LpAlternative

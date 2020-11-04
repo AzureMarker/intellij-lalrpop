@@ -3,24 +3,26 @@ package com.mdrobnak.lalrpop.psi.ext
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.LiteralTextEscaper
 import com.mdrobnak.lalrpop.psi.LpAction
+import com.mdrobnak.lalrpop.psi.LpSelectedType
 
-// TODO: change the evalOfAngleBracketsExpression to the list of selected symbols in the alternative
-class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracketsExpression: String) :
+private data class Mapping(val sourceRange: TextRange, val targetRange: TextRange, val context: Context)
+
+class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracketsExpression: List<LpSelectedType>) :
     LiteralTextEscaper<LpAction>(action) {
 
     // pairs = maps from host to decoded buffer
-    lateinit var angleBracketsExpressions: List<Pair<TextRange, TextRange>>
+    private lateinit var angleBracketsExpressions: List<Mapping>
 
     override fun decode(rangeInsideHost: TextRange, outChars: StringBuilder): Boolean {
         // get the text from the host
         val txt = this.myHost.text.substring(rangeInsideHost.startOffset, rangeInsideHost.endOffset)
 //        println("Input: $txt")
         // get all the text ranges with <> from rust
-        angleBracketsExpressions = txt.findAllRanges("<>", evalOfAngleBracketsExpression.length)
+        angleBracketsExpressions = txt.findAllRanges("<>", evalOfAngleBracketsExpression)
 
         // replace them all with their replacements, in reverse order
-        val result = angleBracketsExpressions.foldRight(txt) { pair, acc ->
-            pair.first.replace(acc, evalOfAngleBracketsExpression)
+        val result = angleBracketsExpressions.foldRight(txt) { mapping, acc ->
+            mapping.sourceRange.replace(acc, evalOfAngleBracketsExpression.replacement(mapping.context))
         }
 
 //        println("Output: $result")
@@ -34,15 +36,15 @@ class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracke
 
     override fun getOffsetInHost(offsetInDecoded: Int, rangeInsideHost: TextRange): Int {
         // last mapping before offsetInDecoded in the decoded(second of the pair)
-        val pair = angleBracketsExpressions.findLast { it.second.startOffset < offsetInDecoded }
+        val mapping = angleBracketsExpressions.findLast { it.targetRange.startOffset < offsetInDecoded }
             ?: return offsetInDecoded + rangeInsideHost.startOffset
 
-        val result = if (offsetInDecoded < pair.second.endOffset)
+        val result = if (offsetInDecoded < mapping.targetRange.endOffset)
         // inside mapping, return index of `<` in host range
-            pair.first.startOffset + rangeInsideHost.startOffset
+            mapping.sourceRange.startOffset + rangeInsideHost.startOffset
         else
         // outside mapping
-            offsetInDecoded - pair.second.endOffset + pair.first.endOffset + rangeInsideHost.startOffset
+            offsetInDecoded - mapping.targetRange.endOffset + mapping.sourceRange.endOffset + rangeInsideHost.startOffset
 
 //        println(
 //            "range in host: $rangeInsideHost, ${
@@ -63,20 +65,23 @@ class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracke
 }
 
 
-fun String.findAllRanges(text: String, replacementLength: Int): List<Pair<TextRange, TextRange>> {
+private fun String.findAllRanges(text: String, replacementLength: List<LpSelectedType>): List<Mapping> {
     var prevIndex = -text.length
     var index = this.indexOf(text)
-    val ranges = mutableListOf<Pair<TextRange, TextRange>>()
+    val ranges = mutableListOf<Mapping>()
     var decodedOffset = 0
     while (index != -1) {
         val decodedStart = decodedOffset + index - (prevIndex + text.length)
         ranges.add(
-            TextRange(index, index + text.length) to TextRange(
-                decodedStart,
-                decodedStart + replacementLength
+            Mapping(
+                TextRange(index, index + text.length), TextRange(
+                    decodedStart,
+                    decodedStart + replacementLength.lengthFor(Context.Parentheses)
+                ),
+                Context.Parentheses
             )
         )
-        decodedOffset = decodedStart + replacementLength
+        decodedOffset = decodedStart + replacementLength.lengthFor(Context.Parentheses)
         prevIndex = index
         index = this.indexOf(text, index + text.length)
     }
@@ -85,3 +90,22 @@ fun String.findAllRanges(text: String, replacementLength: Int): List<Pair<TextRa
 
     return ranges
 }
+
+private enum class Context {
+    Parentheses, Braces
+}
+
+private fun List<LpSelectedType>.replacement(context: Context): String =
+    this.mapIndexed { index, it ->
+        when (it) {
+            is LpSelectedType.WithName -> when (context) {
+                Context.Parentheses -> it.name
+                Context.Braces -> "${it.name}: ${it.name}"
+            }
+            is LpSelectedType.WithoutName -> {
+                "__intellij_lalrpop_noname_$index"
+            }
+        }
+    }.joinToString(separator = ", ")
+
+private fun List<LpSelectedType>.lengthFor(context: Context) = this.replacement(context).length
