@@ -23,7 +23,6 @@ enum class LpColor(default: TextAttributesKey) {
     PREDEFINED_SYMBOLS(Default.PREDEFINED_SYMBOL),
     PARAMETER(Default.PARAMETER),
     PATH(Default.CLASS_REFERENCE),
-    RUST_PRIMITIVE_TYPES(Default.KEYWORD),
     STRING(Default.STRING);
 
     val textAttributesKey = TextAttributesKey.createTextAttributesKey(name, default)
@@ -44,7 +43,6 @@ class LpSyntaxHighlighter : SyntaxHighlighterBase() {
                 in LP_OPERATORS -> LpColor.OPERATION_SIGN
                 in LP_PREDEFINED_SYMBOLS -> LpColor.PREDEFINED_SYMBOLS
                 in LP_KEYWORDS -> LpColor.KEYWORD
-                in RUST_PRIMITIVE_TYPES -> LpColor.RUST_PRIMITIVE_TYPES
                 else -> null
             }
     }
