@@ -13,9 +13,11 @@
   tokenTypeClass="com.mdrobnak.lalrpop.psi.LpTokenType"
 }
 
-grammar ::= SHEBANG_ATTRIBUTE* use_stmt* annotation*
-    GRAMMAR grammar_type_params? grammar_params? grammar_where_clauses? SEMICOLON
+grammar ::= SHEBANG_ATTRIBUTE* use_stmt*
+    grammar_decl
     grammar_item*
+
+grammar_decl ::= annotation* GRAMMAR grammar_type_params? grammar_params? grammar_where_clauses? SEMICOLON
 
 private meta comma ::= (<<param>> COMMA)* <<param>>?
 
@@ -77,10 +79,12 @@ alternatives ::= alternative SEMICOLON | LBRACE <<comma alternative>> RBRACE SEM
 alternative ::= symbol+ (IF cond)? action?
     | (IF cond)? action
 
-action ::= (LOOKAHEAD_ACTION | LOOKBEHIND_ACTION | USER_ACTION | FALLIBLE_ACTION) CODE {
+action ::= action_type CODE {
     implements = "com.intellij.psi.PsiLanguageInjectionHost"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpActionMixin"
 }
+
+action_type ::= LOOKAHEAD_ACTION | LOOKBEHIND_ACTION | USER_ACTION | FALLIBLE_ACTION
 
 cond ::= ID cond_op STR_LITERAL
 

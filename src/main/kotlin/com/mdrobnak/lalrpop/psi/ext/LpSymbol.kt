@@ -16,13 +16,14 @@ abstract class LpSymbolMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSymb
         // Ignore unselected symbols
         if (childrenWithLeaves.first().elementType != LpElementTypes.LESSTHAN) return null
 
+        val isMutable = childrenWithLeaves.any { it.elementType == LpElementTypes.MUT }
         val name = childrenWithLeaves.find { it.elementType == LpElementTypes.ID }?.text
         val nonterminalRef = PsiTreeUtil.findChildOfType(symbol0, LpNonterminalRef::class.java)
         val nonterminal = nonterminalRef?.reference?.resolve() as? LpNonterminalNameImpl?
         val type = nonterminal?.nonterminal?.typeRef?.text ?: "&str"
 
         return if (name != null) {
-            LpSelectedType.WithName(name, type)
+            LpSelectedType.WithName(isMutable, name, type)
         } else {
             LpSelectedType.WithoutName(type)
         }

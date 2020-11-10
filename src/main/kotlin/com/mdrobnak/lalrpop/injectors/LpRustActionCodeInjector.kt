@@ -5,12 +5,10 @@ import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
-import com.mdrobnak.lalrpop.psi.LpAlternative
-import com.mdrobnak.lalrpop.psi.LpNonterminal
-import com.mdrobnak.lalrpop.psi.LpSelectedType
-import com.mdrobnak.lalrpop.psi.LpUseStmt
+import com.mdrobnak.lalrpop.psi.*
 import com.mdrobnak.lalrpop.psi.impl.LpActionImpl
 import com.mdrobnak.lalrpop.psi.impl.LpSymbolImpl
+import com.mdrobnak.lalrpop.psi.util.getName
 import org.rust.lang.RsLanguage
 
 /**
@@ -32,16 +30,34 @@ class LpRustActionCodeInjector : MultiHostInjector {
             .mapNotNull { it.getSelectedType() }
         val returnType = nonterminal.typeRef?.text ?: nonterminal.nonterminalName
 
+        val grammarDecl = PsiTreeUtil.findChildOfType(context.containingFile, LpGrammarDecl::class.java)
+
+        val grammarParams = grammarDecl?.grammarParams
+        val grammarParametersString = grammarParams?.grammarParamList?.joinToString(separator = "") { "${it.getName()}: ${it.typeRef.text}," }
+                ?: ""
+
+        val grammarTypeParams = grammarDecl?.grammarTypeParams
+        val grammarTypeParamsString =
+            grammarTypeParams?.typeParamList?.joinToString(prefix = "<", separator = ", ", postfix = ">") { it.text }
+                ?: ""
+
         val arguments = inputs.joinToString(", ") {
             when (it) {
-                is LpSelectedType.WithName -> it.name + ": " + it.type
+                is LpSelectedType.WithName -> (if (it.isMutable) "mut " else "") + it.name + ": " + it.type
                 // FIXME: do something with unnamed argument?
                 is LpSelectedType.WithoutName -> "intellij_lalrpop_noname: " + it.type
             }
         }
+
+        val grammarWhereClauses = grammarDecl?.grammarWhereClauses
+        val grammarWhereClausesString =
+            grammarWhereClauses?.grammarWhereClauseList?.joinToString(prefix = "where ", separator = ", ") { it.text }
+                ?: ""
+
         val prefix = "mod __intellij_lalrpop {\n" +
-            "$imports\n" +
-            "fn __intellij_lalrpop($arguments) -> $returnType {\n"
+                "$imports\n" +
+                "fn __intellij_lalrpop $grammarTypeParamsString ($grammarParametersString $arguments) -> $returnType" +
+                "$grammarWhereClausesString {\n"
         val suffix = "\n}\n}"
 
         registrar
