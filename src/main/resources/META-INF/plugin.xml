@@ -29,6 +29,8 @@
                 language="LALRPOP"
                 implementationClass="com.mdrobnak.lalrpop.LpSyntaxHighlighter"/>
 
+        <annotator language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.annotator.LpHighlightingAnnotator" />
+
         <multiHostInjector implementation="com.mdrobnak.lalrpop.injectors.LpRegexInjector"/>
         <multiHostInjector implementation="com.mdrobnak.lalrpop.injectors.LpRustActionCodeInjector"/>
         <multiHostInjector implementation="com.mdrobnak.lalrpop.injectors.LpRustImportCodeInjector"/>
