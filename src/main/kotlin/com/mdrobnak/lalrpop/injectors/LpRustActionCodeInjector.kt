@@ -33,11 +33,8 @@ class LpRustActionCodeInjector : MultiHostInjector {
         val grammarDecl = PsiTreeUtil.findChildOfType(context.containingFile, LpGrammarDecl::class.java)
 
         val grammarParams = grammarDecl?.grammarParams
-        val grammarParametersString = if (grammarParams != null && grammarParams.grammarParamList.isNotEmpty()) {
-            grammarParams.grammarParamList.joinToString(separator = "") { "${it.getName()}: ${it.typeRef.text}," }
-        } else {
-            ""
-        }
+        val grammarParametersString = grammarParams?.grammarParamList?.joinToString(separator = "") { "${it.getName()}: ${it.typeRef.text}," }
+                ?: ""
 
         val grammarTypeParams = grammarDecl?.grammarTypeParams
         val grammarTypeParamsString =
