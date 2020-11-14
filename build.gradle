@@ -43,6 +43,9 @@ compileKotlin {
     kotlinOptions.jvmTarget = "11"
     dependsOn(generateLexer, generateParser)
 }
+publishPlugin {
+    token = System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken")
+}
 patchPluginXml {
     // Support 2020.2
     sinceBuild "202.6397.94"
