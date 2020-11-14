@@ -8,7 +8,7 @@ plugins {
 import org.jetbrains.grammarkit.tasks.*
 
 group 'com.mdrobnak'
-version '0.1.0'
+version '0.1.1'
 
 repositories {
     mavenCentral()
@@ -48,6 +48,12 @@ patchPluginXml {
     sinceBuild "202.6397.94"
 
     changeNotes """
+      <b>0.1.1</b><br>
+      * Add missing terminals inspection (@dblanovschi)<br>
+      * Add grammar params to injected action code (@dblanovschi)<br>
+      * Add some code highlighting (ex. nonterminals) (@dblanovschi)<br>
+      <br>
+
       <b>0.1.0</b><br>
       Initial release of the LALRPOP plugin
       """
