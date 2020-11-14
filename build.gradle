@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.intellij' version '0.5.0'
+    id 'org.jetbrains.intellij' version '0.6.3'
     id 'org.jetbrains.kotlin.jvm' version '1.4.10'
     id 'org.jetbrains.grammarkit' version '2020.2.1'
     id 'idea'
@@ -36,8 +36,8 @@ task generateParser(type: GenerateParser) {
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     // Test with 2020.3 EAP
-    version '203.4818-EAP-CANDIDATE-SNAPSHOT'
-    plugins = ['PsiViewer:203-SNAPSHOT', 'org.rust.lang:0.3.133.3426-203', 'org.toml.lang:0.2.133.3426-203']
+    version '203.5784-EAP-CANDIDATE-SNAPSHOT'
+    plugins = ['PsiViewer:203-SNAPSHOT', 'org.rust.lang:0.3.134.3455-203', 'org.toml.lang:0.2.134.3455-203']
 }
 compileKotlin {
     kotlinOptions.jvmTarget = "11"
