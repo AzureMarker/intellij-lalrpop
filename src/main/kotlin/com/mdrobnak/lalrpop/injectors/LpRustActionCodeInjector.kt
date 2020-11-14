@@ -28,7 +28,9 @@ class LpRustActionCodeInjector : MultiHostInjector {
         val inputs = alternative.symbolList
             .filterIsInstance<LpSymbolImpl>()
             .mapNotNull { it.getSelectedType() }
-        val returnType = nonterminal.typeRef?.text ?: nonterminal.nonterminalName
+        // If there's custom action code but no return type, lalrpop will have
+        // a compile time error. Use `()` until the user fixes the issue.
+        val returnType = nonterminal.typeRef?.text ?: "()"
 
         val grammarDecl = PsiTreeUtil.findChildOfType(context.containingFile, LpGrammarDecl::class.java)
 
