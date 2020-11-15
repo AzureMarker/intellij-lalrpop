@@ -6,23 +6,29 @@ import com.mdrobnak.lalrpop.psi.LpAction
 import com.mdrobnak.lalrpop.psi.LpSelectedType
 import java.util.*
 
+/**
+ * A simple structure to hold data about the ranges of `<>` and the ranges they expanded to in the decoded buffer.
+ * Also should know about the context (parentheses / brackets or braces, because the rust code they expand to is
+ * different based on where they are). See <a href="http://lalrpop.github.io/lalrpop/tutorial/003_type_inference.html">
+ *     the chapter on type inference in the lalrpop manual
+ *     </a> for more
+ */
 private data class Mapping(val sourceRange: TextRange, val targetRange: TextRange, val context: Context)
 
 class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracketsExpression: List<LpSelectedType>) :
     LiteralTextEscaper<LpAction>(action) {
 
-    // pairs = maps from host to decoded buffer
-    private lateinit var angleBracketsExpressions: List<Mapping>
+    private lateinit var mappings: List<Mapping>
 
     override fun decode(rangeInsideHost: TextRange, outChars: StringBuilder): Boolean {
         // get the text from the host
         val txt = this.myHost.text.substring(rangeInsideHost.startOffset, rangeInsideHost.endOffset)
 //        println("Input: $txt")
         // get all the text ranges with <> from rust
-        angleBracketsExpressions = txt.findAllRanges("<>", evalOfAngleBracketsExpression)
+        mappings = txt.findAllMappings("<>", evalOfAngleBracketsExpression)
 
         // replace them all with their replacements, in reverse order
-        val result = angleBracketsExpressions.foldRight(txt) { mapping, acc ->
+        val result = mappings.foldRight(txt) { mapping, acc ->
             mapping.sourceRange.replace(acc, evalOfAngleBracketsExpression.replacement(mapping.context))
         }
 
@@ -37,7 +43,7 @@ class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracke
 
     override fun getOffsetInHost(offsetInDecoded: Int, rangeInsideHost: TextRange): Int {
         // last mapping before offsetInDecoded in the decoded(second of the pair)
-        val mapping = angleBracketsExpressions.findLast { it.targetRange.startOffset < offsetInDecoded }
+        val mapping = mappings.findLast { it.targetRange.startOffset < offsetInDecoded }
             ?: return offsetInDecoded + rangeInsideHost.startOffset
 
         val result = if (offsetInDecoded < mapping.targetRange.endOffset)
@@ -66,15 +72,27 @@ class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracke
 }
 
 
-private fun String.findAllRanges(text: String, replacementLength: List<LpSelectedType>): List<Mapping> {
+private fun String.findAllMappings(text: String, replacementLength: List<LpSelectedType>): List<Mapping> {
     var prevIndex = -text.length
     var index = this.indexOf(text)
-    val ranges = mutableListOf<Mapping>()
+    val mappings = mutableListOf<Mapping>()
     var decodedOffset = 0
+
+    val parens = Stack<Context>()
+
     while (index != -1) {
+        val toStartFrom = if (prevIndex >= 0) prevIndex else 0
+        for (i in toStartFrom..index) {
+            when (this[i]) {
+                '(', '[' -> parens.push(Context.Parentheses)
+                '{' -> parens.push(Context.Braces)
+                ')', ']', '}' -> if (!parens.empty()) parens.pop()
+            }
+        }
+
         val decodedStart = decodedOffset + index - (prevIndex + text.length)
-        val context = findContext(index)
-        ranges.add(
+        val context = if (!parens.empty()) parens.peek() else Context.Parentheses
+        mappings.add(
             Mapping(
                 TextRange(index, index + text.length), TextRange(
                     decodedStart,
@@ -88,31 +106,9 @@ private fun String.findAllRanges(text: String, replacementLength: List<LpSelecte
         index = this.indexOf(text, index + text.length)
     }
 
-//    println("Text: $this, ranges: $ranges")
+//    println("Text: $this, mappings: $mappings")
 
-    return ranges
-}
-
-private fun String.findContext(index: Int): Context {
-    val s = Stack<Unit>()
-    var i = index - 1
-    while (i >= 0) {
-        when (this[i]) {
-            '{' -> if (s.empty()) {
-                return Context.Braces
-            } else {
-                s.pop()
-            }
-            '(' -> if (s.empty()) {
-                return Context.Parentheses
-            } else {
-                s.pop()
-            }
-            '}', ')' -> s.push(Unit)
-        }
-        i--
-    }
-    return Context.Parentheses
+    return mappings
 }
 
 private enum class Context {

@@ -30,7 +30,7 @@ abstract class LpTypeRefMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpTyp
             // type
             LpElementTypes.PATH -> {
                 val path = this.path!!
-                (path.rustPrimitive?.text ?: path.pathId?.resolveType(arguments) ?: path.text) +
+                (path.pathId?.resolveType(arguments) ?: path.text) +
                         when (val genericArguments = this.typeGenericArguments) {
                             null -> ""
                             else -> (genericArguments.lifetimeRuleList.map { it.text } +
