@@ -22,7 +22,7 @@ abstract class LpSymbol1Mixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSym
             return "&str"
         }
 
-        val parenthesisExprSymbol = this.parenthesisExprSymbol
+        val parenthesisExprSymbol = this.parenthesesExprSymbol
         if (parenthesisExprSymbol != null) {
             return (parenthesisExprSymbol.exprSymbol.symbolList.computeType(arguments))
         }
