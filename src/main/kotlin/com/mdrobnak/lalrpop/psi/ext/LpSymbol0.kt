@@ -2,21 +2,19 @@ package com.mdrobnak.lalrpop.psi.ext
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
-import com.mdrobnak.lalrpop.psi.LpElementTypes
-import com.mdrobnak.lalrpop.psi.LpResolveType
 import com.mdrobnak.lalrpop.psi.LpSymbol0
 import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
-import org.rust.lang.core.psi.ext.elementType
+import com.mdrobnak.lalrpop.psi.util.switch
 
 abstract class LpSymbol0Mixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSymbol0 {
     override fun resolveType(arguments: List<NonterminalGenericArgument>): String {
         var tp = symbol1.resolveType(arguments)
         for (repeatOp in repeatOpList) {
-            tp = when (repeatOp.elementType) {
-                LpElementTypes.QUESTION -> "::std::option::Option<$tp>"
-                LpElementTypes.PLUS, LpElementTypes.MULTIPLY -> "::std::vec::Vec<$tp>"
-                else -> tp // should never happen but kotlin doesn't know this
-            }
+            tp = repeatOp.switch(
+                question = "::std::option::Option<$tp>",
+                multiply = "::std::vec::Vec<$tp>",
+                plus = "::std::vec::Vec<$tp>"
+            )
         }
         return tp
     }

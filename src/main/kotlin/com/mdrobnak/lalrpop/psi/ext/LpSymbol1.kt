@@ -24,7 +24,7 @@ abstract class LpSymbol1Mixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSym
 
         val parenthesisExprSymbol = this.parenthesisExprSymbol
         if (parenthesisExprSymbol != null) {
-            return (parenthesisExprSymbol.exprSymbol.symbolList.computeType())
+            return (parenthesisExprSymbol.exprSymbol.symbolList.computeType(arguments))
         }
 
         return when (this.childrenWithLeaves.first().elementType) {

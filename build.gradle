@@ -37,7 +37,7 @@ task generateParser(type: GenerateParser) {
 intellij {
     // Test with 2020.3 EAP
     version '203.5784-EAP-CANDIDATE-SNAPSHOT'
-    plugins = ['PsiViewer:203-SNAPSHOT', 'org.rust.lang:0.3.134.3455-203', 'org.toml.lang:0.2.134.3455-203']
+    plugins = ['PsiViewer:203-SNAPSHOT', 'org.rust.lang:0.3.135.3484-203', 'org.toml.lang:0.2.135.3484-203']
 }
 compileKotlin {
     kotlinOptions.jvmTarget = "11"

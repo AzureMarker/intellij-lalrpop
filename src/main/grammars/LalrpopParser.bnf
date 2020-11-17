@@ -125,7 +125,7 @@ repeat_op ::= PLUS | MULTIPLY | QUESTION
 
 symbol1 ::= nonterminal_ref nonterminal_arguments?
     | quoted_terminal
-    | parenthesis_expr_symbol
+    | parentheses_expr_symbol
     | LOOKAHEAD
     | LOOKBEHIND
     | NOT {
@@ -134,7 +134,7 @@ symbol1 ::= nonterminal_ref nonterminal_arguments?
 }
 
 nonterminal_arguments ::= LESSTHAN <<comma symbol>> GREATERTHAN
-parenthesis_expr_symbol ::= LPAREN expr_symbol RPAREN {
+parentheses_expr_symbol ::= LPAREN expr_symbol RPAREN {
     implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpParenthesisExprSymbolMixin"
 }

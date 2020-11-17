@@ -28,24 +28,30 @@ class LpRustActionCodeInjector : MultiHostInjector {
         val alternative = context.parentOfType<LpAlternative>()!!
 
         val inputs = alternative.selected.mapNotNull { (it as LpSymbolImpl).getSelectedType() }
-        // If there's custom action code but no return type, lalrpop will have
-        // a compile time error. Use `()` until the user fixes the issue.
         val returnType = nonterminal.resolveType(listOf())
 
         val grammarDecl = PsiTreeUtil.findChildOfType(context.containingFile, LpGrammarDecl::class.java)
 
         val grammarParams = grammarDecl?.grammarParams
-        val grammarParametersString = grammarParams?.grammarParamList?.joinToString(separator = "") { "${it.name}: ${it.typeRef.text}," }
+        val grammarParametersString =
+            grammarParams?.grammarParamList?.joinToString(separator = "") { "${it.name}: ${it.typeRef.text}," }
                 ?: ""
 
         val grammarTypeParams = grammarDecl?.grammarTypeParams
-        val grammarTypeParamsString =
-            grammarTypeParams?.typeParamList?.joinToString(prefix = "<", separator = ", ", postfix = ">") { it.text }
-                ?: ""
+        val genericParameters = nonterminal.nonterminalName.nonterminalParams?.nonterminalParamList
+
+        fun addNullableIterators(a: List<String>?, b: List<String>?): List<String> = (a ?: listOf()) + (b ?: listOf())
+        fun List<String>.join(): String =
+            if (this.isEmpty()) "" else this.joinToString(prefix = "<", postfix = ">", separator = ", ") { it }
+
+        val grammarTypeParamsString = addNullableIterators(
+            grammarTypeParams?.typeParamList?.map { it.text },
+            genericParameters?.map { it.text }
+        ).join()
 
         val arguments = inputs.mapIndexed { index, it ->
             when (it) {
-                is LpSelectedType.WithName -> it.name + ": " + it.type
+                is LpSelectedType.WithName -> (if (it.isMutable) "mut " else "") + it.name + ": " + it.type
                 is LpSelectedType.WithoutName -> "__intellij_lalrpop_noname_$index: " + it.type
             }
         }.joinToString(", ")

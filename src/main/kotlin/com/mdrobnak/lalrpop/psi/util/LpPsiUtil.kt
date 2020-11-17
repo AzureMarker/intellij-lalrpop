@@ -12,17 +12,11 @@ val LpNonterminalName.nonterminal: LpNonterminal
 
 val LpSymbol.isExplicitlySelected: Boolean
     get() = this.childrenWithLeaves.first().elementType == LpElementTypes.LESSTHAN
-val LpSymbol.isSelected: Boolean
-    get() = (this.parent as LpAlternative).selected.any { it == this }
 
 
 val LpAlternative.selected: List<LpSymbol>
     get() {
-        return if (this.children.any { it is LpSymbol && it.isExplicitlySelected }) {
-            this.children.filterIsInstance<LpSymbol>().filter { it.isExplicitlySelected }
-        } else {
-            this.children.filterIsInstance<LpSymbol>()
-        }
+        return this.children.filterIsInstance<LpSymbol>().selected
     }
 
 val LpNonterminalRef.arguments: LpNonterminalArguments?
@@ -40,15 +34,18 @@ val LpTypeRef.lifetimeOrInfer: String
 val LpTypeRef.isRefMut: Boolean
     get() = this.childrenWithLeaves.find { it.elementType == LpElementTypes.MUT } != null
 
-fun LpAlternative.computeType(): String {
-    val selectedList = this.selected
-    return selectedList.computeType()
-}
+val List<LpSymbol>.selected: List<LpSymbol>
+    get() = if (this.any { it.isExplicitlySelected }) {
+        this.filter { it.isExplicitlySelected }
+    } else {
+        this
+    }
 
-fun List<LpSymbol>.computeType(arguments: List<NonterminalGenericArgument> = listOf()): String {
-    return joinToString(
-        prefix = if (size != 1) "(" else "",
-        postfix = if (size != 1) ")" else ""
+fun List<LpSymbol>.computeType(arguments: List<NonterminalGenericArgument>): String {
+    val sel = selected
+    return sel.joinToString(
+        prefix = if (sel.size != 1) "(" else "",
+        postfix = if (sel.size != 1) ")" else ""
     ) {
         it.resolveType(arguments)
     }
@@ -56,3 +53,11 @@ fun List<LpSymbol>.computeType(arguments: List<NonterminalGenericArgument> = lis
 
 val LpAction.alternativeParent: LpAlternative
     get() = this.parent as LpAlternative
+
+fun <T> LpRepeatOp.switch(question: T, plus: T, multiply: T): T =
+    when (this.childrenWithLeaves.first().elementType) {
+        LpElementTypes.QUESTION -> question
+        LpElementTypes.PLUS -> plus
+        LpElementTypes.MULTIPLY -> multiply
+        else -> TODO("Unreachable") //TODO: should be something like rust's `unreachable!()` but I have no idea how to tell the kotlin compiler about that
+    }
