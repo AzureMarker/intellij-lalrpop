@@ -23,7 +23,6 @@ class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracke
     override fun decode(rangeInsideHost: TextRange, outChars: StringBuilder): Boolean {
         // get the text from the host
         val txt = this.myHost.text.substring(rangeInsideHost.startOffset, rangeInsideHost.endOffset)
-//        println("Input: $txt")
         // get all the text ranges with <> from rust
         mappings = txt.findAllMappings("<>", evalOfAngleBracketsExpression)
 
@@ -32,7 +31,6 @@ class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracke
             mapping.sourceRange.replace(acc, evalOfAngleBracketsExpression.replacement(mapping.context))
         }
 
-//        println("Output: $result")
 
         // add the result string to the builder
         outChars.append(result)
@@ -52,15 +50,6 @@ class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracke
         else
         // outside mapping
             offsetInDecoded - mapping.targetRange.endOffset + mapping.sourceRange.endOffset + rangeInsideHost.startOffset
-
-//        println(
-//            "range in host: $rangeInsideHost, ${
-//                this.myHost.text.substring(
-//                    rangeInsideHost.startOffset,
-//                    rangeInsideHost.endOffset
-//                )
-//            }, offset in decoded: $offsetInDecoded -> $result"
-//        )
 
         return result
     }
@@ -106,7 +95,6 @@ private fun String.findAllMappings(text: String, replacementLength: List<LpSelec
         index = this.indexOf(text, index + text.length)
     }
 
-//    println("Text: $this, mappings: $mappings")
 
     return mappings
 }

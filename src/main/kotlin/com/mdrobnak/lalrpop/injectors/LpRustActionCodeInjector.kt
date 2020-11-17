@@ -66,7 +66,6 @@ class LpRustActionCodeInjector : MultiHostInjector {
                 "fn __intellij_lalrpop $grammarTypeParamsString ($grammarParametersString $arguments) -> $returnType" +
                 " $grammarWhereClausesString {\n"
 
-//        println(prefix)
         val suffix = "\n}\n}"
 
         registrar

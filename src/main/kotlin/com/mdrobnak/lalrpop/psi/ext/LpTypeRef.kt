@@ -2,9 +2,7 @@ package com.mdrobnak.lalrpop.psi.ext
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
-import com.mdrobnak.lalrpop.psi.LpElementTypes
-import com.mdrobnak.lalrpop.psi.LpTypeRef
-import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
+import com.mdrobnak.lalrpop.psi.*
 import com.mdrobnak.lalrpop.psi.util.isRefMut
 import com.mdrobnak.lalrpop.psi.util.lifetimeOrInfer
 import org.rust.lang.core.psi.ext.childrenWithLeaves
@@ -39,7 +37,33 @@ abstract class LpTypeRefMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpTyp
                         }
             }
 
-            // TODO: work out how to do `dyn Trait`s
+            LpElementTypes.DYN -> {
+                // trait or function-like type?
+
+                when (val secondChild = this.childrenWithLeaves.elementAt(1)) {
+                    is LpPath -> {
+                        // trait
+                        val params = this.childrenWithLeaves.elementAtOrNull(2)
+                        if (params == null)
+                            "dyn " + secondChild.text
+                        else {
+                            val typeGenericArguments = params as LpTypeGenericArguments
+                            "dyn " + secondChild.text + (
+                                    typeGenericArguments.lifetimeRuleList.map { it.text } +
+                                            typeGenericArguments.typeRefList.map { it.resolveType(arguments) }
+                                    ).joinToString(prefix = "<", postfix = ">", separator = ", ") { it }
+                        }
+                    }
+                    is LpForall -> {
+                        // function-like?
+                        // FIXME: have no idea what this means
+
+                        "()"
+                    }
+
+                    else -> "()"
+                }
+            }
 
             else -> "()"
         }
