@@ -35,8 +35,6 @@ object MissingTerminalsInspection : LocalInspectionTool() {
     }
 
     override fun inspectionFinished(session: LocalInspectionToolSession, problemsHolder: ProblemsHolder) {
-        problemsHolder.hasResults()
-
         if (session.dataNotNull(checkKey).get() && !session.dataNotNull(matchHasWildcardKey).get()) {
             val terminalDefs = session.dataNotNull(terminalDefsKey)
             session.dataNotNull(unresolvedKey).forEach { unresolvedElement ->
