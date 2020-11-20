@@ -54,14 +54,14 @@ class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracke
         return result
     }
 
-    /**
-     * @return `true` if the host cannot accept multiline content, `false` otherwise
-     */
     override fun isOneLine(): Boolean = false
 }
 
-
-private fun String.findAllMappings(text: String, replacementLength: List<LpSelectedType>): List<Mapping> {
+/**
+ * Returns a list of the mappings within `this` for `text` (= "<>") where the `<>` should be
+ * replaced by `replacements`, via the "replacement" function declared below on the `replacements` list.
+ */
+private fun String.findAllMappings(text: String, replacements: List<LpSelectedType>): List<Mapping> {
     var prevIndex = -text.length
     var index = this.indexOf(text)
     val mappings = mutableListOf<Mapping>()
@@ -85,12 +85,12 @@ private fun String.findAllMappings(text: String, replacementLength: List<LpSelec
             Mapping(
                 TextRange(index, index + text.length), TextRange(
                     decodedStart,
-                    decodedStart + replacementLength.lengthFor(context)
+                    decodedStart + replacements.lengthFor(context)
                 ),
                 context
             )
         )
-        decodedOffset = decodedStart + replacementLength.lengthFor(context)
+        decodedOffset = decodedStart + replacements.lengthFor(context)
         prevIndex = index
         index = this.indexOf(text, index + text.length)
     }
@@ -99,10 +99,16 @@ private fun String.findAllMappings(text: String, replacementLength: List<LpSelec
     return mappings
 }
 
+/**
+ * The context where a <> expression appeared
+ */
 private enum class Context {
     Parentheses, Braces
 }
 
+/**
+ * Given a list of selected types and the context where <> appears, find what the <> should be replaced by.
+ */
 private fun List<LpSelectedType>.replacement(context: Context): String =
     this.mapIndexed { index, it ->
         when (it) {
@@ -116,4 +122,7 @@ private fun List<LpSelectedType>.replacement(context: Context): String =
         }
     }.joinToString(separator = ", ")
 
+/**
+ * Find the length of the replacement of <>, in a given list of selected symbols and the context where the <> appears.
+ */
 private fun List<LpSelectedType>.lengthFor(context: Context) = this.replacement(context).length

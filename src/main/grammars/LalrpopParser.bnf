@@ -139,15 +139,46 @@ parentheses_expr_symbol ::= LPAREN expr_symbol RPAREN {
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpParenthesesExprSymbolMixin"
 }
 
-type_ref ::= LPAREN <<comma type_ref>> RPAREN
-    | LBRACKET type_ref RBRACKET
-    | POUND symbol POUND
-    | AND LIFETIME? MUT? type_ref
-    | DYN? path type_generic_arguments?
-    | DYN forall path LPAREN <<comma type_ref>> RPAREN (RSINGLEARROW type_ref)? {
+type_ref ::= tuple
+    | array
+    | type_of_symbol
+    | rust_reference
+    | rust_type
+    | dyn_trait
+    | dyn_fn {
     implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpTypeRefMixin"
 }
+
+tuple ::= LPAREN <<comma type_ref>> RPAREN {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpTupleMixin"
+}
+array ::= LBRACKET type_ref RBRACKET {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpArrayMixin"
+}
+type_of_symbol ::= POUND symbol POUND {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpTypeOfSymbolMixin"
+}
+rust_reference ::= AND LIFETIME? MUT? type_ref {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpRustReferenceMixin"
+}
+rust_type ::= path type_generic_arguments? {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpRustTypeMixin"
+}
+dyn_trait ::= DYN? path type_generic_arguments? {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpDynTraitMixin"
+}
+dyn_fn ::= DYN forall path LPAREN <<comma type_ref>> RPAREN return_type? {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpDynFnMixin"
+}
+return_type ::= RSINGLEARROW type_ref
 
 type_generic_arguments ::= LESSTHAN <<comma type_ref_or_lifetime>> GREATERTHAN
 

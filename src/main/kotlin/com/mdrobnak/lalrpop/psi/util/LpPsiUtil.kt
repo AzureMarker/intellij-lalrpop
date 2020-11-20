@@ -25,13 +25,13 @@ val LpNonterminalRef.arguments: LpNonterminalArguments?
 val LpNonterminalName.nonterminalParent: LpNonterminal
     get() = this.parent as LpNonterminal
 
-val LpTypeRef.lifetime: String?
+val LpRustReference.lifetime: String?
     get() = this.childrenWithLeaves.find { it.elementType == LpElementTypes.LIFETIME }?.text
 
-val LpTypeRef.lifetimeOrInfer: String
+val LpRustReference.lifetimeOrInfer: String
     get() = this.lifetime ?: "'_"
 
-val LpTypeRef.isRefMut: Boolean
+val LpRustReference.isRefMut: Boolean
     get() = this.childrenWithLeaves.find { it.elementType == LpElementTypes.MUT } != null
 
 val List<LpSymbol>.selected: List<LpSymbol>
