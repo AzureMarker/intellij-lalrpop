@@ -6,9 +6,10 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
 import com.mdrobnak.lalrpop.psi.*
+import com.mdrobnak.lalrpop.psi.ext.name
+import com.mdrobnak.lalrpop.psi.ext.selected
 import com.mdrobnak.lalrpop.psi.impl.LpActionImpl
 import com.mdrobnak.lalrpop.psi.impl.LpSymbolImpl
-import com.mdrobnak.lalrpop.psi.util.getName
 import org.rust.lang.RsLanguage
 
 /**
@@ -25,31 +26,35 @@ class LpRustActionCodeInjector : MultiHostInjector {
             .joinToString("\n") { it.text }
         val nonterminal = context.parentOfType<LpNonterminal>()!!
         val alternative = context.parentOfType<LpAlternative>()!!
-        val inputs = alternative.symbolList
-            .filterIsInstance<LpSymbolImpl>()
-            .mapNotNull { it.getSelectedType() }
-        // If there's custom action code but no return type, lalrpop will have
-        // a compile time error. Use `()` until the user fixes the issue.
-        val returnType = nonterminal.typeRef?.text ?: "()"
+
+        val inputs = alternative.selected.mapNotNull { (it as LpSymbolImpl).getSelectedType() }
+        val returnType = nonterminal.resolveType(listOf())
 
         val grammarDecl = PsiTreeUtil.findChildOfType(context.containingFile, LpGrammarDecl::class.java)
 
         val grammarParams = grammarDecl?.grammarParams
-        val grammarParametersString = grammarParams?.grammarParamList?.joinToString(separator = "") { "${it.getName()}: ${it.typeRef.text}," }
+        val grammarParametersString =
+            grammarParams?.grammarParamList?.joinToString(separator = "") { "${it.name}: ${it.typeRef.text}," }
                 ?: ""
 
         val grammarTypeParams = grammarDecl?.grammarTypeParams
-        val grammarTypeParamsString =
-            grammarTypeParams?.typeParamList?.joinToString(prefix = "<", separator = ", ", postfix = ">") { it.text }
-                ?: ""
+        val genericParameters = nonterminal.nonterminalName.nonterminalParams?.nonterminalParamList
 
-        val arguments = inputs.joinToString(", ") {
+        fun addNullableIterators(a: List<String>?, b: List<String>?): List<String> = (a ?: listOf()) + (b ?: listOf())
+        fun List<String>.join(): String =
+            if (this.isEmpty()) "" else this.joinToString(prefix = "<", postfix = ">", separator = ", ") { it }
+
+        val grammarTypeParamsString = addNullableIterators(
+            grammarTypeParams?.typeParamList?.map { it.text },
+            genericParameters?.map { it.text }
+        ).join()
+
+        val arguments = inputs.mapIndexed { index, it ->
             when (it) {
                 is LpSelectedType.WithName -> (if (it.isMutable) "mut " else "") + it.name + ": " + it.type
-                // FIXME: do something with unnamed argument?
-                is LpSelectedType.WithoutName -> "intellij_lalrpop_noname: " + it.type
+                is LpSelectedType.WithoutName -> "__intellij_lalrpop_noname_$index: " + it.type
             }
-        }
+        }.joinToString(", ")
 
         val grammarWhereClauses = grammarDecl?.grammarWhereClauses
         val grammarWhereClausesString =
@@ -59,7 +64,8 @@ class LpRustActionCodeInjector : MultiHostInjector {
         val prefix = "mod __intellij_lalrpop {\n" +
                 "$imports\n" +
                 "fn __intellij_lalrpop $grammarTypeParamsString ($grammarParametersString $arguments) -> $returnType" +
-                "$grammarWhereClausesString {\n"
+                " $grammarWhereClausesString {\n"
+
         val suffix = "\n}\n}"
 
         registrar
