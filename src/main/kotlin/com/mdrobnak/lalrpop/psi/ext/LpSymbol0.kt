@@ -6,15 +6,12 @@ import com.mdrobnak.lalrpop.psi.LpSymbol0
 import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
 
 abstract class LpSymbol0Mixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSymbol0 {
-    override fun resolveType(arguments: List<NonterminalGenericArgument>): String {
-        var tp = symbol1.resolveType(arguments)
-        for (repeatOp in repeatOpList) {
-            tp = repeatOp.switch(
+    override fun resolveType(arguments: List<NonterminalGenericArgument>): String =
+        repeatOpList.fold(symbol1.resolveType(arguments)) { tp, repeatOp ->
+            repeatOp.switch(
                 question = "::std::option::Option<$tp>",
                 multiply = "::std::vec::Vec<$tp>",
                 plus = "::std::vec::Vec<$tp>"
             )
         }
-        return tp
-    }
 }

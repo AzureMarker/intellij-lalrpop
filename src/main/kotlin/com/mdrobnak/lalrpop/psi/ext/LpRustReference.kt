@@ -9,7 +9,7 @@ import org.rust.lang.core.psi.ext.childrenWithLeaves
 import org.rust.lang.core.psi.ext.elementType
 
 val LpRustReference.lifetime: String?
-    get() = this.childrenWithLeaves.find { it.elementType == LpElementTypes.LIFETIME }?.text
+    get() = this.lifetimeRule?.text
 
 val LpRustReference.lifetimeOrInfer: String
     get() = this.lifetime ?: "'_"

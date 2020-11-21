@@ -7,13 +7,12 @@ import com.mdrobnak.lalrpop.psi.LpTypeRef
 import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
 
 abstract class LpTypeRefMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpTypeRef {
-    override fun resolveType(arguments: List<NonterminalGenericArgument>): String {
-        return when (val child = firstChild) {
+    override fun resolveType(arguments: List<NonterminalGenericArgument>): String =
+        when (val child = firstChild) {
             // all children of a TypeRef in the AST:
             // LpTuple, LpArray, LpTypeOfSymbol, LpRustReference, LpRustType, LpDynTrait, LpDynFn
             // given all of them implement LpResolveType, shortened it to
             is LpResolveType -> child.resolveType(arguments)
             else -> "()"
         }
-    }
 }

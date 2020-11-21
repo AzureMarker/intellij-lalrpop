@@ -4,7 +4,6 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiReference
 import com.mdrobnak.lalrpop.psi.LpPathId
-import com.mdrobnak.lalrpop.psi.LpResolveType
 import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
 import com.mdrobnak.lalrpop.resolve.LpPathIdReference
 

@@ -3,7 +3,6 @@ package com.mdrobnak.lalrpop.psi.ext
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.mdrobnak.lalrpop.psi.LpAlternative
-import com.mdrobnak.lalrpop.psi.LpNonterminal
 import com.mdrobnak.lalrpop.psi.LpSymbol
 import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
 import com.mdrobnak.lalrpop.psi.util.computeType

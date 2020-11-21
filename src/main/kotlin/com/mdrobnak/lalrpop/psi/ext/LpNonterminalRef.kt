@@ -35,8 +35,7 @@ abstract class LpNonterminalRefMixin(node: ASTNode) : ASTWrapperPsiElement(node)
                 }
             }
             is LpNonterminalParam -> {
-                val result = arguments.find { it.name == ref.text }?.rustType ?: ref.text
-                result
+                arguments.find { it.name == ref.text }?.rustType ?: ref.text
             }
             else -> "()"
         }

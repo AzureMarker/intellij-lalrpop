@@ -44,14 +44,12 @@ class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracke
         val mapping = mappings.findLast { it.targetRange.startOffset < offsetInDecoded }
             ?: return offsetInDecoded + rangeInsideHost.startOffset
 
-        val result = if (offsetInDecoded < mapping.targetRange.endOffset)
+        return if (offsetInDecoded < mapping.targetRange.endOffset)
         // inside mapping, return index of `<` in host range
             mapping.sourceRange.startOffset + rangeInsideHost.startOffset
         else
         // outside mapping
             offsetInDecoded - mapping.targetRange.endOffset + mapping.sourceRange.endOffset + rangeInsideHost.startOffset
-
-        return result
     }
 
     override fun isOneLine(): Boolean = false

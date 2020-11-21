@@ -162,7 +162,7 @@ type_of_symbol ::= POUND symbol POUND {
     implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpTypeOfSymbolMixin"
 }
-rust_reference ::= AND LIFETIME? MUT? type_ref {
+rust_reference ::= AND lifetime_rule? MUT? type_ref {
     implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpRustReferenceMixin"
 }

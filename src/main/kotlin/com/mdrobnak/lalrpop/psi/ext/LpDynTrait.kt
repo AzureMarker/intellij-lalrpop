@@ -7,7 +7,6 @@ import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
 
 abstract class LpDynTraitMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpDynTrait {
     override fun resolveType(arguments: List<NonterminalGenericArgument>): String {
-        val type = this.rustType
-        return "dyn " + type.resolveType(arguments)
+        return "dyn " + this.rustType.resolveType(arguments)
     }
 }
