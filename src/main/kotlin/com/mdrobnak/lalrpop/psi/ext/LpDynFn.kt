@@ -24,6 +24,6 @@ abstract class LpDynFnMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpDynFn
             else -> " -> " + returnType.typeRef.resolveType(arguments)
         }
 
-        return "$forAllString $path ($argumentTypes) $returnType"
+        return "$forAllString dyn $path ($argumentTypes) $returnType"
     }
 }
