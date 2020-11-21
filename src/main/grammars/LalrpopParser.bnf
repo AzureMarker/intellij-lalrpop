@@ -170,7 +170,7 @@ rust_type ::= path type_generic_arguments? {
     implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpRustTypeMixin"
 }
-dyn_trait ::= DYN? path type_generic_arguments? {
+dyn_trait ::= DYN rust_type {
     implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpDynTraitMixin"
 }

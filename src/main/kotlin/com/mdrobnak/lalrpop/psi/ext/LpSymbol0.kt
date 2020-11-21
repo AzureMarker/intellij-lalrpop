@@ -4,7 +4,6 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.mdrobnak.lalrpop.psi.LpSymbol0
 import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
-import com.mdrobnak.lalrpop.psi.util.switch
 
 abstract class LpSymbol0Mixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSymbol0 {
     override fun resolveType(arguments: List<NonterminalGenericArgument>): String {

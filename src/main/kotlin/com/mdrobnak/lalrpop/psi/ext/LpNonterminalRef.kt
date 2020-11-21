@@ -3,13 +3,11 @@ package com.mdrobnak.lalrpop.psi.ext
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiReference
-import com.mdrobnak.lalrpop.psi.LpNonterminalName
-import com.mdrobnak.lalrpop.psi.LpNonterminalParam
-import com.mdrobnak.lalrpop.psi.LpNonterminalRef
-import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
-import com.mdrobnak.lalrpop.psi.util.arguments
-import com.mdrobnak.lalrpop.psi.util.nonterminalParent
+import com.mdrobnak.lalrpop.psi.*
 import com.mdrobnak.lalrpop.resolve.LpNonterminalReference
+
+val LpNonterminalRef.arguments: LpNonterminalArguments?
+    get() = this.nextSibling as? LpNonterminalArguments
 
 abstract class LpNonterminalRefMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpNonterminalRef {
     override fun getReference(): PsiReference {

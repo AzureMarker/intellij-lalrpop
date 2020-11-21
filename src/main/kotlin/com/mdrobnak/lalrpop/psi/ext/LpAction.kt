@@ -8,9 +8,11 @@ import com.intellij.psi.PsiLanguageInjectionHost
 import com.intellij.psi.impl.source.tree.LeafElement
 import com.intellij.psi.util.elementType
 import com.mdrobnak.lalrpop.psi.LpAction
+import com.mdrobnak.lalrpop.psi.LpAlternative
 import com.mdrobnak.lalrpop.psi.LpElementTypes
-import com.mdrobnak.lalrpop.psi.util.alternativeParent
-import com.mdrobnak.lalrpop.psi.util.selected
+
+val LpAction.alternativeParent: LpAlternative
+    get() = this.parent as LpAlternative
 
 abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpAction {
     val code: PsiElement?

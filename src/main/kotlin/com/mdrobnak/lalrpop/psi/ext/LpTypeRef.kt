@@ -2,11 +2,9 @@ package com.mdrobnak.lalrpop.psi.ext
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
-import com.mdrobnak.lalrpop.psi.*
-import com.mdrobnak.lalrpop.psi.util.isRefMut
-import com.mdrobnak.lalrpop.psi.util.lifetimeOrInfer
-import org.rust.lang.core.psi.ext.childrenWithLeaves
-import org.rust.lang.core.psi.ext.elementType
+import com.mdrobnak.lalrpop.psi.LpResolveType
+import com.mdrobnak.lalrpop.psi.LpTypeRef
+import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
 
 abstract class LpTypeRefMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpTypeRef {
     override fun resolveType(arguments: List<NonterminalGenericArgument>): String {

@@ -6,10 +6,10 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
 import com.mdrobnak.lalrpop.psi.*
+import com.mdrobnak.lalrpop.psi.ext.name
+import com.mdrobnak.lalrpop.psi.ext.selected
 import com.mdrobnak.lalrpop.psi.impl.LpActionImpl
 import com.mdrobnak.lalrpop.psi.impl.LpSymbolImpl
-import com.mdrobnak.lalrpop.psi.util.name
-import com.mdrobnak.lalrpop.psi.util.selected
 import org.rust.lang.RsLanguage
 
 /**

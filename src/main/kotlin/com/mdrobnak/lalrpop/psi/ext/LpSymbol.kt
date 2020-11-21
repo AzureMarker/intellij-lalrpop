@@ -8,6 +8,10 @@ import com.mdrobnak.lalrpop.psi.LpSelectedType
 import com.mdrobnak.lalrpop.psi.LpSymbol
 import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
 import org.rust.lang.core.psi.ext.childrenWithLeaves
+import org.rust.lang.core.psi.ext.elementType
+
+val LpSymbol.isExplicitlySelected: Boolean
+    get() = this.childrenWithLeaves.first().elementType == LpElementTypes.LESSTHAN
 
 abstract class LpSymbolMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSymbol {
     fun getSelectedType(): LpSelectedType? {
