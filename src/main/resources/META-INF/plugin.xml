@@ -29,7 +29,7 @@
                 language="LALRPOP"
                 implementationClass="com.mdrobnak.lalrpop.LpSyntaxHighlighter"/>
 
-        <annotator language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.annotator.LpHighlightingAnnotator" />
+        <annotator language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.annotator.LpHighlightingAnnotator"/>
 
         <multiHostInjector implementation="com.mdrobnak.lalrpop.injectors.LpRegexInjector"/>
         <multiHostInjector implementation="com.mdrobnak.lalrpop.injectors.LpRustActionCodeInjector"/>
@@ -50,6 +50,11 @@
         <localInspection language="LALRPOP" id="NamedSymbols" groupName="LALRPOP"
                          displayName="Named selected symbols"
                          implementationClass="com.mdrobnak.lalrpop.inspections.NamedSymbolsInspection"
+                         enabledByDefault="true"
+                         level="ERROR"/>
+        <localInspection language="LALRPOP" id="CannotInferNonterminalType" groupName="LALRPOP"
+                         displayName="Cannot infer nonterminal type"
+                         implementationClass="com.mdrobnak.lalrpop.inspections.CannotInferNonterminalTypeInspection"
                          enabledByDefault="true"
                          level="ERROR"/>
 
