@@ -29,7 +29,6 @@ object NamedSymbolsInspection : LocalInspectionTool() {
                             holder.registerProblem(
                                 element,
                                 "Usage of named symbol in an alternative where an unnamed symbol was also used",
-                                ProblemHighlightType.ERROR,
                                 RemoveNameQuickFix
                             )
                         }
@@ -37,7 +36,6 @@ object NamedSymbolsInspection : LocalInspectionTool() {
                         holder.registerProblem(
                             element,
                             "Usage of named symbol in a context that doesn't allow it",
-                            ProblemHighlightType.ERROR,
                             RemoveNameQuickFix
                         )
                     }

@@ -3,11 +3,25 @@ package com.mdrobnak.lalrpop.psi.ext
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiReference
+import com.intellij.psi.util.parentOfType
 import com.mdrobnak.lalrpop.psi.*
 import com.mdrobnak.lalrpop.resolve.LpNonterminalReference
 
 val LpNonterminalRef.arguments: LpNonterminalArguments?
     get() = this.nextSibling as? LpNonterminalArguments
+
+fun LpNonterminalRef.createNonterminal() {
+    val factory = LpElementFactory(project)
+
+    val nonterminal = this.parentOfType<LpNonterminal>() ?: return
+    val grammarItem = nonterminal.parentOfType<LpGrammarItem>() ?: return
+    val grammar = grammarItem.parent
+
+    grammar.addAfter(
+        factory.createNonterminal(this.text, this.arguments?.symbolList?.mapIndexed { index, _ -> "Rule${index+1}" }),
+        grammarItem,
+    )
+}
 
 abstract class LpNonterminalRefMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpNonterminalRef {
     override fun getReference(): PsiReference {

@@ -49,7 +49,6 @@ object MissingTerminalsInspection : LocalInspectionTool() {
                     problemsHolder.registerProblem(
                         unresolvedElement,
                         "Missing declaration of terminal",
-                        ProblemHighlightType.ERROR
                     )
             }
         }

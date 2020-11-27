@@ -5,8 +5,12 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiModificationTracker
+import com.mdrobnak.lalrpop.psi.LpGrammarItem
 import com.mdrobnak.lalrpop.psi.LpNonterminal
 import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
+
+val LpNonterminal.grammarItemParent: LpGrammarItem
+    get() = this.parent as LpGrammarItem
 
 abstract class LpNonterminalMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpNonterminal {
     override fun resolveType(arguments: List<NonterminalGenericArgument>): String =

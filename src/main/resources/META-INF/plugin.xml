@@ -57,6 +57,11 @@
                          implementationClass="com.mdrobnak.lalrpop.inspections.CannotInferNonterminalTypeInspection"
                          enabledByDefault="true"
                          level="ERROR"/>
+        <localInspection language="LALRPOP" id="CannotResolveNonterminalReference" groupName="LALRPOP"
+                         displayName="Cannot resolve nonterminal reference"
+                         implementationClass="com.mdrobnak.lalrpop.inspections.CannotResolveNonterminalReferenceInspection"
+                         enabledByDefault="true"
+                         level="ERROR"/>
 
     </extensions>
 </idea-plugin>

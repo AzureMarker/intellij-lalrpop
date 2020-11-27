@@ -18,7 +18,6 @@ object CannotInferNonterminalTypeInspection : LocalInspectionTool() {
                     holder.registerProblem(
                         element,
                         "Cannot infer type of nonterminal",
-                        ProblemHighlightType.ERROR
                     ) // TODO Quickfix: get from the rust plugin if available.
                 }
             }
