@@ -43,9 +43,15 @@
         <lang.commenter language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpCommenter"/>
         <lang.quoteHandler language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpQuoteHandler"/>
         <lang.foldingBuilder language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpFoldingBuilder"/>
-        <localInspection language="LALRPOP" id="MissingTerminals" groupName="Terminals" displayName="Missing terminals"
+        <localInspection language="LALRPOP" id="MissingTerminals" groupName="LALRPOP" displayName="Missing terminals"
                          implementationClass="com.mdrobnak.lalrpop.inspections.MissingTerminalsInspection"
                          enabledByDefault="true"
                          level="ERROR"/>
+        <localInspection language="LALRPOP" id="NamedSymbols" groupName="LALRPOP"
+                         displayName="Named selected symbols"
+                         implementationClass="com.mdrobnak.lalrpop.inspections.NamedSymbolsInspection"
+                         enabledByDefault="true"
+                         level="ERROR"/>
+
     </extensions>
 </idea-plugin>
