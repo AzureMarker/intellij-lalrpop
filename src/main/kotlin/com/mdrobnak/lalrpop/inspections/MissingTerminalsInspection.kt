@@ -2,7 +2,6 @@ package com.mdrobnak.lalrpop.inspections
 
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.LocalInspectionToolSession
-import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.UserDataHolderBase
@@ -59,27 +58,37 @@ object MissingTerminalsInspection : LocalInspectionTool() {
         isOnTheFly: Boolean,
         session: LocalInspectionToolSession
     ): PsiElementVisitor {
-        return object : PsiElementVisitor() {
-            override fun visitElement(element: PsiElement) {
-                super.visitElement(element)
-                if (element is LpMatchToken || element is LpEnumToken) session.dataNotNull(checkKey).set(true)
+        return object : LpVisitor() {
+            override fun visitMatchToken(o: LpMatchToken) {
+                session.dataNotNull(checkKey).set(true)
+            }
 
-                if (element is LpMatchItem) {
-                    val terminal = element.matchSymbol?.quotedLiteral
-                    if (terminal != null) {
-                        session.dataNotNull(terminalDefsKey).add(terminal)
-                    } else {
-                        // is _ => there cannot be any unresolved terminals, so don't check.
-                        session.dataNotNull(matchHasWildcardKey).set(true)
-                    }
-                } else if (element is LpTerminal && element.parent is LpConversion) {
+            override fun visitEnumToken(o: LpEnumToken) {
+                session.dataNotNull(checkKey).set(true)
+            }
+
+            override fun visitMatchItem(element: LpMatchItem) {
+                val terminal = element.matchSymbol?.quotedLiteral
+                if (terminal != null) {
+                    session.dataNotNull(terminalDefsKey).add(terminal)
+                } else {
+                    // is _ => there cannot be any unresolved terminals, so don't check.
+                    session.dataNotNull(matchHasWildcardKey).set(true)
+                }
+            }
+
+            override fun visitTerminal(element: LpTerminal) {
+                if (element.parent is LpConversion) {
                     val terminal = element.quotedTerminal
                     if (terminal != null) {
                         session.dataNotNull(terminalDefsKey).add(terminal)
                     }
-                } else if (element is LpQuotedTerminal && element.parent !is LpTerminal) {
-                    session.dataNotNull(unresolvedKey).add(element)
                 }
+            }
+
+            override fun visitQuotedTerminal(element: LpQuotedTerminal) {
+                if (element.parent !is LpTerminal)
+                    session.dataNotNull(unresolvedKey).add(element)
             }
         }
     }

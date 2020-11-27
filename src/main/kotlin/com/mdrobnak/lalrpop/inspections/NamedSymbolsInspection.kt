@@ -2,7 +2,6 @@ package com.mdrobnak.lalrpop.inspections
 
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.util.PsiTreeUtil
 import com.mdrobnak.lalrpop.psi.*
@@ -16,10 +15,10 @@ import com.mdrobnak.lalrpop.psi.ext.removeName
  */
 object NamedSymbolsInspection : LocalInspectionTool() {
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
-        return object : PsiElementVisitor() {
-            override fun visitElement(element: PsiElement) {
-                if (element is LpSymbol && element.isNamed) {
-                    val parent = PsiTreeUtil.findFirstParent(element) {
+        return object : LpVisitor() {
+            override fun visitSymbol(symbol: LpSymbol) {
+                if (symbol.isNamed) {
+                    val parent = PsiTreeUtil.findFirstParent(symbol) {
                         it is LpAlternative || it is LpExprSymbol || it is LpNonterminalArguments || it is LpTypeOfSymbol
                     }
                     if (parent is LpAlternative) {
@@ -27,14 +26,14 @@ object NamedSymbolsInspection : LocalInspectionTool() {
                         if (parent.symbolList.any { it.isExplicitlySelected && !it.isNamed }) {
                             // then it is an error
                             holder.registerProblem(
-                                element,
+                                symbol,
                                 "Usage of named symbol in an alternative where an unnamed symbol was also used",
                                 RemoveNameQuickFix
                             )
                         }
                     } else {
                         holder.registerProblem(
-                            element,
+                            symbol,
                             "Usage of named symbol in a context that doesn't allow it",
                             RemoveNameQuickFix
                         )
