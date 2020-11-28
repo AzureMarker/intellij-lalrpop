@@ -27,7 +27,7 @@ class LpRustActionCodeInjector : MultiHostInjector {
         val nonterminal = context.parentOfType<LpNonterminal>()!!
         val alternative = context.parentOfType<LpAlternative>()!!
 
-        val inputs = alternative.selected.mapNotNull { (it as LpSymbolImpl).getSelectedType() }
+        val inputs = alternative.selected.map { (it as LpSymbolImpl).getSelectedType() }
         val returnType = nonterminal.resolveType(listOf())
 
         val grammarDecl = PsiTreeUtil.findChildOfType(context.containingFile, LpGrammarDecl::class.java)

@@ -18,7 +18,7 @@ val LpSymbol.isNamed: Boolean
 val LpSymbol.isMutable: Boolean
     get() = this.symbolName?.childrenWithLeaves?.any { it.elementType == LpElementTypes.MUT } ?: false
 
-val LpSymbol.name: String?
+val LpSymbol.symbolNameString: String?
     get() = this.symbolName?.childrenWithLeaves?.find { it.elementType == LpElementTypes.ID }?.text
 
 fun LpSymbol.removeName() {
@@ -28,7 +28,7 @@ fun LpSymbol.removeName() {
 abstract class LpSymbolMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSymbol {
     fun getSelectedType(): LpSelectedType {
         val isMutable = this.isMutable
-        val name = this.name
+        val name = this.symbolNameString
         val type = this.resolveType(listOf())
 
         return if (name != null) {
