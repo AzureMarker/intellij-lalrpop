@@ -22,21 +22,21 @@ class LpElementFactory(val project: Project) {
         createFromText<LpNonterminalName>("grammar;\n$name = \" \";")?.nameIdentifier
             ?: error("Failed to create identifier: `$name`")
 
-    fun createNonterminalParamsFromSingle(name: String): PsiElement =
-        createFromText<LpNonterminalParams>("grammar;\ndummy<$name> = {};")
+    fun createNonterminalParamsFromSingle(name: String): LpNonterminalParams =
+        createFromText("grammar;\ndummy<$name> = {};")
             ?: error("Failed to create nonterminal params from single param with name = `$name`")
 
     fun createComma(): PsiElement =
         createFromText<LpNonterminalParams>("grammar;\ndummy<T,U> = {};")?.childrenWithLeaves?.first { it.elementType == LpElementTypes.COMMA }
             ?: error("Failed to create psi element for comma (`,`)")
 
-    fun createNonterminalParam(name: String): PsiElement =
-        createFromText<LpNonterminalParam>("grammar;\ndummy<$name> = {};")
+    fun createNonterminalParam(name: String): LpNonterminalParam =
+        createFromText("grammar;\ndummy<$name> = {};")
             ?: error("Failed to create nonterminal param from from name = `$name`")
 
-    fun createNonterminal(name: String, params: List<String>?): PsiElement {
+    fun createNonterminal(name: String, params: List<String>?): LpNonterminal {
         val paramsString = params?.joinToString(prefix = "<", separator = ", ", postfix = ">") ?: ""
-        return createFromText<LpNonterminal>("grammar;\n$name$paramsString = ();")
+        return createFromText("grammar;\n$name$paramsString = ();")
             ?: error("Failed to create nonterminal with name = `$name` and params = `$params`")
     }
 }

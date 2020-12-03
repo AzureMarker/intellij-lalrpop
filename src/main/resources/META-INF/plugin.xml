@@ -63,5 +63,12 @@
                          enabledByDefault="true"
                          level="ERROR"/>
 
+        <!-- Prone to errors in the comparison and thus disabled by default. -->
+        <localInspection language="LALRPOP" id="WrongInferredType" groupName="LALRPOP"
+                         displayName="Inferred type does not correspond to explicit type declared on nonterminal"
+                         implementationClass="com.mdrobnak.lalrpop.inspections.WrongInferredTypeInspection"
+                         enabledByDefault="false"
+                         level="ERROR"/>
+
     </extensions>
 </idea-plugin>

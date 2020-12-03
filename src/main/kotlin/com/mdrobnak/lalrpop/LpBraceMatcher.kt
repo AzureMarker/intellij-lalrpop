@@ -4,9 +4,7 @@ import com.intellij.lang.BracePair
 import com.intellij.lang.PairedBraceMatcher
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IElementType
-import com.mdrobnak.lalrpop.psi.LpElementTypes
-import com.mdrobnak.lalrpop.psi.LpEnumToken
-import com.mdrobnak.lalrpop.psi.LpGrammarItem
+import com.mdrobnak.lalrpop.psi.*
 import org.rust.lang.core.psi.ext.startOffset
 
 object LpBraceMatcher : PairedBraceMatcher {
@@ -29,7 +27,7 @@ object LpBraceMatcher : PairedBraceMatcher {
         var element = file.findElementAt(openingBraceOffset)
         while (element != null) {
             when (element) {
-                is LpGrammarItem, is LpEnumToken -> return element.startOffset
+                is LpUseStmt, is LpNonterminal, is LpMatchToken, is LpEnumToken -> return element.startOffset
             }
 
             element = element.parent

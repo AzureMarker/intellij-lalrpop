@@ -14,12 +14,11 @@ fun LpNonterminalRef.createNonterminal() {
     val factory = LpElementFactory(project)
 
     val nonterminal = this.parentOfType<LpNonterminal>() ?: return
-    val grammarItem = nonterminal.parentOfType<LpGrammarItem>() ?: return
-    val grammar = grammarItem.parent
+    val grammar = nonterminal.parent
 
     grammar.addAfter(
         factory.createNonterminal(this.text, this.arguments?.symbolList?.mapIndexed { index, _ -> "Rule${index+1}" }),
-        grammarItem,
+        nonterminal,
     )
 }
 
