@@ -39,6 +39,8 @@
                 language="LALRPOP"
                 implementationClass="com.mdrobnak.lalrpop.resolve.LpFindUsagesProvider"/>
 
+        <lang.refactoringSupport language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpRefactoringSupportProvider" />
+
         <lang.braceMatcher language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpBraceMatcher"/>
         <lang.commenter language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpCommenter"/>
         <lang.quoteHandler language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpQuoteHandler"/>
@@ -69,6 +71,12 @@
                          implementationClass="com.mdrobnak.lalrpop.inspections.WrongInferredTypeInspection"
                          enabledByDefault="false"
                          level="ERROR"/>
+
+        <localInspection language="LALRPOP" id="Unused" groupName="LALRPOP"
+                         displayName="Unused nonterminal"
+                         implementationClass="com.mdrobnak.lalrpop.inspections.UnusedInspection"
+                         enabledByDefault="true"
+                         level="WARNING"/>
 
     </extensions>
 </idea-plugin>
