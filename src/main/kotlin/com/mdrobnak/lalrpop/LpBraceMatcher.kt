@@ -27,7 +27,7 @@ object LpBraceMatcher : PairedBraceMatcher {
         var element = file.findElementAt(openingBraceOffset)
         while (element != null) {
             when (element) {
-                is LpUseStmt, is LpNonterminal, is LpMatchToken, is LpEnumToken -> return element.startOffset
+                is LpUseStmt, is LpNonterminal, is LpMatchToken, is LpExternToken, is LpEnumToken -> return element.startOffset
             }
 
             element = element.parent
