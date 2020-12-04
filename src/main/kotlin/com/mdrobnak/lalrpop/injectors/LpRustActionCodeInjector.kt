@@ -5,7 +5,11 @@ import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
-import com.mdrobnak.lalrpop.psi.*
+import com.mdrobnak.lalrpop.psi.LpAlternative
+import com.mdrobnak.lalrpop.psi.LpGrammarDecl
+import com.mdrobnak.lalrpop.psi.LpNonterminal
+import com.mdrobnak.lalrpop.psi.LpSelectedType
+import com.mdrobnak.lalrpop.psi.ext.importCode
 import com.mdrobnak.lalrpop.psi.ext.name
 import com.mdrobnak.lalrpop.psi.ext.selected
 import com.mdrobnak.lalrpop.psi.impl.LpActionImpl
@@ -22,8 +26,7 @@ class LpRustActionCodeInjector : MultiHostInjector {
         }
 
         val codeNode = context.code ?: return
-        val imports = PsiTreeUtil.findChildrenOfType(context.containingFile, LpUseStmt::class.java)
-            .joinToString("\n") { it.text }
+        val imports = context.containingFile.importCode
         val nonterminal = context.parentOfType<LpNonterminal>()!!
         val alternative = context.parentOfType<LpAlternative>()!!
 
