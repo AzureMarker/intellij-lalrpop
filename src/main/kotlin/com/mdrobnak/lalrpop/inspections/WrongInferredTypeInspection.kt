@@ -1,20 +1,25 @@
 package com.mdrobnak.lalrpop.inspections
 
 import com.intellij.codeInspection.LocalInspectionTool
-import com.intellij.codeInspection.LocalInspectionToolSession
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
+import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.util.PsiTreeUtil
+import com.jetbrains.rd.util.string.printToString
+import com.mdrobnak.lalrpop.injectors.findModuleDefinition
 import com.mdrobnak.lalrpop.psi.LpNonterminal
 import com.mdrobnak.lalrpop.psi.LpVisitor
 import com.mdrobnak.lalrpop.psi.ext.importCode
 import org.rust.lang.RsLanguage
+import org.rust.lang.core.macros.RsExpandedElement
+import org.rust.lang.core.macros.setContext
+import org.rust.lang.core.psi.RsModDeclItem
 import org.rust.lang.core.psi.RsTypeAlias
+import org.rust.lang.core.psi.ext.childOfType
 import org.rust.lang.core.psi.ext.childrenOfType
 import org.rust.lang.core.resolve.ImplLookup
-import org.rust.lang.core.resolve.knownItems
-import org.rust.lang.core.types.infer.RsInferenceContext
 
 /**
  * Reports 2 kinds of problems on a nonterminal
@@ -25,7 +30,6 @@ object WrongInferredTypeInspection : LocalInspectionTool() {
     override fun buildVisitor(
         holder: ProblemsHolder,
         isOnTheFly: Boolean,
-        session: LocalInspectionToolSession
     ): PsiElementVisitor {
         return object : LpVisitor() {
             override fun visitNonterminal(nonterminal: LpNonterminal) {
@@ -33,6 +37,8 @@ object WrongInferredTypeInspection : LocalInspectionTool() {
 
                 val explicitType = nonterminal.typeRef?.resolveType(listOf())
 
+                // LALRPOP will automatically supply action code of (), so we don't need to worry about inferring the wrong type.
+                // https://github.com/lalrpop/lalrpop/blob/8a96e9646b3d00c2226349efed832c4c25631c53/lalrpop/src/normalize/lower/mod.rs#L351-L354
                 if (explicitType == "()") return
 
                 var seenType = explicitType
@@ -47,6 +53,7 @@ object WrongInferredTypeInspection : LocalInspectionTool() {
 
                     if (!sameTypes(
                             nonterminal.project,
+                            nonterminal.containingFile,
                             nonterminal.containingFile.importCode,
                             seenType!!,
                             alternativeType
@@ -54,7 +61,7 @@ object WrongInferredTypeInspection : LocalInspectionTool() {
                     ) {
                         holder.registerProblem(
                             alternative,
-                            "Resolved type of alternative is `$alternativeType`, while expected type `$seenType`"
+                            "Resolved type of alternative is `$alternativeType`, while expected type is `$seenType`"
                         )
                     }
                 }
@@ -62,16 +69,28 @@ object WrongInferredTypeInspection : LocalInspectionTool() {
         }
     }
 
-    fun sameTypes(project: Project, importCode: String, type1: String, type2: String): Boolean {
+    fun sameTypes(project: Project, lalrpopFile: PsiFile, importCode: String, type1: String, type2: String): Boolean {
         val file = PsiFileFactory.getInstance(project)
-            .createFileFromText(RsLanguage, "$importCode\ntype T1 = $type1;\ntype T2 = $type2;")
-        val aliases = file.childrenOfType<RsTypeAlias>();
+            .createFileFromText(RsLanguage, "mod __intellij_lalrpop {\n$importCode\ntype T1 = $type1;\ntype T2 = $type2;\n}")
+        val aliases = PsiTreeUtil.findChildrenOfType(file, RsTypeAlias::class.java)
 
         if (aliases.size != 2) return false
 
-        return RsInferenceContext(project, ImplLookup.relativeTo(aliases[0]), aliases[0].knownItems).canCombineTypes(
-            aliases[0].declaredType,
-            aliases[1].declaredType
-        )
+        val first = aliases.first()
+        val second = aliases.last()
+
+        val moduleDefinition = findModuleDefinition(project, lalrpopFile) ?: return false
+
+        for (child in file.childrenOfType<RsExpandedElement>()) {
+            child.setContext(moduleDefinition)
+        }
+
+        val ctx = ImplLookup.relativeTo(first).ctx
+        val ty1 = ctx.fullyResolve(first.declaredType)
+        val ty2 = ctx.fullyResolve(second.declaredType)
+
+        println("First: $type1, second: $type2, aliases: ${first.text}, ${second.text}, ty1 = ${ty1.printToString()}, ty2 = ${ty2.printToString()}")
+
+        return ctx.canCombineTypes(ty1, ty2)
     }
 }
