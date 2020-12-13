@@ -89,8 +89,6 @@ object WrongInferredTypeInspection : LocalInspectionTool() {
         val ty1 = ctx.fullyResolve(first.declaredType)
         val ty2 = ctx.fullyResolve(second.declaredType)
 
-        println("First: $type1, second: $type2, aliases: ${first.text}, ${second.text}, ty1 = ${ty1.printToString()}, ty2 = ${ty2.printToString()}")
-
         return ctx.canCombineTypes(ty1, ty2)
     }
 }
