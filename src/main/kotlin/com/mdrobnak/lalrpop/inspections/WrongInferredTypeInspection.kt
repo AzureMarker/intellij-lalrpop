@@ -33,6 +33,8 @@ object WrongInferredTypeInspection : LocalInspectionTool() {
     ): PsiElementVisitor {
         return object : LpVisitor() {
             override fun visitNonterminal(nonterminal: LpNonterminal) {
+                // TODO: idea to implement this inspection for lalrpop macros:
+                // https://github.com/Mcat12/intellij-lalrpop/pull/22#discussion_r542538737
                 if (nonterminal.nonterminalName.nonterminalParams != null) return
 
                 val explicitType = nonterminal.typeRef?.resolveType(listOf())
