@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.PsiWhiteSpace
 import com.mdrobnak.lalrpop.LpLanguage
 import org.rust.lang.core.psi.ext.childrenWithLeaves
 import org.rust.lang.core.psi.ext.descendantOfTypeStrict
@@ -39,4 +40,7 @@ class LpElementFactory(val project: Project) {
         return createFromText("grammar;\n$name$paramsString = ();")
             ?: error("Failed to create nonterminal with name = `$name` and params = `$params`")
     }
+
+    fun createWhitespace(s: String): PsiWhiteSpace = createFromText("${s}grammar;")
+        ?: error("Failed to create whitespace '$s'")
 }

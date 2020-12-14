@@ -20,6 +20,8 @@ fun LpNonterminalRef.createNonterminal() {
         factory.createNonterminal(this.text, this.arguments?.symbolList?.mapIndexed { index, _ -> "Rule${index+1}" }),
         nonterminal,
     )
+
+    grammar.addAfter(factory.createWhitespace("\n\n"), nonterminal)
 }
 
 abstract class LpNonterminalRefMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpNonterminalRef {
