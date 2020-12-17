@@ -24,7 +24,7 @@ class LpHighlightingAnnotator : Annotator {
     private fun colorForIdentifier(parent: PsiElement?): LpColor? =
         when (parent?.elementType) {
             LpElementTypes.GRAMMAR_PARAM -> LpColor.PARAMETER
-            LpElementTypes.SYMBOL -> LpColor.PARAMETER
+            LpElementTypes.SYMBOL_NAME -> LpColor.PARAMETER
             LpElementTypes.NONTERMINAL_REF ->
                 if ((parent as LpNonterminalRef).reference?.resolve()?.elementType == LpElementTypes.NONTERMINAL_PARAM)
                     LpColor.NONTERMINAL_GENERIC_PARAMETER

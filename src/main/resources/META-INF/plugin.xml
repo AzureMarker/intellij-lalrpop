@@ -29,7 +29,7 @@
                 language="LALRPOP"
                 implementationClass="com.mdrobnak.lalrpop.LpSyntaxHighlighter"/>
 
-        <annotator language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.annotator.LpHighlightingAnnotator" />
+        <annotator language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.annotator.LpHighlightingAnnotator"/>
 
         <multiHostInjector implementation="com.mdrobnak.lalrpop.injectors.LpRegexInjector"/>
         <multiHostInjector implementation="com.mdrobnak.lalrpop.injectors.LpRustActionCodeInjector"/>
@@ -39,13 +39,49 @@
                 language="LALRPOP"
                 implementationClass="com.mdrobnak.lalrpop.resolve.LpFindUsagesProvider"/>
 
+        <lang.refactoringSupport language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpRefactoringSupportProvider" />
+
         <lang.braceMatcher language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpBraceMatcher"/>
         <lang.commenter language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpCommenter"/>
         <lang.quoteHandler language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpQuoteHandler"/>
         <lang.foldingBuilder language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpFoldingBuilder"/>
-        <localInspection language="LALRPOP" id="MissingTerminals" groupName="Terminals" displayName="Missing terminals"
+        <localInspection language="LALRPOP" id="MissingTerminals" groupName="LALRPOP" displayName="Missing terminals"
                          implementationClass="com.mdrobnak.lalrpop.inspections.MissingTerminalsInspection"
                          enabledByDefault="true"
                          level="ERROR"/>
+        <localInspection language="LALRPOP" id="NamedSymbols" groupName="LALRPOP"
+                         displayName="Named selected symbols"
+                         implementationClass="com.mdrobnak.lalrpop.inspections.NamedSymbolsInspection"
+                         enabledByDefault="true"
+                         level="ERROR"/>
+        <localInspection language="LALRPOP" id="CannotInferNonterminalType" groupName="LALRPOP"
+                         displayName="Cannot infer nonterminal type"
+                         implementationClass="com.mdrobnak.lalrpop.inspections.CannotInferNonterminalTypeInspection"
+                         enabledByDefault="true"
+                         level="ERROR"/>
+        <localInspection language="LALRPOP" id="CannotResolveNonterminalReference" groupName="LALRPOP"
+                         displayName="Cannot resolve nonterminal reference"
+                         implementationClass="com.mdrobnak.lalrpop.inspections.CannotResolveNonterminalReferenceInspection"
+                         enabledByDefault="true"
+                         level="ERROR"/>
+
+        <localInspection language="LALRPOP" id="WrongInferredType" groupName="LALRPOP"
+                         displayName="Inferred type does not correspond to explicit type declared on nonterminal"
+                         implementationClass="com.mdrobnak.lalrpop.inspections.WrongInferredTypeInspection"
+                         enabledByDefault="true"
+                         level="ERROR"/>
+
+        <localInspection language="LALRPOP" id="Unused" groupName="LALRPOP"
+                         displayName="Unused nonterminal"
+                         implementationClass="com.mdrobnak.lalrpop.inspections.UnusedInspection"
+                         enabledByDefault="true"
+                         level="WARNING"/>
+
+        <localInspection language="LALRPOP" id="Precedence" groupName="LALRPOP"
+                         displayName="Precedence validation"
+                         implementationClass="com.mdrobnak.lalrpop.inspections.PrecedenceInspection"
+                         enabledByDefault="true"
+                         level="ERROR"/>
+
     </extensions>
 </idea-plugin>

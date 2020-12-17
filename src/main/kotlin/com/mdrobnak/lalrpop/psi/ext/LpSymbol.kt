@@ -12,10 +12,23 @@ import org.rust.lang.core.psi.ext.elementType
 val LpSymbol.isExplicitlySelected: Boolean
     get() = this.childrenWithLeaves.first().elementType == LpElementTypes.LESSTHAN
 
+val LpSymbol.isNamed: Boolean
+    get() = this.symbolName != null
+
+val LpSymbol.isMutable: Boolean
+    get() = this.symbolName?.childrenWithLeaves?.any { it.elementType == LpElementTypes.MUT } ?: false
+
+val LpSymbol.symbolNameString: String?
+    get() = this.symbolName?.childrenWithLeaves?.find { it.elementType == LpElementTypes.ID }?.text
+
+fun LpSymbol.removeName() {
+    this.symbolName?.delete()
+}
+
 abstract class LpSymbolMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSymbol {
-    fun getSelectedType(): LpSelectedType? {
-        val isMutable = childrenWithLeaves.any { it.elementType == LpElementTypes.MUT }
-        val name = childrenWithLeaves.find { it.elementType == LpElementTypes.ID }?.text
+    fun getSelectedType(): LpSelectedType {
+        val isMutable = this.isMutable
+        val name = this.symbolNameString
         val type = this.resolveType(listOf())
 
         return if (name != null) {

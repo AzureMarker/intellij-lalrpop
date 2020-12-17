@@ -1,0 +1,27 @@
+<html>
+<body>
+<p>
+    Detects nonterminals where there is a conflict between the inferred or explicit type of the nonterminal and an
+    alternative <br/>
+</p>
+<!-- tooltip end -->
+<div>
+    Helps in situations like
+    <pre><code>
+A: T1 = {...}
+B: T2 = {...}
+// T1 != T2
+X = {
+    A,
+    B,
+}
+Y: A = {
+    A,
+    B
+}
+</code></pre>
+
+    Where it will flag the second alternative in both <code>X</code> and <code>Y</code> with an "incorrect type" error.
+</div>
+</body>
+</html>
