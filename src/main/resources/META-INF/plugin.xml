@@ -77,5 +77,11 @@
                          enabledByDefault="true"
                          level="WARNING"/>
 
+        <localInspection language="LALRPOP" id="Precedence" groupName="LALRPOP"
+                         displayName="Precedence validation"
+                         implementationClass="com.mdrobnak.lalrpop.inspections.PrecedenceInspection"
+                         enabledByDefault="true"
+                         level="ERROR"/>
+
     </extensions>
 </idea-plugin>

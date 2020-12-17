@@ -61,9 +61,14 @@ nonterminal ::= annotation* visibility? nonterminal_name (COLON type_ref)? EQUAL
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpNonterminalMixin"
 }
 
-annotation_arg ::= LPAREN id EQUALS STR_LITERAL RPAREN
+annotation_arg ::= LPAREN annotation_arg_name EQUALS annotation_arg_value RPAREN
 
-annotation ::= POUND LBRACKET ID annotation_arg? RBRACKET
+annotation_arg_name ::= id
+annotation_arg_value ::= STR_LITERAL
+
+annotation ::= POUND LBRACKET annotation_name annotation_arg? RBRACKET
+
+annotation_name ::= ID
 
 nonterminal_name ::= ID nonterminal_params? {
     implements = "com.mdrobnak.lalrpop.psi.LpNamedElement"
@@ -87,7 +92,7 @@ alternatives ::= alternative SEMICOLON | LBRACE <<comma alternative>> RBRACE SEM
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpAlternativesMixin"
 }
 
-alternative ::= symbol+ (IF cond)? action?
+alternative ::= annotation* symbol+ (IF cond)? action?
     | (IF cond)? action {
     implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpAlternativeMixin"
