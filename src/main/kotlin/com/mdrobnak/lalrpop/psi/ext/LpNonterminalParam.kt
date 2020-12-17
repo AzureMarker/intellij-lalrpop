@@ -3,6 +3,7 @@ package com.mdrobnak.lalrpop.psi.ext
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
+import com.intellij.psi.TokenType
 import com.mdrobnak.lalrpop.psi.LpElementFactory
 import com.mdrobnak.lalrpop.psi.LpElementTypes
 import com.mdrobnak.lalrpop.psi.LpNonterminalParam
@@ -36,7 +37,10 @@ open class LpNonterminalParamMixin(node: ASTNode) : ASTWrapperPsiElement(node), 
         // on refactoring(safe-delete), also delete the comma that follows this param
         if (this.nextSibling?.elementType == LpElementTypes.COMMA) this.nextSibling.delete()
         // or delete the previous comma
-        else if (this.prevSibling?.elementType == LpElementTypes.COMMA) this.prevSibling.delete()
+        else {
+            if (this.prevSibling?.elementType == TokenType.WHITE_SPACE) this.prevSibling.delete()
+            if (this.prevSibling?.elementType == LpElementTypes.COMMA) this.prevSibling.delete()
+        }
 
         super.delete()
     }
