@@ -8,7 +8,7 @@ plugins {
 import org.jetbrains.grammarkit.tasks.*
 
 group 'com.mdrobnak'
-version '0.1.1'
+version '0.2.0'
 
 repositories {
     mavenCentral()
@@ -51,6 +51,13 @@ patchPluginXml {
     sinceBuild "202.6397.94"
 
     changeNotes """
+      <b>0.2.0</b><br>
+      * Handle <> expressions in action code (@dblanovschi)<br>
+      * Infer nonterminal types and perform type resolution (@dblanovschi)<br>
+      * Fix "Unable to save plugin settings" error (@dblanovschi)<br>
+      * Add a bunch of inspections (@dblanovschi)<br>
+      <br>
+
       <b>0.1.1</b><br>
       * Add missing terminals inspection (@dblanovschi)<br>
       * Add grammar params to injected action code (@dblanovschi)<br>
