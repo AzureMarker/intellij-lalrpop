@@ -1,6 +1,9 @@
 package com.mdrobnak.lalrpop.psi.util
 
 import com.intellij.psi.PsiFile
+import com.intellij.psi.util.CachedValueProvider
+import com.intellij.psi.util.CachedValuesManager
+import com.intellij.psi.util.PsiModificationTracker
 import com.intellij.psi.util.PsiTreeUtil
 import com.mdrobnak.lalrpop.psi.LpExternToken
 import com.mdrobnak.lalrpop.psi.LpSymbol
@@ -28,12 +31,15 @@ fun List<LpSymbol>.computeType(context: LpTypeResolutionContext, arguments: List
     }
 }
 
-fun PsiFile.lalrpopTypeResolutionContext(): LpTypeResolutionContext {
+fun PsiFile.lalrpopTypeResolutionContext(): LpTypeResolutionContext = CachedValuesManager.getCachedValue(this) {
     val externTokens = PsiTreeUtil.findChildrenOfType(this, LpExternToken::class.java)
 
     val locationType = externTokens.mapNotNull { it.resolveLocationType() }.firstOrNull() ?: "usize"
     val errorType = externTokens.mapNotNull { it.resolveErrorType() }.firstOrNull() ?: "()"
     val tokenType = externTokens.mapNotNull { it.resolveTokenType() }.firstOrNull() ?: "&str"
 
-    return LpTypeResolutionContext(locationType, errorType, tokenType)
+    return@getCachedValue CachedValueProvider.Result<LpTypeResolutionContext>(
+        LpTypeResolutionContext(locationType, errorType, tokenType),
+        PsiModificationTracker.MODIFICATION_COUNT
+    )
 }
