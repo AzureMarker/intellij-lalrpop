@@ -33,8 +33,9 @@ abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpActi
     }
 
     override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> {
+        val context = this.containingFile.lalrpopTypeResolutionContext()
         return LpActionLiteralTextEscaper(
             this,
-            this.alternativeParent.selected.mapNotNull { (it as LpSymbolMixin).getSelectedType(it.containingFile.lalrpopTypeResolutionContext()) })
+            this.alternativeParent.selected.map { (it as LpSymbolMixin).getSelectedType(context) })
     }
 }
