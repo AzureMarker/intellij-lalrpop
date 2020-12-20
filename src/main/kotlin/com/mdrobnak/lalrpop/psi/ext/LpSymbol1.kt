@@ -30,7 +30,7 @@ abstract class LpSymbol1Mixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSym
 
         return when (this.childrenWithLeaves.first().elementType) {
             LpElementTypes.LOOKAHEAD, LpElementTypes.LOOKBEHIND -> context.locationType
-            LpElementTypes.NOT -> context.errorRecovery()
+            LpElementTypes.NOT -> context.errorRecovery
             else -> "()"
         }
     }
