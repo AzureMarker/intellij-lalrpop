@@ -35,5 +35,5 @@ fun PsiFile.lalrpopTypeResolutionContext(): LpTypeResolutionContext {
     val errorType = externTokens.mapNotNull { it.resolveErrorType() }.firstOrNull() ?: "()"
     val tokenType = externTokens.mapNotNull { it.resolveTokenType() }.firstOrNull() ?: "&str"
 
-    return LpTypeResolutionContext(locationType = locationType, errorType = errorType, tokenType = tokenType)
+    return LpTypeResolutionContext(locationType, errorType, tokenType)
 }
