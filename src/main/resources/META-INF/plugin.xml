@@ -34,6 +34,7 @@
         <multiHostInjector implementation="com.mdrobnak.lalrpop.injectors.LpRegexInjector"/>
         <multiHostInjector implementation="com.mdrobnak.lalrpop.injectors.LpRustActionCodeInjector"/>
         <multiHostInjector implementation="com.mdrobnak.lalrpop.injectors.LpRustImportCodeInjector"/>
+        <multiHostInjector implementation="com.mdrobnak.lalrpop.injectors.LpRustTypeRefInjector"/>
 
         <lang.findUsagesProvider
                 language="LALRPOP"

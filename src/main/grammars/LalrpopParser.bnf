@@ -152,7 +152,7 @@ type_ref ::= tuple
     | rust_type
     | dyn_trait
     | dyn_fn {
-    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    implements = ["com.mdrobnak.lalrpop.psi.LpResolveType" "com.intellij.psi.PsiLanguageInjectionHost"]
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpTypeRefMixin"
 }
 

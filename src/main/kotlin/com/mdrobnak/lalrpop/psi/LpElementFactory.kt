@@ -33,7 +33,7 @@ class LpElementFactory(val project: Project) {
 
     fun createNonterminalParam(name: String): LpNonterminalParam =
         createFromText("grammar;\ndummy<$name> = {};")
-            ?: error("Failed to create nonterminal param from from name = `$name`")
+            ?: error("Failed to create nonterminal param from name = `$name`")
 
     fun createNonterminal(name: String, params: List<String>?): LpNonterminal {
         val paramsString = params?.joinToString(prefix = "<", separator = ", ", postfix = ">") ?: ""
