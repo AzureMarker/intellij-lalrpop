@@ -4,6 +4,11 @@ import com.intellij.psi.PsiElement
 
 data class NonterminalGenericArgument(val rustType: String, var name: String)
 
+data class LpTypeResolutionContext(val locationType: String = "usize", val errorType: String = "()", val tokenType: String = "&str") {
+    fun errorRecovery() = "::lalrpop_util::ErrorRecovery<$locationType, $tokenType, $errorType>"
+    fun parseError() = "::lalrpop_util::ParseError<$locationType, $tokenType, $errorType>"
+}
+
 interface LpResolveType : PsiElement {
     /**
      * Returns a string of the rust type the node that implements this would resolve to.
@@ -16,5 +21,5 @@ interface LpResolveType : PsiElement {
      * And referenced with Nonterminal<A, B> in another symbol, the list of arguments should be the resolved types of
      * "A" and "B", in this order.
      */
-    fun resolveType(arguments: List<NonterminalGenericArgument>): String
+    fun resolveType(context: LpTypeResolutionContext, arguments: List<NonterminalGenericArgument>): String
 }

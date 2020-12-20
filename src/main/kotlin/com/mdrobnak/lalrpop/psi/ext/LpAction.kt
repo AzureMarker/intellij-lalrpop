@@ -10,6 +10,7 @@ import com.intellij.psi.util.elementType
 import com.mdrobnak.lalrpop.psi.LpAction
 import com.mdrobnak.lalrpop.psi.LpAlternative
 import com.mdrobnak.lalrpop.psi.LpElementTypes
+import com.mdrobnak.lalrpop.psi.util.lalrpopTypeResolutionContext
 
 val LpAction.alternativeParent: LpAlternative
     get() = this.parent as LpAlternative
@@ -34,6 +35,6 @@ abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpActi
     override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> {
         return LpActionLiteralTextEscaper(
             this,
-            this.alternativeParent.selected.mapNotNull { (it as LpSymbolMixin).getSelectedType() })
+            this.alternativeParent.selected.mapNotNull { (it as LpSymbolMixin).getSelectedType(it.containingFile.lalrpopTypeResolutionContext()) })
     }
 }

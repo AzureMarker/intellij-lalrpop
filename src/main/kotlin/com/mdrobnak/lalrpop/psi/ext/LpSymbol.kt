@@ -2,10 +2,7 @@ package com.mdrobnak.lalrpop.psi.ext
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
-import com.mdrobnak.lalrpop.psi.LpElementTypes
-import com.mdrobnak.lalrpop.psi.LpSelectedType
-import com.mdrobnak.lalrpop.psi.LpSymbol
-import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
+import com.mdrobnak.lalrpop.psi.*
 import org.rust.lang.core.psi.ext.childrenWithLeaves
 import org.rust.lang.core.psi.ext.elementType
 
@@ -26,10 +23,10 @@ fun LpSymbol.removeName() {
 }
 
 abstract class LpSymbolMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSymbol {
-    fun getSelectedType(): LpSelectedType {
+    fun getSelectedType(context: LpTypeResolutionContext): LpSelectedType {
         val isMutable = this.isMutable
         val name = this.symbolNameString
-        val type = this.resolveType(listOf())
+        val type = this.resolveType(context, listOf())
 
         return if (name != null) {
             LpSelectedType.WithName(isMutable, name, type)
@@ -38,6 +35,6 @@ abstract class LpSymbolMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSymb
         }
     }
 
-    override fun resolveType(arguments: List<NonterminalGenericArgument>): String =
-        symbol0.resolveType(arguments)
+    override fun resolveType(context: LpTypeResolutionContext, arguments: List<NonterminalGenericArgument>): String =
+        symbol0.resolveType(context, arguments)
 }
