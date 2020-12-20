@@ -5,8 +5,8 @@ import com.intellij.psi.PsiElement
 data class NonterminalGenericArgument(val rustType: String, var name: String)
 
 data class LpTypeResolutionContext(val locationType: String = "usize", val errorType: String = "()", val tokenType: String = "&str") {
-    fun errorRecovery() = "::lalrpop_util::ErrorRecovery<$locationType, $tokenType, $errorType>"
-    fun parseError() = "::lalrpop_util::ParseError<$locationType, $tokenType, $errorType>"
+    val errorRecovery = "::lalrpop_util::ErrorRecovery<$locationType, $tokenType, $errorType>"
+    val parseError = "::lalrpop_util::ParseError<$locationType, $tokenType, $errorType>"
 }
 
 interface LpResolveType : PsiElement {
