@@ -43,4 +43,19 @@ class LpElementFactory(val project: Project) {
 
     fun createWhitespace(s: String): PsiWhiteSpace = createFromText("${s}grammar;")
         ?: error("Failed to create whitespace '$s'")
+
+    /**
+     * Returns a pair where the first element corresponds to the ':' and the second to the type_ref.
+     * Used with `nonterminal.addRangeAfter(pair.first, pair.second, nonterminal.name)` to add the type to a nonterminal
+     * where a type doesn't exist already.
+     */
+    fun createNonterminalType(type: String): Pair<PsiElement, LpTypeRef> {
+        val nonterminal = createFromText<LpNonterminal>("grammar;\n Nonterminal: $type = {};") ?: error("Failed to create nonterminal")
+
+        val typeRef = nonterminal.typeRef!!
+        val whitespace = typeRef.prevSibling
+        val colon = whitespace.prevSibling
+
+        return colon to typeRef
+    }
 }

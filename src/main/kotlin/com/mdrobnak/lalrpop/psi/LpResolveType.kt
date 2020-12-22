@@ -1,6 +1,7 @@
 package com.mdrobnak.lalrpop.psi
 
 import com.intellij.psi.PsiElement
+import com.mdrobnak.lalrpop.psi.util.lalrpopTypeResolutionContext
 
 data class NonterminalGenericArgument(val rustType: String, var name: String)
 
@@ -30,3 +31,6 @@ interface LpResolveType : PsiElement {
 //    fun resolveType(arguments: List<NonterminalGenericArgument>): String =
 //        this.resolveType(this.containingFile.lalrpopTypeResolutionContext(), arguments)
 }
+
+fun LpResolveType.getContextAndResolveType(arguments: List<NonterminalGenericArgument>): String =
+    this.resolveType(this.containingFile.lalrpopTypeResolutionContext(), arguments)
