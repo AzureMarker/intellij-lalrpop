@@ -5,15 +5,11 @@ import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
-import com.mdrobnak.lalrpop.psi.LpAlternative
-import com.mdrobnak.lalrpop.psi.LpGrammarDecl
-import com.mdrobnak.lalrpop.psi.LpNonterminal
-import com.mdrobnak.lalrpop.psi.LpSelectedType
-import com.mdrobnak.lalrpop.psi.ext.importCode
-import com.mdrobnak.lalrpop.psi.ext.name
-import com.mdrobnak.lalrpop.psi.ext.selected
+import com.mdrobnak.lalrpop.psi.*
+import com.mdrobnak.lalrpop.psi.ext.*
 import com.mdrobnak.lalrpop.psi.impl.LpActionImpl
 import com.mdrobnak.lalrpop.psi.impl.LpSymbolImpl
+import com.mdrobnak.lalrpop.psi.util.lalrpopTypeResolutionContext
 import org.rust.lang.RsLanguage
 
 /**
@@ -30,8 +26,10 @@ class LpRustActionCodeInjector : MultiHostInjector {
         val nonterminal = context.parentOfType<LpNonterminal>()!!
         val alternative = context.parentOfType<LpAlternative>()!!
 
-        val inputs = alternative.selected.map { (it as LpSymbolImpl).getSelectedType() }
-        val returnType = nonterminal.resolveType(listOf())
+        val typeResolutionContext = context.containingFile.lalrpopTypeResolutionContext()
+
+        val inputs = alternative.selected.map { (it as LpSymbolImpl).getSelectedType(typeResolutionContext) }
+        val returnType = context.actionType.returnType(nonterminal.resolveType(typeResolutionContext, listOf()), typeResolutionContext)
 
         val grammarDecl = PsiTreeUtil.findChildOfType(context.containingFile, LpGrammarDecl::class.java)
 

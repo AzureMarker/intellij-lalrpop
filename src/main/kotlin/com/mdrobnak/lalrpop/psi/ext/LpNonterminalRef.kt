@@ -17,7 +17,7 @@ fun LpNonterminalRef.createNonterminal() {
     val grammar = nonterminal.parent
 
     grammar.addAfter(
-        factory.createNonterminal(this.text, this.arguments?.symbolList?.mapIndexed { index, _ -> "Rule${index+1}" }),
+        factory.createNonterminal(this.text, this.arguments?.symbolList?.mapIndexed { index, _ -> "Rule${index + 1}" }),
         nonterminal,
     )
 
@@ -29,22 +29,22 @@ abstract class LpNonterminalRefMixin(node: ASTNode) : ASTWrapperPsiElement(node)
         return LpNonterminalReference(this)
     }
 
-    override fun resolveType(arguments: List<NonterminalGenericArgument>): String {
+    override fun resolveType(context: LpTypeResolutionContext, arguments: List<NonterminalGenericArgument>): String {
         return when (val ref = this.reference.resolve()) {
             is LpNonterminalName -> {
                 val nonterminalParams = ref.nonterminalParams
-                    ?: return ref.nonterminalParent.resolveType(arguments)
+                    ?: return ref.nonterminalParent.resolveType(context, arguments)
 
                 val nonterminal = ref.nonterminalParent
 
                 val nonterminalArguments = this.arguments
                 if (nonterminalArguments != null) {
-                    nonterminal.resolveType(
+                    nonterminal.resolveType(context,
                         nonterminalArguments.symbolList.zip(nonterminalParams.nonterminalParamList).map {
-                            NonterminalGenericArgument(it.first.resolveType(arguments), it.second.text)
+                            NonterminalGenericArgument(it.first.resolveType(context, arguments), it.second.text)
                         })
                 } else {
-                    nonterminal.resolveType(nonterminalParams.nonterminalParamList.map {
+                    nonterminal.resolveType(context, nonterminalParams.nonterminalParamList.map {
                         NonterminalGenericArgument("()", it.text)
                     })
                 }

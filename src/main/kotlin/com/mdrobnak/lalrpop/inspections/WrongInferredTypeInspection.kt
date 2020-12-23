@@ -12,6 +12,7 @@ import com.mdrobnak.lalrpop.injectors.findModuleDefinition
 import com.mdrobnak.lalrpop.psi.LpNonterminal
 import com.mdrobnak.lalrpop.psi.LpVisitor
 import com.mdrobnak.lalrpop.psi.ext.importCode
+import com.mdrobnak.lalrpop.psi.util.lalrpopTypeResolutionContext
 import org.rust.lang.RsLanguage
 import org.rust.lang.core.macros.RsExpandedElement
 import org.rust.lang.core.macros.setContext
@@ -37,7 +38,9 @@ object WrongInferredTypeInspection : LocalInspectionTool() {
                 // https://github.com/Mcat12/intellij-lalrpop/pull/22#discussion_r542538737
                 if (nonterminal.nonterminalName.nonterminalParams != null) return
 
-                val explicitType = nonterminal.typeRef?.resolveType(listOf())
+                val context = nonterminal.containingFile.lalrpopTypeResolutionContext()
+
+                val explicitType = nonterminal.typeRef?.resolveType(context, listOf())
 
                 // LALRPOP will automatically supply action code of (), so we don't need to worry about inferring the wrong type.
                 // https://github.com/lalrpop/lalrpop/blob/8a96e9646b3d00c2226349efed832c4c25631c53/lalrpop/src/normalize/lower/mod.rs#L351-L354
@@ -46,7 +49,7 @@ object WrongInferredTypeInspection : LocalInspectionTool() {
                 var seenType = explicitType
 
                 nonterminal.alternatives.alternativeList.filter { it.action == null }.forEach { alternative ->
-                    val alternativeType = alternative.resolveType(listOf())
+                    val alternativeType = alternative.resolveType(context, listOf())
 
                     if (seenType == null) {
                         seenType = alternativeType

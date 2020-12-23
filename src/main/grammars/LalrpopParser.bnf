@@ -215,7 +215,9 @@ enum_token ::= ENUM type_ref LBRACE <<comma conversion>> RBRACE {
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpEnumTokenMixin"
 }
 
-associated_type ::= TYPE ID EQUALS type_ref SEMICOLON
+associated_type ::= TYPE associated_type_name EQUALS type_ref SEMICOLON
+
+associated_type_name ::= ID
 
 conversion ::= terminal USER_ACTION CODE
 
