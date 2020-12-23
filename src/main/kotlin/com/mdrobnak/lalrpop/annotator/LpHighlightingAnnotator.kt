@@ -4,13 +4,18 @@ import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.parentOfType
 import com.mdrobnak.lalrpop.LpColor
 import com.mdrobnak.lalrpop.psi.LpElementTypes
 import com.mdrobnak.lalrpop.psi.LpNonterminalRef
+import com.mdrobnak.lalrpop.psi.LpRustType
 import org.toml.lang.psi.ext.elementType
 
 class LpHighlightingAnnotator : Annotator {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
+        // Leave type highlighting to the Rust plugin
+        if (element.parentOfType<LpRustType>(withSelf = true) != null) return;
+
         val color = when (element.elementType) {
             LpElementTypes.ANNOTATION -> LpColor.ANNOTATION
             LpElementTypes.ID -> colorForIdentifier(element.parent)
