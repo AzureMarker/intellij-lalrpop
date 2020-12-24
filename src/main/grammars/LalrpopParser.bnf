@@ -17,6 +17,8 @@ grammar ::= SHEBANG_ATTRIBUTE* use_stmt*
     grammar_decl
     grammar_item*
 
+grammar_decl ::= annotation* GRAMMAR grammar_type_params? grammar_params? grammar_where_clauses? SEMICOLON
+
 private meta comma ::= (<<param>> COMMA)* <<param>>?
 
 private meta plus ::= (<<param>> PLUS)* <<param>>?
@@ -56,18 +58,34 @@ use_stmt ::= USE IMPORT_CODE SEMICOLON {
 
 visibility ::= PUB LPAREN path RPAREN | PUB
 
-nonterminal ::= annotation* visibility? nonterminal_name (COLON type_ref)? EQUALS alternatives
+nonterminal ::= annotation* visibility? nonterminal_name (COLON type_ref)? EQUALS alternatives {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpNonterminalMixin"
+}
 
-annotation_arg ::= LPAREN id EQUALS STR_LITERAL RPAREN
+annotation_arg ::= LPAREN annotation_arg_name EQUALS annotation_arg_value RPAREN
 
-annotation ::= POUND LBRACKET ID annotation_arg? RBRACKET
+annotation_arg_name ::= id
+annotation_arg_value ::= STR_LITERAL
 
-nonterminal_name ::= ID LESSTHAN <<comma ID>> GREATERTHAN | ID {
+annotation ::= POUND LBRACKET annotation_name annotation_arg? RBRACKET
+
+annotation_name ::= ID
+
+nonterminal_name ::= ID nonterminal_params? {
     implements = "com.mdrobnak.lalrpop.psi.LpNamedElement"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpNonterminalNameMixin"
 }
 
+nonterminal_params ::= LESSTHAN <<comma nonterminal_param>> GREATERTHAN
+
+nonterminal_param ::= ID {
+    implements = "com.mdrobnak.lalrpop.psi.LpNamedElement"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpNonterminalParamMixin"
+}
+
 nonterminal_ref ::= ID {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpNonterminalRefMixin"
 }
 
@@ -76,49 +94,105 @@ alternatives ::= alternative SEMICOLON | LBRACE <<comma alternative>> RBRACE SEM
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpAlternativesMixin"
 }
 
-alternative ::= symbol+ (IF cond)? action?
-    | (IF cond)? action
+alternative ::= annotation* symbol+ (IF cond)? action?
+    | (IF cond)? action {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpAlternativeMixin"
+}
 
-action ::= (LOOKAHEAD_ACTION | LOOKBEHIND_ACTION | USER_ACTION | FALLIBLE_ACTION) CODE {
+action ::= action_type CODE {
     implements = "com.intellij.psi.PsiLanguageInjectionHost"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpActionMixin"
 }
+
+action_type ::= LOOKAHEAD_ACTION | LOOKBEHIND_ACTION | USER_ACTION | FALLIBLE_ACTION
 
 cond ::= ID cond_op STR_LITERAL
 
 cond_op ::= EQUALS_EQUALS | NOT_EQUALS | MATCH_OP | NOT_MATCH_OP
 
-expr_symbol ::= symbol*
-
-symbol ::= LESSTHAN MUT? ID COLON symbol0 GREATERTHAN
-    | LESSTHAN symbol0 GREATERTHAN
-    | symbol0 {
-    mixin = "com.mdrobnak.lalrpop.psi.ext.LpSymbolMixin"
+expr_symbol ::= symbol* {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpExprSymbolMixin"
 }
 
-symbol0 ::= symbol1 repeat_op*
+symbol ::= LESSTHAN symbol_name? symbol0 GREATERTHAN
+    | symbol0 {
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpSymbolMixin"
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+}
+
+symbol_name ::= MUT? ID COLON
+
+symbol0 ::= symbol1 repeat_op* {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpSymbol0Mixin"
+}
 
 repeat_op ::= PLUS | MULTIPLY | QUESTION
 
-symbol1 ::= nonterminal_ref LESSTHAN <<comma symbol>> GREATERTHAN
+symbol1 ::= nonterminal_ref nonterminal_arguments?
     | quoted_terminal
-    | nonterminal_ref
-    | LPAREN expr_symbol RPAREN
+    | parentheses_expr_symbol
     | LOOKAHEAD
     | LOOKBEHIND
-    | NOT
+    | NOT {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpSymbol1Mixin"
+}
 
-type_ref ::= LPAREN <<comma type_ref>> RPAREN
-    | LBRACKET type_ref RBRACKET
-    | POUND symbol POUND
-    | AND LIFETIME? MUT? type_ref
-    | path LESSTHAN <<comma type_ref_or_lifetime>> GREATERTHAN
-    | path
-    | DYN path LESSTHAN <<comma type_ref_or_lifetime>> GREATERTHAN
-    | DYN path
-    | DYN forall path LPAREN <<comma type_ref>> RPAREN (RSINGLEARROW type_ref)?
+nonterminal_arguments ::= LESSTHAN <<comma symbol>> GREATERTHAN
+parentheses_expr_symbol ::= LPAREN expr_symbol RPAREN {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpParenthesesExprSymbolMixin"
+}
 
-type_ref_or_lifetime ::= type_ref | LIFETIME
+type_ref ::= tuple
+    | array
+    | type_of_symbol
+    | rust_reference
+    | rust_type
+    | dyn_trait
+    | dyn_fn {
+    implements = ["com.mdrobnak.lalrpop.psi.LpResolveType" "com.intellij.psi.PsiLanguageInjectionHost"]
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpTypeRefMixin"
+}
+
+tuple ::= LPAREN <<comma type_ref>> RPAREN {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpTupleMixin"
+}
+array ::= LBRACKET type_ref RBRACKET {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpArrayMixin"
+}
+type_of_symbol ::= POUND symbol POUND {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpTypeOfSymbolMixin"
+}
+rust_reference ::= AND lifetime_rule? MUT? type_ref {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpRustReferenceMixin"
+}
+rust_type ::= path type_generic_arguments? {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpRustTypeMixin"
+}
+dyn_trait ::= DYN rust_type {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpDynTraitMixin"
+}
+dyn_fn ::= DYN forall path LPAREN <<comma type_ref>> RPAREN return_type? {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpDynFnMixin"
+}
+return_type ::= RSINGLEARROW type_ref
+
+type_generic_arguments ::= LESSTHAN <<comma type_ref_or_lifetime>> GREATERTHAN
+
+private type_ref_or_lifetime ::= type_ref | lifetime_rule
+
+lifetime_rule ::= LIFETIME
 
 extern_token ::= EXTERN LBRACE extern_contents RBRACE {
     implements = "com.mdrobnak.lalrpop.psi.LpFoldable"
@@ -144,7 +218,9 @@ enum_token ::= ENUM type_ref LBRACE <<comma conversion>> RBRACE {
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpEnumTokenMixin"
 }
 
-associated_type ::= TYPE ID EQUALS type_ref SEMICOLON
+associated_type ::= TYPE associated_type_name EQUALS type_ref SEMICOLON
+
+associated_type_name ::= ID
 
 conversion ::= terminal USER_ACTION CODE
 
@@ -157,4 +233,9 @@ quoted_literal ::= STR_LITERAL | REGEX_LITERAL {
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpQuotedLiteralMixin"
 }
 
-path ::= PATH_REF | ID
+path ::= PATH_REF | path_id
+
+path_id ::= ID {
+    implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
+    mixin = "com.mdrobnak.lalrpop.psi.ext.LpPathIdMixin"
+}

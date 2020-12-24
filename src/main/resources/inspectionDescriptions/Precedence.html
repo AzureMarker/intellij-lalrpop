@@ -1,0 +1,23 @@
+<html>
+<body>
+<p>Detects invalid usage of precedence annotations on alternatives
+</p>
+<!-- tooltip end -->
+<p>
+    Here's a list of the problems this inspections tries to detect:
+</p>
+<ul>
+    <li>
+        if there's at least one alternative with precedence annotations in a rule, then all the alternatives must be
+        annotated
+    </li>
+    <li>
+        syntax (precedence annotations have a level argument that is an integer, associativity annotations have a side
+        argument)
+    </li>
+    <li>
+        the first level cannot have associativity annotations.
+    </li>
+</ul>
+</body>
+</html>

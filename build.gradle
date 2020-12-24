@@ -1,14 +1,14 @@
 plugins {
-    id 'org.jetbrains.intellij' version '0.4.26'
+    id 'org.jetbrains.intellij' version '0.6.5'
     id 'org.jetbrains.kotlin.jvm' version '1.4.10'
-    id 'org.jetbrains.grammarkit' version '2020.2.1'
+    id 'org.jetbrains.grammarkit' version '2020.3.2'
     id 'idea'
 }
 
 import org.jetbrains.grammarkit.tasks.*
 
 group 'com.mdrobnak'
-version '0.1.0'
+version '0.2.0'
 
 repositories {
     mavenCentral()
@@ -35,19 +35,35 @@ task generateParser(type: GenerateParser) {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    // Test with 2020.3 EAP
-    version '203.3645-EAP-CANDIDATE-SNAPSHOT'
-    plugins = ['PsiViewer:203-SNAPSHOT', 'org.rust.lang:0.3.131.3366-202', 'org.toml.lang:0.2.131.3366-202']
+    // Test with 2020.3
+    version '2020.3'
+    plugins = ['PsiViewer:203-SNAPSHOT', 'org.rust.lang:0.3.136.3514-203', 'org.toml.lang:0.2.136.3514-203']
 }
 compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "11"
     dependsOn(generateLexer, generateParser)
+}
+publishPlugin {
+    token = System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken")
 }
 patchPluginXml {
     // Support 2020.2
     sinceBuild "202.6397.94"
 
     changeNotes """
+      <b>0.2.0</b><br>
+      * Handle <> expressions in action code (@dblanovschi)<br>
+      * Infer nonterminal types and perform type resolution (@dblanovschi)<br>
+      * Fix "Unable to save plugin settings" error (@dblanovschi)<br>
+      * Add a bunch of inspections (@dblanovschi)<br>
+      <br>
+
+      <b>0.1.1</b><br>
+      * Add missing terminals inspection (@dblanovschi)<br>
+      * Add grammar params to injected action code (@dblanovschi)<br>
+      * Add some code highlighting (ex. nonterminals) (@dblanovschi)<br>
+      <br>
+
       <b>0.1.0</b><br>
       Initial release of the LALRPOP plugin
       """
