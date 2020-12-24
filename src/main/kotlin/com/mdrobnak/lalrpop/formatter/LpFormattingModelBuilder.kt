@@ -11,6 +11,8 @@ import com.mdrobnak.lalrpop.LpLanguage
 import com.mdrobnak.lalrpop.psi.LpElementTypes
 
 class LpFormattingModelBuilder : FormattingModelBuilder {
+    // FIXME: Replace with createModel(FormattingContext) (added in 2020.3)
+    //        when we drop support for 2020.2
     @Suppress("UnstableApiUsage")
     override fun createModel(element: PsiElement, settings: CodeStyleSettings): FormattingModel {
         return FormattingModelProvider
