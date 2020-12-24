@@ -44,8 +44,8 @@ class LpFormattingModelBuilder : FormattingModelBuilder {
                 .before(LpElementTypes.RPAREN).spaces(0)
                 .afterInside(LpElementTypes.LESSTHAN, LpElementTypes.TYPE_REF).none()
                 .beforeInside(LpElementTypes.GREATERTHAN, LpElementTypes.TYPE_REF).none()
-                .afterInside(LpElementTypes.LESSTHAN, LpElementTypes.SYMBOL_1).none()
-                .beforeInside(LpElementTypes.GREATERTHAN, LpElementTypes.SYMBOL_1).none()
+                .afterInside(LpElementTypes.LESSTHAN, LpElementTypes.NONTERMINAL_ARGUMENTS).none()
+                .beforeInside(LpElementTypes.GREATERTHAN, LpElementTypes.NONTERMINAL_ARGUMENTS).none()
                 .around(LpElementTypes.SYMBOL).spaces(1)
         }
     }
