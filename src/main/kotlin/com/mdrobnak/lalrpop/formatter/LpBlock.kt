@@ -30,9 +30,9 @@ class LpBlock(
             TokenSet.create(LpElementTypes.ANNOTATION) to Alignment.createAlignment(),
             TokenSet.create(LpElementTypes.WHERE) to Alignment.createAlignment(),
             TokenSet.create(LpElementTypes.NONTERMINAL) to Alignment.createAlignment(),
-            TokenSet.create(LpElementTypes.EQUALS) to Alignment.createAlignment(),
-            TokenSet.create(LpElementTypes.LBRACE) to Alignment.createChildAlignment(this.alignment),
-            TokenSet.create(LpElementTypes.LPAREN) to Alignment.createChildAlignment(this.alignment),
+//            TokenSet.create(LpElementTypes.EQUALS) to Alignment.createAlignment(),
+//            TokenSet.create(LpElementTypes.LBRACE) to Alignment.createAlignment(),
+//            TokenSet.create(LpElementTypes.LPAREN) to Alignment.createAlignment(),
             TokenSet.create(LpElementTypes.EXTERN) to Alignment.createAlignment(),
             TokenSet.create(LpElementTypes.ENUM) to Alignment.createAlignment(),
             TokenSet.create(LpElementTypes.GRAMMAR) to Alignment.createAlignment(),
@@ -41,7 +41,8 @@ class LpBlock(
         while (child != null) {
             if (child.elementType != TokenType.WHITE_SPACE) {
                 val block: Block = LpBlock(
-                    child, wraps.computeIfAbsent(child.elementType) {
+                    child,
+                    wraps.computeIfAbsent(child.elementType) {
                         when (it) {
                             LpElementTypes.GRAMMAR_PARAM, LpElementTypes.GRAMMAR_WHERE_CLAUSE -> Wrap.createWrap(
                                 WrapType.CHOP_DOWN_IF_LONG,
