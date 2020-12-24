@@ -20,21 +20,13 @@ class LpBlock(
         val wraps = hashMapOf<IElementType, Wrap>()
         val alignments = mapOf(
             TokenSet.create(LpElementTypes.SHEBANG_ATTRIBUTE, LpElementTypes.USE_STMT) to Alignment.createAlignment(),
-            TokenSet.create(
-                LpElementTypes.ALTERNATIVE,
-            ) to Alignment.createAlignment(),
-            TokenSet.create(
-                LpElementTypes.GRAMMAR_PARAM
-            ) to Alignment.createAlignment(),
+            TokenSet.create(LpElementTypes.ALTERNATIVE) to Alignment.createAlignment(),
+            TokenSet.create(LpElementTypes.GRAMMAR_PARAM) to Alignment.createAlignment(),
             TokenSet.create(LpElementTypes.GRAMMAR_WHERE_CLAUSE) to Alignment.createAlignment(),
             TokenSet.create(LpElementTypes.GRAMMAR_WHERE_CLAUSES) to Alignment.createAlignment(),
             TokenSet.create(LpElementTypes.MATCH_TOKEN) to Alignment.createAlignment(),
-            TokenSet.create(
-                LpElementTypes.CONVERSION
-            ) to Alignment.createAlignment(),
-            TokenSet.create(
-                LpElementTypes.ASSOCIATED_TYPE, LpElementTypes.ENUM_TOKEN
-            ) to Alignment.createAlignment(),
+            TokenSet.create(LpElementTypes.CONVERSION) to Alignment.createAlignment(),
+            TokenSet.create(LpElementTypes.ASSOCIATED_TYPE, LpElementTypes.ENUM_TOKEN) to Alignment.createAlignment(),
             TokenSet.create(LpElementTypes.ANNOTATION) to Alignment.createAlignment(),
             TokenSet.create(LpElementTypes.WHERE) to Alignment.createAlignment(),
             TokenSet.create(LpElementTypes.NONTERMINAL) to Alignment.createAlignment(),
@@ -47,7 +39,7 @@ class LpBlock(
         )
         var child = myNode.firstChildNode
         while (child != null) {
-            if (child.elementType !== TokenType.WHITE_SPACE) {
+            if (child.elementType != TokenType.WHITE_SPACE) {
                 val block: Block = LpBlock(
                     child, wraps.computeIfAbsent(child.elementType) {
                         when (it) {
