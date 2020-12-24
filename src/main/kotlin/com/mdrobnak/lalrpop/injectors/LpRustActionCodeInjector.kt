@@ -5,8 +5,14 @@ import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
-import com.mdrobnak.lalrpop.psi.*
-import com.mdrobnak.lalrpop.psi.ext.*
+import com.mdrobnak.lalrpop.psi.LpAlternative
+import com.mdrobnak.lalrpop.psi.LpGrammarDecl
+import com.mdrobnak.lalrpop.psi.LpNonterminal
+import com.mdrobnak.lalrpop.psi.LpSelectedType
+import com.mdrobnak.lalrpop.psi.ext.importCode
+import com.mdrobnak.lalrpop.psi.ext.name
+import com.mdrobnak.lalrpop.psi.ext.returnType
+import com.mdrobnak.lalrpop.psi.ext.selected
 import com.mdrobnak.lalrpop.psi.impl.LpActionImpl
 import com.mdrobnak.lalrpop.psi.impl.LpSymbolImpl
 import com.mdrobnak.lalrpop.psi.util.lalrpopTypeResolutionContext
@@ -33,9 +39,9 @@ class LpRustActionCodeInjector : MultiHostInjector {
 
         val grammarDecl = PsiTreeUtil.findChildOfType(context.containingFile, LpGrammarDecl::class.java)
 
-        val grammarParams = grammarDecl?.grammarParams
+        val grammarParams = grammarDecl?.grammarParamList
         val grammarParametersString =
-            grammarParams?.grammarParamList?.joinToString(separator = "") { "${it.name}: ${it.typeRef.text}," }
+            grammarParams?.joinToString(separator = "") { "${it.name}: ${it.typeRef.text}," }
                 ?: ""
 
         val grammarTypeParams = grammarDecl?.grammarTypeParams
