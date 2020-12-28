@@ -11,10 +11,8 @@ import com.mdrobnak.lalrpop.psi.LpPathId
 class LpPathIdReference(element: LpPathId) :
     PsiReferenceBase<LpPathId>(element, TextRange.allOf(element.text)) {
     override fun resolve(): PsiElement? =
-        when (val thisNonTerminal = PsiTreeUtil.getParentOfType(element, LpNonterminal::class.java)) {
-            null -> null
-            else -> LpResolveUtil.findNonterminalParameter(thisNonTerminal, element.text).firstOrNull()
-        }
+        PsiTreeUtil.getParentOfType(element, LpNonterminal::class.java)
+            ?.let { LpResolveUtil.findNonterminalParameter(it, element.text).firstOrNull() }
 
     override fun handleElementRename(newElementName: String): PsiElement {
         val newNode = LpElementFactory(element.project).createIdentifier(newElementName)
@@ -23,8 +21,7 @@ class LpPathIdReference(element: LpPathId) :
     }
 
     override fun getVariants(): Array<Any> =
-        when (val thisNonTerminal = PsiTreeUtil.getParentOfType(element, LpNonterminal::class.java)) {
-            null -> arrayOf()
-            else -> LpResolveUtil.findNonterminalParams(thisNonTerminal).toTypedArray()
-        }
+        PsiTreeUtil.getParentOfType(element, LpNonterminal::class.java)?.let {
+            LpResolveUtil.findNonterminalParams(it)
+        }.orEmpty().toTypedArray()
 }

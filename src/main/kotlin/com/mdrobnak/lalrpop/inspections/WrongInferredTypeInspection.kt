@@ -9,6 +9,7 @@ import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.util.PsiTreeUtil
 import com.jetbrains.rd.util.string.printToString
 import com.mdrobnak.lalrpop.injectors.findModuleDefinition
+import com.mdrobnak.lalrpop.psi.LpMacroArguments
 import com.mdrobnak.lalrpop.psi.LpNonterminal
 import com.mdrobnak.lalrpop.psi.LpVisitor
 import com.mdrobnak.lalrpop.psi.ext.importCode
@@ -40,7 +41,7 @@ object WrongInferredTypeInspection : LocalInspectionTool() {
 
                 val context = nonterminal.containingFile.lalrpopTypeResolutionContext()
 
-                val explicitType = nonterminal.typeRef?.resolveType(context, listOf())
+                val explicitType = nonterminal.typeRef?.resolveType(context, LpMacroArguments())
 
                 // LALRPOP will automatically supply action code of (), so we don't need to worry about inferring the wrong type.
                 // https://github.com/lalrpop/lalrpop/blob/8a96e9646b3d00c2226349efed832c4c25631c53/lalrpop/src/normalize/lower/mod.rs#L351-L354
@@ -49,7 +50,7 @@ object WrongInferredTypeInspection : LocalInspectionTool() {
                 var seenType = explicitType
 
                 nonterminal.alternatives.alternativeList.filter { it.action == null }.forEach { alternative ->
-                    val alternativeType = alternative.resolveType(context, listOf())
+                    val alternativeType = alternative.resolveType(context, LpMacroArguments())
 
                     if (seenType == null) {
                         seenType = alternativeType

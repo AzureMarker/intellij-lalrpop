@@ -8,7 +8,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.mdrobnak.lalrpop.psi.LpExternToken
 import com.mdrobnak.lalrpop.psi.LpSymbol
 import com.mdrobnak.lalrpop.psi.LpTypeResolutionContext
-import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
+import com.mdrobnak.lalrpop.psi.LpMacroArguments
 import com.mdrobnak.lalrpop.psi.ext.isExplicitlySelected
 import com.mdrobnak.lalrpop.psi.ext.resolveErrorType
 import com.mdrobnak.lalrpop.psi.ext.resolveLocationType
@@ -21,7 +21,7 @@ val List<LpSymbol>.selected: List<LpSymbol>
         this
     }
 
-fun List<LpSymbol>.computeType(context: LpTypeResolutionContext, arguments: List<NonterminalGenericArgument>): String {
+fun List<LpSymbol>.computeType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String {
     val sel = selected
     return sel.joinToString(
         prefix = if (sel.size != 1) "(" else "",

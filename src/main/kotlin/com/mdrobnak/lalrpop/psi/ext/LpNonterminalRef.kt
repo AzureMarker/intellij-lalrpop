@@ -29,7 +29,7 @@ abstract class LpNonterminalRefMixin(node: ASTNode) : ASTWrapperPsiElement(node)
         return LpNonterminalReference(this)
     }
 
-    override fun resolveType(context: LpTypeResolutionContext, arguments: List<NonterminalGenericArgument>): String {
+    override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String {
         return when (val ref = this.reference.resolve()) {
             is LpNonterminalName -> {
                 val nonterminalParams = ref.nonterminalParams
@@ -37,17 +37,17 @@ abstract class LpNonterminalRefMixin(node: ASTNode) : ASTWrapperPsiElement(node)
 
                 val nonterminal = ref.nonterminalParent
 
-                val nonterminalArguments = this.arguments
-                if (nonterminalArguments != null) {
-                    nonterminal.resolveType(context,
-                        nonterminalArguments.symbolList.zip(nonterminalParams.nonterminalParamList).map {
-                            NonterminalGenericArgument(it.first.resolveType(context, arguments), it.second.text)
-                        })
-                } else {
-                    nonterminal.resolveType(context, nonterminalParams.nonterminalParamList.map {
-                        NonterminalGenericArgument("()", it.text)
-                    })
-                }
+                this.arguments?.let { nonterminalArguments ->
+                    nonterminal.resolveType(
+                        context,
+                        LpMacroArguments(
+                            nonterminalArguments.symbolList.zip(nonterminalParams.nonterminalParamList).map {
+                                LpMacroArgument(it.first.resolveType(context, arguments), it.second.text)
+                            })
+                    )
+                } ?: nonterminal.resolveType(context, LpMacroArguments(nonterminalParams.nonterminalParamList.map {
+                    LpMacroArgument("()", it.text)
+                }))
             }
             is LpNonterminalParam -> {
                 arguments.find { it.name == ref.text }?.rustType ?: ref.text

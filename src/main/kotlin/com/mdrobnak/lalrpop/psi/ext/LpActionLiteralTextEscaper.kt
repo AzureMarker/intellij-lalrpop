@@ -15,6 +15,21 @@ import java.util.*
  */
 private data class Mapping(val sourceRange: TextRange, val targetRange: TextRange, val context: Context)
 
+private fun actionCodeEscapeWithMappings(actionCode: String, evalOfAngleBracketsExpression: List<LpSelectedType>): Pair<List<Mapping>, String> {
+    // get all the text ranges with <> from rust
+    val mappings = actionCode.findAllMappings("<>", evalOfAngleBracketsExpression)
+
+    // replace them all with their replacements, in reverse order
+    val result = mappings.foldRight(actionCode) { mapping, acc ->
+        mapping.sourceRange.replace(acc, evalOfAngleBracketsExpression.replacement(mapping.context))
+    }
+
+    return mappings to result
+}
+
+fun actionCodeEscape(actionCode: String, evalOfAngleBracketsExpression: List<LpSelectedType>): String =
+    actionCodeEscapeWithMappings(actionCode, evalOfAngleBracketsExpression).second
+
 class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracketsExpression: List<LpSelectedType>) :
     LiteralTextEscaper<LpAction>(action) {
 
@@ -23,17 +38,12 @@ class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracke
     override fun decode(rangeInsideHost: TextRange, outChars: StringBuilder): Boolean {
         // get the text from the host
         val txt = this.myHost.text.substring(rangeInsideHost.startOffset, rangeInsideHost.endOffset)
-        // get all the text ranges with <> from rust
-        mappings = txt.findAllMappings("<>", evalOfAngleBracketsExpression)
 
-        // replace them all with their replacements, in reverse order
-        val result = mappings.foldRight(txt) { mapping, acc ->
-            mapping.sourceRange.replace(acc, evalOfAngleBracketsExpression.replacement(mapping.context))
-        }
-
+        val mappingsAndResult = actionCodeEscapeWithMappings(txt, evalOfAngleBracketsExpression)
+        mappings = mappingsAndResult.first
 
         // add the result string to the builder
-        outChars.append(result)
+        outChars.append(mappingsAndResult.second)
 
         // can never fail so just return true
         return true

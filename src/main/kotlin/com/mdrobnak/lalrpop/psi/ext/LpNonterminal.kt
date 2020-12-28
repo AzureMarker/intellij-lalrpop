@@ -7,23 +7,23 @@ import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiModificationTracker
 import com.mdrobnak.lalrpop.psi.LpNonterminal
 import com.mdrobnak.lalrpop.psi.LpTypeResolutionContext
-import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
+import com.mdrobnak.lalrpop.psi.LpMacroArguments
 
 abstract class LpNonterminalMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpNonterminal {
-    override fun resolveType(context: LpTypeResolutionContext, arguments: List<NonterminalGenericArgument>): String =
+    override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
         if (this.nonterminalName.nonterminalParams != null) {
             internallyResolveType(context, arguments)
         } else {
             // Isn't a lalrpop macro and therefore can be cached
             CachedValuesManager.getCachedValue(this) {
                 return@getCachedValue CachedValueProvider.Result<String>(
-                    internallyResolveType(context, listOf()),
+                    internallyResolveType(context, LpMacroArguments()),
                     PsiModificationTracker.MODIFICATION_COUNT
                 )
             }
         }
 
-    private fun internallyResolveType(context: LpTypeResolutionContext, arguments: List<NonterminalGenericArgument>): String =
+    private fun internallyResolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
         this.typeRef?.resolveType(context, arguments) ?: this.alternatives.alternativeList.firstOrNull { it.action == null }
             ?.resolveType(context, arguments) ?: "()"
 }

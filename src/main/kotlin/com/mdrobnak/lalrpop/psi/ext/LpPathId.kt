@@ -5,13 +5,13 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiReference
 import com.mdrobnak.lalrpop.psi.LpPathId
 import com.mdrobnak.lalrpop.psi.LpTypeResolutionContext
-import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
+import com.mdrobnak.lalrpop.psi.LpMacroArguments
 import com.mdrobnak.lalrpop.resolve.LpPathIdReference
 
 open class LpPathIdMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpPathId {
     override fun getReference(): PsiReference? = LpPathIdReference(this)
 
-    override fun resolveType(context: LpTypeResolutionContext, arguments: List<NonterminalGenericArgument>): String {
+    override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String {
         val id = this.text
         return arguments.find { it.name == id }?.rustType ?: id
     }

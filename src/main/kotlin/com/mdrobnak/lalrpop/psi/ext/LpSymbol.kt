@@ -22,19 +22,19 @@ fun LpSymbol.removeName() {
     this.symbolName?.delete()
 }
 
-abstract class LpSymbolMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSymbol {
-    fun getSelectedType(context: LpTypeResolutionContext): LpSelectedType {
-        val isMutable = this.isMutable
-        val name = this.symbolNameString
-        val type = this.resolveType(context, listOf())
+fun LpSymbol.getSelectedType(context: LpTypeResolutionContext): LpSelectedType {
+    val isMutable = this.isMutable
+    val name = this.symbolNameString
+    val type = this.resolveType(context, LpMacroArguments())
 
-        return if (name != null) {
-            LpSelectedType.WithName(isMutable, name, type)
-        } else {
-            LpSelectedType.WithoutName(type)
-        }
+    return if (name != null) {
+        LpSelectedType.WithName(isMutable, name, type)
+    } else {
+        LpSelectedType.WithoutName(type)
     }
+}
 
-    override fun resolveType(context: LpTypeResolutionContext, arguments: List<NonterminalGenericArgument>): String =
+abstract class LpSymbolMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSymbol {
+    override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
         symbol0.resolveType(context, arguments)
 }

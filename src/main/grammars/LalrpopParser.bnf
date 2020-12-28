@@ -99,7 +99,7 @@ alternative ::= annotation* symbol+ (IF cond)? action?
 }
 
 action ::= action_type CODE {
-    implements = "com.intellij.psi.PsiLanguageInjectionHost"
+    implements = ["com.intellij.psi.PsiLanguageInjectionHost" "com.mdrobnak.lalrpop.psi.LpResolveType"]
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpActionMixin"
 }
 

@@ -2,8 +2,33 @@ package com.mdrobnak.lalrpop.psi
 
 import com.intellij.psi.PsiElement
 import com.mdrobnak.lalrpop.psi.util.lalrpopTypeResolutionContext
+import org.rust.lang.core.psi.RsPsiFactory
+import org.rust.lang.core.psi.RsTypeParameterList
+import org.rust.lang.core.resolve.ImplLookup
+import org.rust.lang.core.types.Substitution
+import org.rust.lang.core.types.infer.RsInferenceContext
+import org.rust.lang.core.types.toTypeSubst
+import org.rust.lang.core.types.ty.TyTypeParameter
+import org.rust.lang.core.types.ty.TyUnit
+import org.rust.lang.core.types.type
 
-data class NonterminalGenericArgument(val rustType: String, var name: String)
+data class LpMacroArgument(val rustType: String, val name: String)
+data class LpMacroArguments(val arguments: List<LpMacroArgument> = listOf()): List<LpMacroArgument> by arguments {
+    fun getSubstitution(params: RsTypeParameterList?, inferenceContext: RsInferenceContext): Substitution =
+        params?.typeParameterList.orEmpty().map { param ->
+            TyTypeParameter.named(param) to (arguments.find { arg -> arg.name == param.name }?.rustType?.let {
+                inferenceContext.fullyResolve(RsPsiFactory(param.project).createType(it).type)
+            } ?: TyUnit)
+        }.toMap().toTypeSubst()
+
+    companion object {
+        fun identity(params: LpNonterminalParams?): LpMacroArguments =
+            LpMacroArguments(params?.nonterminalParamList?.map {
+                val name = it.name!!
+                LpMacroArgument(name, name)
+            }.orEmpty())
+    }
+}
 
 data class LpTypeResolutionContext(
     val locationType: String = "usize",
@@ -26,11 +51,9 @@ interface LpResolveType : PsiElement {
      * And referenced with Nonterminal<A, B> in another symbol, the list of arguments should be the resolved types of
      * "A" and "B", in this order.
      */
-    fun resolveType(context: LpTypeResolutionContext, arguments: List<NonterminalGenericArgument>): String
+    fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String
 
-//    fun resolveType(arguments: List<NonterminalGenericArgument>): String =
-//        this.resolveType(this.containingFile.lalrpopTypeResolutionContext(), arguments)
 }
 
-fun LpResolveType.getContextAndResolveType(arguments: List<NonterminalGenericArgument>): String =
+fun LpResolveType.getContextAndResolveType(arguments: LpMacroArguments): String =
     this.resolveType(this.containingFile.lalrpopTypeResolutionContext(), arguments)

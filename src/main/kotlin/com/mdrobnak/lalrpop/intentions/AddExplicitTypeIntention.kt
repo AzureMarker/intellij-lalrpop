@@ -5,10 +5,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.mdrobnak.lalrpop.LpLanguage
-import com.mdrobnak.lalrpop.psi.LpAlternative
-import com.mdrobnak.lalrpop.psi.LpElementFactory
-import com.mdrobnak.lalrpop.psi.LpNonterminal
-import com.mdrobnak.lalrpop.psi.getContextAndResolveType
+import com.mdrobnak.lalrpop.psi.*
 
 class AddExplicitTypeIntention : IntentionAction {
     override fun startInWriteAction(): Boolean = true
@@ -51,7 +48,7 @@ class AddExplicitTypeIntention : IntentionAction {
         if (nonterminal == null) return
 
         val inferredType =
-            alternativeToUse?.getContextAndResolveType(listOf()) ?: nonterminal.getContextAndResolveType(listOf())
+            alternativeToUse?.getContextAndResolveType(LpMacroArguments()) ?: nonterminal.getContextAndResolveType(LpMacroArguments())
 
         val type = LpElementFactory(project).createNonterminalType(inferredType)
         val typeRef = nonterminal.typeRef

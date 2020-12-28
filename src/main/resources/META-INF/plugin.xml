@@ -84,7 +84,7 @@
                          enabledByDefault="true"
                          level="ERROR"/>
 
-        <intentionAction id="com.mdrobnak.lalrpop.intentions.AddExplicitTypeIntention">
+        <intentionAction>
             <className>com.mdrobnak.lalrpop.intentions.AddExplicitTypeIntention</className>
             <category>LALRPOP</category>
         </intentionAction>
