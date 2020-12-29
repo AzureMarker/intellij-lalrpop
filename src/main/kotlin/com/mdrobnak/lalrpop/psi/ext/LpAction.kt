@@ -21,10 +21,7 @@ import org.rust.lang.core.psi.RsFunction
 import org.rust.lang.core.psi.ext.block
 import org.rust.lang.core.psi.ext.childrenOfType
 import org.rust.lang.core.resolve.ImplLookup
-import org.rust.lang.core.types.infer.RsTypeInferenceWalker
-import org.rust.lang.core.types.infer.foldTyTypeParameterWith
-import org.rust.lang.core.types.infer.substituteOrUnknown
-import org.rust.lang.core.types.ty.TyUnknown
+import org.rust.lang.core.types.infer.substitute
 
 val LpAction.alternativeParent: LpAlternative
     get() = this.parent as LpAlternative
@@ -47,7 +44,10 @@ fun LpAction.actionCodeFunctionHeader(withReturnType: Boolean): String {
     val arrowReturnType =
         if (withReturnType)
             " -> " + actionType.returnType(
-                nonterminal.resolveType(typeResolutionContext, LpMacroArguments.identity(nonterminal.nonterminalName.nonterminalParams)),
+                nonterminal.resolveType(
+                    typeResolutionContext,
+                    LpMacroArguments.identity(nonterminal.nonterminalName.nonterminalParams)
+                ),
                 typeResolutionContext
             )
         else ""
@@ -66,7 +66,7 @@ fun LpAction.actionCodeFunctionHeader(withReturnType: Boolean): String {
         if (this.isEmpty()) "" else this.joinToString(prefix = "<", postfix = ">", separator = ", ") { it }
 
     val genericParamsString =
-        grammarTypeParams?.typeParamList?.map { it.text }.orEmpty() + genericParameters?.map { it.text }.orEmpty()
+        (grammarTypeParams?.typeParamList?.map { it.text }.orEmpty() + genericParameters?.map { it.text }.orEmpty())
             .join()
 
     val arguments = inputs.mapIndexed { index, it ->
@@ -113,11 +113,14 @@ abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpActi
                 "   $code\n" +
                 "}\n"
 
+        val fileText = "mod __intellij_lalrpop {\n$importCode\n $fnCode \n}"
+        println("File: \"$fileText\"")
         val file = PsiFileFactory.getInstance(project)
-            .createFileFromText(RsLanguage, "mod __intellij_lalrpop {\n$importCode\n $fnCode \n}")
+            .createFileFromText(RsLanguage, fileText)
 
         val fn = PsiTreeUtil.findChildOfType(file, RsFunction::class.java) ?: return "()"
         val block = fn.block ?: return "()"
+        val expr = block.expr ?: return "()"
 
         val moduleDefinition = findModuleDefinition(project, this.containingFile) ?: return "()"
 
@@ -126,11 +129,14 @@ abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpActi
         }
 
         val ctx = ImplLookup.relativeTo(fn).ctx
-        val inferenceWalker = RsTypeInferenceWalker(ctx, TyUnknown)
 
-        val inferredGenericType = inferenceWalker.inferFnBody(block)
-        val concreteType = inferredGenericType.substituteOrUnknown(arguments.getSubstitution(fn.typeParameterList, ctx))
+        val inferenceResult = ctx.infer(fn)
+        val inferredGenericType = inferenceResult.getExprType(expr)
 
-        return concreteType.renderInsertionSafe(fn)
+        println("Inferred generic type: $inferredGenericType")
+        val maybeConcreteType = inferredGenericType.substitute(arguments.getSubstitution(fn.typeParameterList, ctx))
+        println("Concrete type after substitution: $maybeConcreteType")
+
+        return maybeConcreteType.renderInsertionSafe(fn, includeTypeArguments = true, includeLifetimeArguments = true)
     }
 }

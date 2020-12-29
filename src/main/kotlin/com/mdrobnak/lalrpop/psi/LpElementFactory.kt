@@ -50,7 +50,7 @@ class LpElementFactory(val project: Project) {
      * where a type doesn't exist already.
      */
     fun createNonterminalType(type: String): Pair<PsiElement, LpTypeRef> {
-        val nonterminal = createFromText<LpNonterminal>("grammar;\n Nonterminal: $type = {};") ?: error("Failed to create nonterminal")
+        val nonterminal = createFromText<LpNonterminal>("grammar;\n Nonterminal: $type = {};") ?: error("Failed to create nonterminal, type = $type")
 
         val typeRef = nonterminal.typeRef!!
         val whitespace = typeRef.prevSibling

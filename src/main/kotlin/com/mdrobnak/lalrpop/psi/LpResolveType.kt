@@ -17,6 +17,7 @@ data class LpMacroArguments(val arguments: List<LpMacroArgument> = listOf()): Li
     fun getSubstitution(params: RsTypeParameterList?, inferenceContext: RsInferenceContext): Substitution =
         params?.typeParameterList.orEmpty().map { param ->
             TyTypeParameter.named(param) to (arguments.find { arg -> arg.name == param.name }?.rustType?.let {
+                println("Type parameter: ${param.name!!}, rust type in substitution: $it")
                 inferenceContext.fullyResolve(RsPsiFactory(param.project).createType(it).type)
             } ?: TyUnit)
         }.toMap().toTypeSubst()

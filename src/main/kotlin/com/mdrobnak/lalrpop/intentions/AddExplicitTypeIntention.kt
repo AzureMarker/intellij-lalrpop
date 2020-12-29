@@ -5,7 +5,11 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.mdrobnak.lalrpop.LpLanguage
-import com.mdrobnak.lalrpop.psi.*
+import com.mdrobnak.lalrpop.psi.LpAlternative
+import com.mdrobnak.lalrpop.psi.LpMacroArguments
+import com.mdrobnak.lalrpop.psi.LpNonterminal
+import com.mdrobnak.lalrpop.psi.ext.setType
+import com.mdrobnak.lalrpop.psi.getContextAndResolveType
 
 class AddExplicitTypeIntention : IntentionAction {
     override fun startInWriteAction(): Boolean = true
@@ -35,8 +39,7 @@ class AddExplicitTypeIntention : IntentionAction {
 
         while (element != null) {
             if (element is LpAlternative) {
-                if (element.action == null) // TODO: maybe get from the rust plugin?
-                    alternativeToUse = element
+                alternativeToUse = element
             } else if (element is LpNonterminal) {
                 nonterminal = element
                 break
@@ -48,14 +51,9 @@ class AddExplicitTypeIntention : IntentionAction {
         if (nonterminal == null) return
 
         val inferredType =
-            alternativeToUse?.getContextAndResolveType(LpMacroArguments()) ?: nonterminal.getContextAndResolveType(LpMacroArguments())
+            alternativeToUse?.getContextAndResolveType(LpMacroArguments.identity(nonterminal.nonterminalName.nonterminalParams))
+                ?: nonterminal.getContextAndResolveType(LpMacroArguments.identity(nonterminal.nonterminalName.nonterminalParams))
 
-        val type = LpElementFactory(project).createNonterminalType(inferredType)
-        val typeRef = nonterminal.typeRef
-
-        if (typeRef != null)
-            typeRef.replace(type.second)
-        else
-            nonterminal.addRangeAfter(type.first, type.second, nonterminal.nonterminalName)
+        nonterminal.setType(inferredType)
     }
 }
