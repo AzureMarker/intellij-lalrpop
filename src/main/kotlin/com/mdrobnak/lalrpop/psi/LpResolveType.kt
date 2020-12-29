@@ -43,7 +43,7 @@ data class LpMacroArguments(val arguments: List<LpMacroArgument> = listOf()) : L
 
 data class LpTypeResolutionContext(
     val locationType: String = "usize",
-    val errorType: String = "()",
+    val errorType: String = "&'static str",
     val tokenType: String = "&str"
 ) {
     val errorRecovery = "::lalrpop_util::ErrorRecovery<$locationType, $tokenType, $errorType>"
