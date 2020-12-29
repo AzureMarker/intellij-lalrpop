@@ -23,5 +23,5 @@ abstract class LpQuotedLiteralMixin(node: ASTNode) : ASTWrapperPsiElement(node),
         return LiteralTextEscaper.createSimple(this)
     }
 
-    fun isRegex(): Boolean = firstChild.elementType == LpElementTypes.REGEX_LITERAL
+    fun isRegex(): Boolean = regexLiteral != null
 }

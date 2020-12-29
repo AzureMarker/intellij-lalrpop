@@ -3,12 +3,10 @@ package com.mdrobnak.lalrpop.psi.ext
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.LiteralTextEscaper
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiLanguageInjectionHost
 import com.intellij.psi.impl.source.tree.LeafElement
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.elementType
 import com.intellij.psi.util.parentOfType
 import com.mdrobnak.lalrpop.injectors.findModuleDefinition
 import com.mdrobnak.lalrpop.psi.*
@@ -18,20 +16,15 @@ import org.rust.lang.RsLanguage
 import org.rust.lang.core.macros.RsExpandedElement
 import org.rust.lang.core.macros.setContext
 import org.rust.lang.core.psi.RsFunction
+import org.rust.lang.core.psi.ext.RsElement
 import org.rust.lang.core.psi.ext.block
 import org.rust.lang.core.psi.ext.childrenOfType
 import org.rust.lang.core.resolve.ImplLookup
+import org.rust.lang.core.types.asTy
 import org.rust.lang.core.types.infer.substitute
 
 val LpAction.alternativeParent: LpAlternative
     get() = this.parent as LpAlternative
-
-val LpAction.code: PsiElement?
-    get() = if (lastChild?.elementType == LpElementTypes.CODE) {
-        lastChild
-    } else {
-        null
-    }
 
 fun LpAction.actionCodeFunctionHeader(withReturnType: Boolean): String {
     val alternative = parentOfType<LpAlternative>()!!
@@ -62,12 +55,9 @@ fun LpAction.actionCodeFunctionHeader(withReturnType: Boolean): String {
     val grammarTypeParams = grammarDecl?.grammarTypeParams
     val genericParameters = nonterminal.nonterminalName.nonterminalParams?.nonterminalParamList
 
-    fun List<String>.join(): String =
-        if (this.isEmpty()) "" else this.joinToString(prefix = "<", postfix = ">", separator = ", ") { it }
-
     val genericParamsString =
         (grammarTypeParams?.typeParamList?.map { it.text }.orEmpty() + genericParameters?.map { it.text }.orEmpty())
-            .join()
+            .let { if (it.isEmpty()) "" else it.joinToString(prefix = "<", postfix = ">", separator = ", ") }
 
     val arguments = inputs.mapIndexed { index, it ->
         when (it) {
@@ -135,7 +125,12 @@ abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpActi
         val inferredGenericType = inferenceResult.getExprType(expr)
 
         println("Inferred generic type: $inferredGenericType")
-        val maybeConcreteType = inferredGenericType.substitute(arguments.getSubstitution(fn.typeParameterList, ctx))
+        val maybeConcreteType = inferredGenericType.substitute(
+            arguments.getSubstitution(
+                fn.typeParameterList, project, ctx,
+                fn.parent as RsElement
+            )
+        )
         println("Concrete type after substitution: $maybeConcreteType")
 
         return maybeConcreteType.renderInsertionSafe(fn, includeTypeArguments = true, includeLifetimeArguments = true)

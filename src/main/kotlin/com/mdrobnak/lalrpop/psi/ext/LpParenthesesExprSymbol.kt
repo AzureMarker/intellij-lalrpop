@@ -7,7 +7,6 @@ import com.mdrobnak.lalrpop.psi.LpTypeResolutionContext
 import com.mdrobnak.lalrpop.psi.LpMacroArguments
 
 abstract class LpParenthesesExprSymbolMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpParenthesesExprSymbol {
-    override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String {
-        return this.exprSymbol.resolveType(context, arguments)
-    }
+    override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
+        exprSymbol.resolveType(context, arguments)
 }

@@ -1,10 +1,12 @@
 package com.mdrobnak.lalrpop.psi
 
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.mdrobnak.lalrpop.psi.util.lalrpopTypeResolutionContext
+import org.rust.lang.core.macros.setContext
 import org.rust.lang.core.psi.RsPsiFactory
 import org.rust.lang.core.psi.RsTypeParameterList
-import org.rust.lang.core.resolve.ImplLookup
+import org.rust.lang.core.psi.ext.RsElement
 import org.rust.lang.core.types.Substitution
 import org.rust.lang.core.types.infer.RsInferenceContext
 import org.rust.lang.core.types.toTypeSubst
@@ -13,14 +15,22 @@ import org.rust.lang.core.types.ty.TyUnit
 import org.rust.lang.core.types.type
 
 data class LpMacroArgument(val rustType: String, val name: String)
-data class LpMacroArguments(val arguments: List<LpMacroArgument> = listOf()): List<LpMacroArgument> by arguments {
-    fun getSubstitution(params: RsTypeParameterList?, inferenceContext: RsInferenceContext): Substitution =
-        params?.typeParameterList.orEmpty().map { param ->
+data class LpMacroArguments(val arguments: List<LpMacroArgument> = listOf()) : List<LpMacroArgument> by arguments {
+    fun getSubstitution(
+        params: RsTypeParameterList?,
+        project: Project,
+        inferenceContext: RsInferenceContext,
+        expandedElementContext: RsElement
+    ): Substitution =
+        params?.typeParameterList?.map { param ->
             TyTypeParameter.named(param) to (arguments.find { arg -> arg.name == param.identifier.text }?.rustType?.let {
-                println("Type parameter: ${param.identifier.text}, rust type in substitution: $it")
-                inferenceContext.fullyResolve(RsPsiFactory(param.project).createType(it).type)
+                RsPsiFactory(project).createType(it).let { typeRef ->
+                    typeRef.setContext(expandedElementContext)
+
+                    inferenceContext.fullyResolve(typeRef.type)
+                }
             } ?: TyUnit)
-        }.toMap().toTypeSubst()
+        }.orEmpty().toMap().toTypeSubst()
 
     companion object {
         fun identity(params: LpNonterminalParams?): LpMacroArguments =
