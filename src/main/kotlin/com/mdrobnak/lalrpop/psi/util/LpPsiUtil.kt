@@ -35,7 +35,7 @@ fun PsiFile.lalrpopTypeResolutionContext(): LpTypeResolutionContext = CachedValu
     val externTokens = PsiTreeUtil.findChildrenOfType(this, LpExternToken::class.java)
 
     val locationType = externTokens.mapNotNull { it.resolveLocationType() }.firstOrNull() ?: "usize"
-    val errorType = externTokens.mapNotNull { it.resolveErrorType() }.firstOrNull() ?: "()"
+    val errorType = externTokens.mapNotNull { it.resolveErrorType() }.firstOrNull() ?: "&'static str"
     val tokenType = externTokens.mapNotNull { it.resolveTokenType() }.firstOrNull() ?: "&str"
 
     return@getCachedValue CachedValueProvider.Result<LpTypeResolutionContext>(
