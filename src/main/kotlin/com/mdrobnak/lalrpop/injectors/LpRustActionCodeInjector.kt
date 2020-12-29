@@ -23,7 +23,6 @@ class LpRustActionCodeInjector : MultiHostInjector {
 
         val codeNode = context.code ?: return
         val imports = context.containingFile.importCode
-        val alternative = context.parentOfType<LpAlternative>()!!
 
         val rustFunctionHeader = context.actionCodeFunctionHeader(true)
 

@@ -8,16 +8,16 @@ import org.rust.lang.core.psi.ext.childrenWithLeaves
 import org.rust.lang.core.psi.ext.elementType
 
 val LpSymbol.isExplicitlySelected: Boolean
-    get() = this.childrenWithLeaves.first().elementType == LpElementTypes.LESSTHAN
+    get() = this.lessthan != null
 
 val LpSymbol.isNamed: Boolean
     get() = this.symbolName != null
 
 val LpSymbol.isMutable: Boolean
-    get() = this.symbolName?.childrenWithLeaves?.any { it.elementType == LpElementTypes.MUT } ?: false
+    get() = this.symbolName?.mut != null
 
 val LpSymbol.symbolNameString: String?
-    get() = this.symbolName?.childrenWithLeaves?.find { it.elementType == LpElementTypes.ID }?.text
+    get() = this.symbolName?.id?.text
 
 fun LpSymbol.removeName() {
     this.symbolName?.delete()

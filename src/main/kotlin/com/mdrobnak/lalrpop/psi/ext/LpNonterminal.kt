@@ -20,6 +20,14 @@ fun LpNonterminal.setType(type: String) {
         addRangeAfter(typePsi.first, typePsi.second, nonterminalName)
 }
 
+fun LpNonterminal.rustGenericUnitStructs(): String =
+    this.containingFile.lalrpopFindGrammarDecl().typeParamsRustUnitStructs() +
+            this.nonterminalName.nonterminalParams?.nonterminalParamList?.joinToString(
+                separator = "\n",
+                postfix = "\n"
+            ) { "struct ${it.id.text}();" }
+
+
 abstract class LpNonterminalMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpNonterminal {
     override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
         if (this.nonterminalName.nonterminalParams != null) {
@@ -34,7 +42,10 @@ abstract class LpNonterminalMixin(node: ASTNode) : ASTWrapperPsiElement(node), L
             }
         }
 
-    private fun internallyResolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
+    private fun internallyResolveType(
+        context: LpTypeResolutionContext,
+        arguments: LpMacroArguments
+    ): String =
         // get directly from the type_ref if available
         this.typeRef?.resolveType(context, arguments) ?:
         // or try to infer from the first alternative that doesn't have action code

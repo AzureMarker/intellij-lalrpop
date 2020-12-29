@@ -10,12 +10,12 @@ import com.mdrobnak.lalrpop.psi.LpTypeResolutionContext
 import com.mdrobnak.lalrpop.psi.util.braceMatcherFoldDescriptors
 
 fun LpExternToken.resolveErrorType(): String? =
-    this.associatedTypeList.find { it.associatedTypeName.text == "Error" }?.typeRef?.resolveType(
+    this.associatedTypeList.find { it.id.text == "Error" }?.typeRef?.resolveType(
         LpTypeResolutionContext(), LpMacroArguments()
     )
 
 fun LpExternToken.resolveLocationType(): String? =
-    this.associatedTypeList.find { it.associatedTypeName.text == "Location" }?.typeRef?.resolveType(
+    this.associatedTypeList.find { it.id.text == "Location" }?.typeRef?.resolveType(
         LpTypeResolutionContext(), LpMacroArguments()
     )
 

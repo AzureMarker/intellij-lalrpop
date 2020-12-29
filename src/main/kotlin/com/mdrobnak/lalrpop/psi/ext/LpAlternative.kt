@@ -2,6 +2,7 @@ package com.mdrobnak.lalrpop.psi.ext
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
+import com.intellij.psi.util.parentOfType
 import com.mdrobnak.lalrpop.psi.*
 import com.mdrobnak.lalrpop.psi.util.computeType
 import com.mdrobnak.lalrpop.psi.util.lalrpopTypeResolutionContext
@@ -12,6 +13,9 @@ val LpAlternative.selected: List<LpSymbol>
 
 fun LpAlternative.selectedTypesInContext(context: LpTypeResolutionContext = containingFile.lalrpopTypeResolutionContext()): List<LpSelectedType> =
     this.selected.map { it.getSelectedType(context) }
+
+val LpAlternative.nonterminalParent: LpNonterminal
+    get() = this.parentOfType()!!
 
 abstract class LpAlternativeMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpAlternative {
     override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =

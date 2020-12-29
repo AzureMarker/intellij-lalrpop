@@ -106,14 +106,15 @@ abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpActi
     override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String {
         val importCode = this.containingFile.importCode
 
-        val code = actionCodeEscape(code?.text!!, this.alternativeParent.selectedTypesInContext(context))
+        val code = actionCodeEscape(code.text, this.alternativeParent.selectedTypesInContext(context))
 
         val fnCode = actionCodeFunctionHeader(false) +
                 "{\n" +
                 "   $code\n" +
                 "}\n"
+        val genericUnitStructs = this.alternativeParent.nonterminalParent.rustGenericUnitStructs()
 
-        val fileText = "mod __intellij_lalrpop {\n$importCode\n $fnCode \n}"
+        val fileText = "mod __intellij_lalrpop {\n$importCode\n $genericUnitStructs\n $fnCode \n}"
         println("File: \"$fileText\"")
         val file = PsiFileFactory.getInstance(project)
             .createFileFromText(RsLanguage, fileText)
