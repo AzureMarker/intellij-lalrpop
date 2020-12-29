@@ -20,7 +20,6 @@ import org.rust.lang.core.psi.ext.RsElement
 import org.rust.lang.core.psi.ext.block
 import org.rust.lang.core.psi.ext.childrenOfType
 import org.rust.lang.core.resolve.ImplLookup
-import org.rust.lang.core.types.asTy
 import org.rust.lang.core.types.infer.substitute
 
 val LpAction.alternativeParent: LpAlternative
@@ -105,7 +104,6 @@ abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpActi
         val genericUnitStructs = this.alternativeParent.nonterminalParent.rustGenericUnitStructs()
 
         val fileText = "mod __intellij_lalrpop {\n$importCode\n $genericUnitStructs\n $fnCode \n}"
-        println("File: \"$fileText\"")
         val file = PsiFileFactory.getInstance(project)
             .createFileFromText(RsLanguage, fileText)
 
@@ -124,15 +122,14 @@ abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpActi
         val inferenceResult = ctx.infer(fn)
         val inferredGenericType = inferenceResult.getExprType(expr)
 
-        println("Inferred generic type: $inferredGenericType")
         val maybeConcreteType = inferredGenericType.substitute(
             arguments.getSubstitution(
                 fn.typeParameterList, project, ctx,
                 fn.parent as RsElement
             )
         )
-        println("Concrete type after substitution: $maybeConcreteType")
 
-        return maybeConcreteType.renderInsertionSafe(fn, includeTypeArguments = true, includeLifetimeArguments = true)
+        return actionType.nonterminalTypeFromReturn(maybeConcreteType)
+            .renderInsertionSafe(fn, includeTypeArguments = true, includeLifetimeArguments = true)
     }
 }
