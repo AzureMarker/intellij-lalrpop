@@ -4,8 +4,8 @@ import com.intellij.codeInsight.intention.IntentionAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
+import com.intellij.psi.util.parentOfType
 import com.mdrobnak.lalrpop.LpLanguage
-import com.mdrobnak.lalrpop.psi.LpAlternative
 import com.mdrobnak.lalrpop.psi.LpMacroArguments
 import com.mdrobnak.lalrpop.psi.LpNonterminal
 import com.mdrobnak.lalrpop.psi.ext.setType
@@ -21,39 +21,14 @@ class AddExplicitTypeIntention : IntentionAction {
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
         if (editor == null || file == null || file.language != LpLanguage) return false
 
-        var element = file.findElementAt(editor.caretModel.primaryCaret.offset)
-        while (element != null) {
-            if (element is LpNonterminal) return true
-            element = element.parent
-        }
-        return false
+        return file.findElementAt(editor.caretModel.primaryCaret.offset)?.parentOfType<LpNonterminal>(withSelf = true) != null
     }
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
         if (editor == null || file == null || file.language != LpLanguage) return
 
-        var element = file.findElementAt(editor.caretModel.primaryCaret.offset)
-
-        var nonterminal: LpNonterminal? = null
-        var alternativeToUse: LpAlternative? = null
-
-        while (element != null) {
-            if (element is LpAlternative) {
-                alternativeToUse = element
-            } else if (element is LpNonterminal) {
-                nonterminal = element
-                break
-            }
-
-            element = element.parent
+        file.findElementAt(editor.caretModel.primaryCaret.offset)?.parentOfType<LpNonterminal>(withSelf = true)?.apply {
+            setType(getContextAndResolveType(LpMacroArguments.identity(nonterminalName.nonterminalParams)))
         }
-
-        if (nonterminal == null) return
-
-        val inferredType =
-            alternativeToUse?.getContextAndResolveType(LpMacroArguments.identity(nonterminal.nonterminalName.nonterminalParams))
-                ?: nonterminal.getContextAndResolveType(LpMacroArguments.identity(nonterminal.nonterminalName.nonterminalParams))
-
-        nonterminal.setType(inferredType)
     }
 }

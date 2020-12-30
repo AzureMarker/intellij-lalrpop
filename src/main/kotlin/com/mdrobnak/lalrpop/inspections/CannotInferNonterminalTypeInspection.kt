@@ -31,12 +31,12 @@ object CannotInferNonterminalTypeInspection : LocalInspectionTool() {
     }
 }
 
-object InferFromRustPluginQuickFix: LocalQuickFix {
+object InferFromRustPluginQuickFix : LocalQuickFix {
     override fun getFamilyName(): String = "Get from action code"
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-        val nonterminal = descriptor.psiElement as LpNonterminal
-
-        nonterminal.setType(nonterminal.getContextAndResolveType(LpMacroArguments.identity(nonterminal.nonterminalName.nonterminalParams)))
+        (descriptor.psiElement as LpNonterminal).apply {
+            setType(getContextAndResolveType(LpMacroArguments.identity(nonterminalName.nonterminalParams)))
+        }
     }
 }
