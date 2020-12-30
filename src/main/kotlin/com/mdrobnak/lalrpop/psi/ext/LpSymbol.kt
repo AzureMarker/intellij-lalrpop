@@ -29,7 +29,7 @@ fun LpSymbol.getSelectedType(context: LpTypeResolutionContext): LpSelectedType {
     val type = this.resolveType(context, LpMacroArguments.identity(this.parentOfType<LpNonterminal>()?.nonterminalName?.nonterminalParams))
 
     return if (name != null) {
-        LpSelectedType.WithName(isMutable, name, type)
+        LpSelectedType.WithName(name, type, isMutable)
     } else {
         LpSelectedType.WithoutName(type)
     }

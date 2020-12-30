@@ -44,14 +44,14 @@ fun LpAction.actionCodeFunctionHeader(withReturnType: Boolean): String {
             )
         else ""
 
-    val grammarDecl = PsiTreeUtil.findChildOfType(this.containingFile, LpGrammarDecl::class.java)
+    val grammarDecl = this.containingFile.lalrpopFindGrammarDecl()
 
-    val grammarParams = grammarDecl?.grammarParams
+    val grammarParams = grammarDecl.grammarParams
     val grammarParametersString =
         grammarParams?.grammarParamList?.joinToString(separator = "") { "${it.name}: ${it.typeRef.text}," }
             ?: ""
 
-    val grammarTypeParams = grammarDecl?.grammarTypeParams
+    val grammarTypeParams = grammarDecl.grammarTypeParams
     val genericParameters = nonterminal.nonterminalName.nonterminalParams?.nonterminalParamList
 
     val genericParamsString =
@@ -65,7 +65,7 @@ fun LpAction.actionCodeFunctionHeader(withReturnType: Boolean): String {
         }
     }.joinToString(", ")
 
-    val grammarWhereClauses = grammarDecl?.grammarWhereClauses
+    val grammarWhereClauses = grammarDecl.grammarWhereClauses
     val grammarWhereClausesString =
         grammarWhereClauses?.grammarWhereClauseList?.joinToString(prefix = "where ", separator = ", ") { it.text }
             ?: ""
