@@ -143,7 +143,7 @@ private fun List<LpSelectedType>.replacement(context: Context): String =
                 Context.Braces -> "${it.name}: ${it.name}"
             }
             is LpSelectedType.WithoutName -> {
-                "__intellij_lalrpop_noname_$index"
+                index.lalrpopNoNameParameterByIndex
             }
         }
     }.joinToString(separator = ", ")

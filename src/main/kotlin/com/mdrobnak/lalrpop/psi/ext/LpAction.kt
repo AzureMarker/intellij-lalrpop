@@ -25,6 +25,9 @@ import org.rust.lang.core.types.infer.substitute
 val LpAction.alternativeParent: LpAlternative
     get() = this.parentOfType()!!
 
+val Int.lalrpopNoNameParameterByIndex
+    get() = "__intellij_lalrpop_noname_$this"
+
 /**
  * The action code function header / definition (<code>fn __intellij_lalrpop <type_params>(params) where where_clauses</code>),
  * without the opening brace.
@@ -69,7 +72,7 @@ fun LpAction.actionCodeFunctionHeader(withReturnType: Boolean = true): String {
     val arguments = inputs.mapIndexed { index, it ->
         when (it) {
             is LpSelectedType.WithName -> (if (it.isMutable) "mut " else "") + it.name + ": " + it.type
-            is LpSelectedType.WithoutName -> "__intellij_lalrpop_noname_$index: " + it.type
+            is LpSelectedType.WithoutName -> "${index.lalrpopNoNameParameterByIndex}: " + it.type
         }
     }.joinToString(", ")
 
