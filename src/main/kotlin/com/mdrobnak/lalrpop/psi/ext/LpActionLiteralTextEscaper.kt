@@ -27,6 +27,16 @@ private fun actionCodeEscapeWithMappings(actionCode: String, evalOfAngleBrackets
     return mappings to result
 }
 
+/**
+ * Get the action code, roughly like what the rust plugin will see after lalrpop does it's magic;
+ * mostly resolves <code><></code> and replaces them with something based on evalOfAngleBracketsExpressions and
+ * where they are in the action code (parentheses / brackets / braces).
+ *
+ * @param actionCode The action code in the source lalrpop file
+ * @param evalOfAngleBracketsExpression The list of names for "selected types"
+ *
+ * @return The final rust form the action code will have.
+ */
 fun actionCodeEscape(actionCode: String, evalOfAngleBracketsExpression: List<LpSelectedType>): String =
     actionCodeEscapeWithMappings(actionCode, evalOfAngleBracketsExpression).second
 
@@ -68,6 +78,14 @@ class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracke
 /**
  * Returns a list of the mappings within `this` for `text` (= "<>") where the `<>` should be
  * replaced by `replacements`, via the "replacement" function declared below on the `replacements` list.
+ *
+ * @param text "<>"
+ * @param replacements The list of replacements; used to compute the final length and set up the ranges
+ *
+ * @return The list of mappings
+ *
+ * @see Mapping
+ * @see lengthFor
  */
 private fun String.findAllMappings(text: String, replacements: List<LpSelectedType>): List<Mapping> {
     var prevIndex = -text.length

@@ -4,8 +4,6 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.util.parentOfType
 import com.mdrobnak.lalrpop.psi.*
-import org.rust.lang.core.psi.ext.childrenWithLeaves
-import org.rust.lang.core.psi.ext.elementType
 
 val LpSymbol.isExplicitlySelected: Boolean
     get() = this.lessthan != null
@@ -23,10 +21,15 @@ fun LpSymbol.removeName() {
     this.symbolName?.delete()
 }
 
-fun LpSymbol.getSelectedType(context: LpTypeResolutionContext): LpSelectedType {
+fun LpSymbol.getSelectedType(context: LpTypeResolutionContext, resolveTypes: Boolean = true): LpSelectedType {
     val isMutable = this.isMutable
     val name = this.symbolNameString
-    val type = this.resolveType(context, LpMacroArguments.identity(this.parentOfType<LpNonterminal>()?.nonterminalName?.nonterminalParams))
+    val type = if (resolveTypes)
+        this.resolveType(
+            context,
+            LpMacroArguments.identity(this.parentOfType<LpNonterminal>()?.nonterminalName?.nonterminalParams)
+        )
+    else ""
 
     return if (name != null) {
         LpSelectedType.WithName(name, type, isMutable)

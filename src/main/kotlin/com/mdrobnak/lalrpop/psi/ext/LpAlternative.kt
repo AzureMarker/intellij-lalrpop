@@ -11,8 +11,21 @@ import com.mdrobnak.lalrpop.psi.util.selected
 val LpAlternative.selected: List<LpSymbol>
     get() = this.symbolList.selected
 
-fun LpAlternative.selectedTypesInContext(context: LpTypeResolutionContext = containingFile.lalrpopTypeResolutionContext()): List<LpSelectedType> =
-    this.selected.map { it.getSelectedType(context) }
+/**
+ * The selected types, resolved with the 'context' resolution context, and
+ *
+ * @param context The type resolution context
+ * @param resolveTypes Whether to resolve types or not. Some calls to this(like in 'LpAction.createLiteralTextEscaper'),
+ * don't need to know about the types, but are only interested in names.
+ *
+ * @see LpTypeResolutionContext
+ * @see LpAction.createLiteralTextEscaper
+ */
+fun LpAlternative.selectedTypesInContext(
+    context: LpTypeResolutionContext = containingFile.lalrpopTypeResolutionContext(),
+    resolveTypes: Boolean = true
+): List<LpSelectedType> =
+    this.selected.map { it.getSelectedType(context, resolveTypes) }
 
 val LpAlternative.nonterminalParent: LpNonterminal
     get() = this.parentOfType()!!

@@ -23,9 +23,17 @@ import org.rust.lang.core.resolve.ImplLookup
 import org.rust.lang.core.types.infer.substitute
 
 val LpAction.alternativeParent: LpAlternative
-    get() = this.parent as LpAlternative
+    get() = this.parentOfType()!!
 
-fun LpAction.actionCodeFunctionHeader(withReturnType: Boolean): String {
+/**
+ * The action code function header / definition (<code>fn __intellij_lalrpop <type_params>(params) where where_clauses</code>),
+ * without the opening brace.
+ *
+ * @param withReturnType add the return type? You usually want this to be true, but during type resolution of a nonterminal
+ * like <code>A = B => do_something(<>);</code>, to use the return type we should know it first, but to know it we must
+ * infer it with the rust plugin, but to infer it we need the header, and this would lead to infinite indirect recursion.
+ */
+fun LpAction.actionCodeFunctionHeader(withReturnType: Boolean = true): String {
     val alternative = parentOfType<LpAlternative>()!!
     val nonterminal = parentOfType<LpNonterminal>()!!
 
@@ -88,7 +96,10 @@ abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpActi
         val context = this.containingFile.lalrpopTypeResolutionContext()
         return LpActionLiteralTextEscaper(
             this,
-            this.alternativeParent.selectedTypesInContext(context)
+            this.alternativeParent.selectedTypesInContext(
+                context,
+                resolveTypes = false // no need to know the types of the selected symbols for expanding `<>`s
+            )
         )
     }
 
