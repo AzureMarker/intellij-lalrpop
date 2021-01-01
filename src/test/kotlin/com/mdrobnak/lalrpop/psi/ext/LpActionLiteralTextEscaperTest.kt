@@ -38,7 +38,7 @@ class LpActionLiteralTextEscaperTest {
     @Test
     fun `simple inside-braces replacements`() {
         assertEquals(
-            "X {p1: p1, p2: p2, p3: p3}",
+            "X {p1, p2, p3}",
             actionCodeEscape(
                 "X {<>}", listOf(
                     LpSelectedType.WithName(name = "p1", type = ""),
@@ -48,7 +48,7 @@ class LpActionLiteralTextEscaperTest {
             )
         )
         assertEquals(
-            "X {a, b, c, p1: p1, p2: p2, p3: p3}",
+            "X {a, b, c, p1, p2, p3}",
             actionCodeEscape(
                 "X {a, b, c, <>}", listOf(
                     LpSelectedType.WithName(name = "p1", type = ""),
