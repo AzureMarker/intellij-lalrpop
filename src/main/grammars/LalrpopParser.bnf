@@ -11,6 +11,8 @@
   elementTypeHolderClass="com.mdrobnak.lalrpop.psi.LpElementTypes"
   elementTypeClass="com.mdrobnak.lalrpop.psi.LpElementType"
   tokenTypeClass="com.mdrobnak.lalrpop.psi.LpTokenType"
+
+  generateTokenAccessors=true
 }
 
 grammar ::= SHEBANG_ATTRIBUTE* use_stmt*
@@ -99,7 +101,7 @@ alternative ::= annotation* symbol+ (IF cond)? action?
 }
 
 action ::= action_type CODE {
-    implements = "com.intellij.psi.PsiLanguageInjectionHost"
+    implements = ["com.intellij.psi.PsiLanguageInjectionHost" "com.mdrobnak.lalrpop.psi.LpResolveType"]
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpActionMixin"
 }
 
@@ -168,7 +170,7 @@ type_of_symbol ::= POUND symbol POUND {
     implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpTypeOfSymbolMixin"
 }
-rust_reference ::= AND lifetime_rule? MUT? type_ref {
+rust_reference ::= AND LIFETIME? MUT? type_ref {
     implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpRustReferenceMixin"
 }
@@ -188,9 +190,7 @@ return_type ::= RSINGLEARROW type_ref
 
 type_generic_arguments ::= LESSTHAN <<comma type_ref_or_lifetime>> GREATERTHAN
 
-private type_ref_or_lifetime ::= type_ref | lifetime_rule
-
-lifetime_rule ::= LIFETIME
+type_ref_or_lifetime ::= type_ref | LIFETIME
 
 extern_token ::= EXTERN LBRACE associated_type* enum_token associated_type* RBRACE
     | EXTERN LBRACE associated_type* RBRACE {
@@ -215,9 +215,7 @@ enum_token ::= ENUM type_ref LBRACE <<comma conversion>> RBRACE {
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpEnumTokenMixin"
 }
 
-associated_type ::= TYPE associated_type_name EQUALS type_ref SEMICOLON
-
-associated_type_name ::= ID
+associated_type ::= TYPE ID EQUALS type_ref SEMICOLON
 
 conversion ::= terminal USER_ACTION CODE
 

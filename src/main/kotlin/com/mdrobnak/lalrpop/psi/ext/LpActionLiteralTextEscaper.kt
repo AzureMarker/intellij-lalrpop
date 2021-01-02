@@ -15,6 +15,31 @@ import java.util.*
  */
 private data class Mapping(val sourceRange: TextRange, val targetRange: TextRange, val context: Context)
 
+private fun actionCodeEscapeWithMappings(actionCode: String, evalOfAngleBracketsExpression: List<LpSelectedType>): Pair<List<Mapping>, String> {
+    // get all the text ranges with <> from rust
+    val mappings = actionCode.findAllMappings("<>", evalOfAngleBracketsExpression)
+
+    // replace them all with their replacements, in reverse order
+    val result = mappings.foldRight(actionCode) { mapping, acc ->
+        mapping.sourceRange.replace(acc, evalOfAngleBracketsExpression.replacement(mapping.context))
+    }
+
+    return mappings to result
+}
+
+/**
+ * Get the action code, roughly like what the rust plugin will see after lalrpop does it's magic;
+ * mostly resolves <code><></code> and replaces them with something based on evalOfAngleBracketsExpressions and
+ * where they are in the action code (parentheses / brackets / braces).
+ *
+ * @param actionCode The action code in the source lalrpop file
+ * @param evalOfAngleBracketsExpression The list of names for "selected types"
+ *
+ * @return The final rust form the action code will have.
+ */
+fun actionCodeEscape(actionCode: String, evalOfAngleBracketsExpression: List<LpSelectedType>): String =
+    actionCodeEscapeWithMappings(actionCode, evalOfAngleBracketsExpression).second
+
 class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracketsExpression: List<LpSelectedType>) :
     LiteralTextEscaper<LpAction>(action) {
 
@@ -23,17 +48,12 @@ class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracke
     override fun decode(rangeInsideHost: TextRange, outChars: StringBuilder): Boolean {
         // get the text from the host
         val txt = this.myHost.text.substring(rangeInsideHost.startOffset, rangeInsideHost.endOffset)
-        // get all the text ranges with <> from rust
-        mappings = txt.findAllMappings("<>", evalOfAngleBracketsExpression)
 
-        // replace them all with their replacements, in reverse order
-        val result = mappings.foldRight(txt) { mapping, acc ->
-            mapping.sourceRange.replace(acc, evalOfAngleBracketsExpression.replacement(mapping.context))
-        }
-
+        val mappingsAndResult = actionCodeEscapeWithMappings(txt, evalOfAngleBracketsExpression)
+        mappings = mappingsAndResult.first
 
         // add the result string to the builder
-        outChars.append(result)
+        outChars.append(mappingsAndResult.second)
 
         // can never fail so just return true
         return true
@@ -58,6 +78,14 @@ class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracke
 /**
  * Returns a list of the mappings within `this` for `text` (= "<>") where the `<>` should be
  * replaced by `replacements`, via the "replacement" function declared below on the `replacements` list.
+ *
+ * @param text "<>"
+ * @param replacements The list of replacements; used to compute the final length and set up the ranges
+ *
+ * @return The list of mappings
+ *
+ * @see Mapping
+ * @see lengthFor
  */
 private fun String.findAllMappings(text: String, replacements: List<LpSelectedType>): List<Mapping> {
     var prevIndex = -text.length
@@ -115,7 +143,7 @@ private fun List<LpSelectedType>.replacement(context: Context): String =
                 Context.Braces -> "${it.name}: ${it.name}"
             }
             is LpSelectedType.WithoutName -> {
-                "__intellij_lalrpop_noname_$index"
+                index.lalrpopNoNameParameterByIndex
             }
         }
     }.joinToString(separator = ", ")

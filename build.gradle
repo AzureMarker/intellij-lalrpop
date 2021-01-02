@@ -14,6 +14,11 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.0"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.7.0"
+}
+
 // Add the generated source files into the build
 sourceSets.main.java.srcDirs 'src/main/gen'
 idea.module.generatedSourceDirs.add(file('src/main/gen'))
@@ -67,4 +72,10 @@ patchPluginXml {
       <b>0.1.0</b><br>
       Initial release of the LALRPOP plugin
       """
+}
+
+test {
+    useJUnitPlatform()
+
+    maxHeapSize = "1G"
 }

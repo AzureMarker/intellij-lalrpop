@@ -16,9 +16,6 @@ val PsiFile.importCode: String
     get() = this.childrenOfType<LpUseStmt>().joinToString(separator = "\n") { it.text }
 
 abstract class LpUseStmtMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpUseStmt {
-    val importCode: PsiElement
-        get() = findChildByType(LpElementTypes.IMPORT_CODE)!!
-
     override fun isValidHost(): Boolean = true
 
     override fun updateText(text: String): PsiLanguageInjectionHost {

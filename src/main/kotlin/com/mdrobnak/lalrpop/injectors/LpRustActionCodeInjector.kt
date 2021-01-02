@@ -17,55 +17,18 @@ import org.rust.lang.RsLanguage
  */
 class LpRustActionCodeInjector : MultiHostInjector {
     override fun getLanguagesToInject(registrar: MultiHostRegistrar, context: PsiElement) {
-        if (!context.isValid || context !is LpActionImpl) {
+        if (!context.isValid || context !is LpAction) {
             return
         }
 
-        val codeNode = context.code ?: return
+        val codeNode = context.code
         val imports = context.containingFile.importCode
-        val nonterminal = context.parentOfType<LpNonterminal>()!!
-        val alternative = context.parentOfType<LpAlternative>()!!
 
-        val typeResolutionContext = context.containingFile.lalrpopTypeResolutionContext()
-
-        val inputs = alternative.selected.map { (it as LpSymbolImpl).getSelectedType(typeResolutionContext) }
-        val returnType = context.actionType.returnType(nonterminal.resolveType(typeResolutionContext, listOf()), typeResolutionContext)
-
-        val grammarDecl = PsiTreeUtil.findChildOfType(context.containingFile, LpGrammarDecl::class.java)
-
-        val grammarParams = grammarDecl?.grammarParams
-        val grammarParametersString =
-            grammarParams?.grammarParamList?.joinToString(separator = "") { "${it.name}: ${it.typeRef.text}," }
-                ?: ""
-
-        val grammarTypeParams = grammarDecl?.grammarTypeParams
-        val genericParameters = nonterminal.nonterminalName.nonterminalParams?.nonterminalParamList
-
-        fun addNullableIterators(a: List<String>?, b: List<String>?): List<String> = (a ?: listOf()) + (b ?: listOf())
-        fun List<String>.join(): String =
-            if (this.isEmpty()) "" else this.joinToString(prefix = "<", postfix = ">", separator = ", ") { it }
-
-        val grammarTypeParamsString = addNullableIterators(
-            grammarTypeParams?.typeParamList?.map { it.text },
-            genericParameters?.map { it.text }
-        ).join()
-
-        val arguments = inputs.mapIndexed { index, it ->
-            when (it) {
-                is LpSelectedType.WithName -> (if (it.isMutable) "mut " else "") + it.name + ": " + it.type
-                is LpSelectedType.WithoutName -> "__intellij_lalrpop_noname_$index: " + it.type
-            }
-        }.joinToString(", ")
-
-        val grammarWhereClauses = grammarDecl?.grammarWhereClauses
-        val grammarWhereClausesString =
-            grammarWhereClauses?.grammarWhereClauseList?.joinToString(prefix = "where ", separator = ", ") { it.text }
-                ?: ""
+        val rustFunctionHeader = context.actionCodeFunctionHeader(true)
 
         val prefix = "mod __intellij_lalrpop {\n" +
                 "$imports\n" +
-                "fn __intellij_lalrpop $grammarTypeParamsString ($grammarParametersString $arguments) -> $returnType" +
-                " $grammarWhereClausesString {\n"
+                "$rustFunctionHeader {\n"
 
         val suffix = "\n}\n}"
 
@@ -78,5 +41,5 @@ class LpRustActionCodeInjector : MultiHostInjector {
     }
 
     override fun elementsToInjectIn(): List<Class<out PsiElement>> =
-        listOf(LpActionImpl::class.java)
+        listOf(LpAction::class.java)
 }

@@ -10,7 +10,7 @@ import com.intellij.psi.util.parentOfType
 import com.mdrobnak.lalrpop.psi.LpResolveType
 import com.mdrobnak.lalrpop.psi.LpTypeRef
 import com.mdrobnak.lalrpop.psi.LpTypeResolutionContext
-import com.mdrobnak.lalrpop.psi.NonterminalGenericArgument
+import com.mdrobnak.lalrpop.psi.LpMacroArguments
 
 /**
  * If this type ref is not a child of another type ref.
@@ -34,7 +34,7 @@ abstract class LpTypeRefMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpTyp
         return SimpleMultiLineTextEscaper(this)
     }
 
-    override fun resolveType(context: LpTypeResolutionContext, arguments: List<NonterminalGenericArgument>): String =
+    override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
         when (val child = firstChild) {
             // all children of a TypeRef in the AST:
             // LpTuple, LpArray, LpTypeOfSymbol, LpRustReference, LpRustType, LpDynTrait, LpDynFn
