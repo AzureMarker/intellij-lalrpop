@@ -23,7 +23,7 @@ import org.rust.lang.core.resolve.ImplLookup
 import org.rust.lang.core.types.infer.substitute
 
 val LpAction.alternativeParent: LpAlternative
-    get() = this.parentOfType()!!
+    get() = parentOfType()!!
 
 val Int.lalrpopNoNameParameterByIndex
     get() = "__intellij_lalrpop_noname_$this"
@@ -37,8 +37,8 @@ val Int.lalrpopNoNameParameterByIndex
  * infer it with the rust plugin, but to infer it we need the header, and this would lead to infinite indirect recursion.
  */
 fun LpAction.actionCodeFunctionHeader(withReturnType: Boolean = true): String {
-    val alternative = parentOfType<LpAlternative>()!!
-    val nonterminal = parentOfType<LpNonterminal>()!!
+    val alternative = alternativeParent
+    val nonterminal = alternative.nonterminalParent
 
     val typeResolutionContext = containingFile.lalrpopTypeResolutionContext()
 
@@ -55,7 +55,7 @@ fun LpAction.actionCodeFunctionHeader(withReturnType: Boolean = true): String {
             )
         else ""
 
-    val grammarDecl = this.containingFile.lalrpopFindGrammarDecl()
+    val grammarDecl = containingFile.lalrpopFindGrammarDecl()
 
     val grammarParams = grammarDecl.grammarParams
     val grammarParametersString =
@@ -90,30 +90,27 @@ fun LpAction.actionCodeFunctionHeader(withReturnType: Boolean = true): String {
 abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpAction {
     override fun isValidHost(): Boolean = true
 
-    override fun updateText(text: String): PsiLanguageInjectionHost {
+    override fun updateText(text: String): PsiLanguageInjectionHost = apply {
         val valueNode = node.lastChildNode
         assert(valueNode is LeafElement)
         (valueNode as LeafElement).replaceWithText(text)
-        return this
     }
 
-    override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> {
-        val context = this.containingFile.lalrpopTypeResolutionContext()
-        return LpActionLiteralTextEscaper(
+    override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> =
+        LpActionLiteralTextEscaper(
             this,
-            this.alternativeParent.selectedTypesInContext(
-                context,
+            alternativeParent.selectedTypesInContext(
+                containingFile.lalrpopTypeResolutionContext(),
                 resolveTypes = false // no need to know the types of the selected symbols for expanding `<>`s
             )
         )
-    }
 
     override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String {
-        val importCode = this.containingFile.importCode
+        val importCode = containingFile.importCode
 
-        val code = actionCodeEscape(code.text, this.alternativeParent.selectedTypesInContext(context))
+        val code = actionCodeEscape(code.text, alternativeParent.selectedTypesInContext(context))
 
-        val genericUnitStructs = this.alternativeParent.nonterminalParent.rustGenericUnitStructs()
+        val genericUnitStructs = alternativeParent.nonterminalParent.rustGenericUnitStructs()
 
         val fileText = """
             mod __intellij_lalrpop {
@@ -130,7 +127,7 @@ abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpActi
         val fn = PsiTreeUtil.findChildOfType(file, RsFunction::class.java) ?: return "()"
         val expr = fn.block?.expr ?: return "()"
 
-        val moduleDefinition = findModuleDefinition(project, this.containingFile) ?: return "()"
+        val moduleDefinition = findModuleDefinition(project, containingFile) ?: return "()"
 
         for (child in file.childrenOfType<RsExpandedElement>()) {
             child.setContext(moduleDefinition)

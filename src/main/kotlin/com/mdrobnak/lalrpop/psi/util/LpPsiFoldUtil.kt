@@ -15,7 +15,7 @@ import java.util.*
  * The ranges also contain the braces themselves.
  */
 fun braceMatcherFoldDescriptors(element: PsiElement): List<FoldingDescriptor> {
-    val braces: Stack<Int> = Stack()
+    val braces = Stack<Int>()
     val descriptors = mutableListOf<FoldingDescriptor>()
     element.childrenWithLeaves.iterator().forEach {
         when (it.elementType) {

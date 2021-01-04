@@ -17,8 +17,8 @@ fun LpNonterminal.setType(type: String) {
 }
 
 fun LpNonterminal.rustGenericUnitStructs(): String =
-    this.containingFile.lalrpopFindGrammarDecl().typeParamsRustUnitStructs() +
-            (this.nonterminalName.nonterminalParams?.nonterminalParamList?.joinToString(
+    containingFile.lalrpopFindGrammarDecl().typeParamsRustUnitStructs() +
+            (nonterminalName.nonterminalParams?.nonterminalParamList?.joinToString(
                 separator = "\n",
                 postfix = "\n"
             ) { "struct ${it.id.text}();" } ?: "")
@@ -26,7 +26,7 @@ fun LpNonterminal.rustGenericUnitStructs(): String =
 
 abstract class LpNonterminalMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpNonterminal {
     override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
-        this.nonterminalName.nonterminalParams?.let { internallyResolveType(context, arguments) }
+        nonterminalName.nonterminalParams?.let { internallyResolveType(context, arguments) }
             ?: CachedValuesManager.getCachedValue(this) {
                 // Isn't a lalrpop macro and therefore can be cached
                 return@getCachedValue CachedValueProvider.Result<String>(
@@ -40,11 +40,11 @@ abstract class LpNonterminalMixin(node: ASTNode) : ASTWrapperPsiElement(node), L
         arguments: LpMacroArguments
     ): String =
         // get directly from the type_ref if available
-        this.typeRef?.resolveType(context, arguments) ?:
+        typeRef?.resolveType(context, arguments) ?:
         // or try to infer from the first alternative that doesn't have action code
-        this.alternatives.alternativeList.firstOrNull { it.action == null }?.resolveType(context, arguments) ?:
+        alternatives.alternativeList.firstOrNull { it.action == null }?.resolveType(context, arguments) ?:
         // or as a last resort try to infer from the action code with intellij-rust
-        this.alternatives.alternativeList.firstOrNull()?.resolveType(context, arguments) ?:
+        alternatives.alternativeList.firstOrNull()?.resolveType(context, arguments) ?:
         // or if we get here, it means the nonterminal looks like `A = {};`, e.g. there are no alternatives and no type_ref
         "()"
 }

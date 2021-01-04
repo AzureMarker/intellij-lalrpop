@@ -6,7 +6,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
-import com.intellij.psi.util.PsiTreeUtil
 import com.mdrobnak.lalrpop.injectors.findModuleDefinition
 import com.mdrobnak.lalrpop.psi.LpMacroArguments
 import com.mdrobnak.lalrpop.psi.LpNonterminal

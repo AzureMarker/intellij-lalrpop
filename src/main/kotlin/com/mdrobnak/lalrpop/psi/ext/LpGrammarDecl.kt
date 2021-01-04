@@ -8,5 +8,5 @@ import com.mdrobnak.lalrpop.psi.LpGrammarDecl
 fun PsiFile.lalrpopFindGrammarDecl(): LpGrammarDecl = findDescendantOfType()!!
 
 fun LpGrammarDecl.typeParamsRustUnitStructs(): String =
-    this.grammarTypeParams?.typeParamList?.filter { it.id != null }
+    grammarTypeParams?.typeParamList?.filter { it.id != null }
         ?.joinToString(separator = "\n", postfix = "\n") { "struct ${it.id!!.text}();" } ?: ""

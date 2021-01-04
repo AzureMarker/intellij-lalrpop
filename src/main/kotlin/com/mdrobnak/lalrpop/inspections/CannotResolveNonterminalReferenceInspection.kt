@@ -42,15 +42,15 @@ object CannotResolveNonterminalReferenceInspection : LocalInspectionTool() {
 object AddToMacroParamsQuickFix : LocalQuickFix {
     override fun getFamilyName(): String = "Add to macro parameters"
 
-    override fun applyFix(project: Project, descriptor: ProblemDescriptor) =
-        descriptor.psiElement.parentOfType<LpNonterminal>()?.run {
-            nonterminalName.addParam(descriptor.psiElement.text)
-        } ?: Unit
+    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+        descriptor.psiElement.parentOfType<LpNonterminal>()?.nonterminalName?.addParam(descriptor.psiElement.text)
+    }
 }
 
 object CreateNonterminalQuickFix : LocalQuickFix {
     override fun getFamilyName(): String = "Create nonterminal"
 
-    override fun applyFix(project: Project, descriptor: ProblemDescriptor) =
+    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         (descriptor.psiElement as LpNonterminalRef).createNonterminal()
+    }
 }

@@ -32,8 +32,9 @@ object CannotInferNonterminalTypeInspection : LocalInspectionTool() {
 object InferFromRustPluginQuickFix : LocalQuickFix {
     override fun getFamilyName(): String = "Get from action code"
 
-    override fun applyFix(project: Project, descriptor: ProblemDescriptor) =
-        (descriptor.psiElement as LpNonterminal).run {
+    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+        (descriptor.psiElement as LpNonterminal).apply {
             setType(getContextAndResolveType(LpMacroArguments.identity(nonterminalName.nonterminalParams)))
         }
+    }
 }

@@ -9,6 +9,6 @@ class LpRefactoringSupportProvider : RefactoringSupportProvider() {
     override fun isSafeDeleteAvailable(element: PsiElement): Boolean =
         element is LpNonterminalName || element is LpNonterminalParam
 
-    override fun isInplaceRenameAvailable(element: PsiElement, context: PsiElement?): Boolean =
+    override fun isMemberInplaceRenameAvailable(element: PsiElement, context: PsiElement?): Boolean =
         element is LpNonterminalName || element is LpNonterminalParam
 }

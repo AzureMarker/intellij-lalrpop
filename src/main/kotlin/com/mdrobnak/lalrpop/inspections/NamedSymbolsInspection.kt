@@ -47,6 +47,7 @@ object NamedSymbolsInspection : LocalInspectionTool() {
 object RemoveNameQuickFix : LocalQuickFix {
     override fun getFamilyName(): String = "Remove name"
 
-    override fun applyFix(project: Project, descriptor: ProblemDescriptor) =
+    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         (descriptor.psiElement as LpSymbol).removeName()
+    }
 }

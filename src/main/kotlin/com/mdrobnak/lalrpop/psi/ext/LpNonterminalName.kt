@@ -39,5 +39,7 @@ abstract class LpNonterminalNameMixin(node: ASTNode) : ASTWrapperPsiElement(node
     }
 
     // delete the name = delete the nonterminal
-    override fun delete() = nonterminalParent.delete()
+    override fun delete() {
+        nonterminalParent.delete()
+    }
 }

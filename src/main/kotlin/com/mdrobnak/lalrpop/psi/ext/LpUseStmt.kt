@@ -11,7 +11,7 @@ import com.mdrobnak.lalrpop.psi.LpUseStmt
 import org.rust.lang.core.psi.ext.childrenOfType
 
 val PsiFile.importCode: String
-    get() = this.childrenOfType<LpUseStmt>().joinToString(separator = "\n") { it.text }
+    get() = childrenOfType<LpUseStmt>().joinToString(separator = "\n") { it.text }
 
 abstract class LpUseStmtMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpUseStmt {
     override fun isValidHost(): Boolean = true

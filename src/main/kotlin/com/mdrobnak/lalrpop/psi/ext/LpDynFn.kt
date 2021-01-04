@@ -11,12 +11,12 @@ abstract class LpDynFnMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpDynFn
         val forAllString = forall.typeParamList.takeUnless { it.isEmpty() }
             ?.joinToString(prefix = "for<", separator = ", ", postfix = ">") { it.text } ?: ""
 
-        val path = this.path.text
+        val path = path.text
 
         val argumentTypes =
-            this.typeRefList.joinToString(separator = ", ") { it.resolveType(context, arguments) }
+            typeRefList.joinToString(separator = ", ") { it.resolveType(context, arguments) }
 
-        val returnType = this.returnType?.let { " -> " + it.typeRef.resolveType(context, arguments) } ?: ""
+        val returnType = returnType?.let { " -> " + it.typeRef.resolveType(context, arguments) } ?: ""
 
         return "$forAllString dyn $path ($argumentTypes) $returnType"
     }

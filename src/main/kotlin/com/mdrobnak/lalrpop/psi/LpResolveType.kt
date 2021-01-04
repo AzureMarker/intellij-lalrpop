@@ -17,39 +17,40 @@ import org.rust.lang.core.types.type
 
 data class LpMacroArgument(val rustType: String, val name: String)
 data class LpMacroArguments(val arguments: List<LpMacroArgument> = listOf()) : List<LpMacroArgument> by arguments {
-    fun getSubstitution(
-        params: RsTypeParameterList?,
-        project: Project,
-        inferenceContext: RsInferenceContext,
-        expandedElementContext: RsElement
-    ): Substitution =
-        params?.typeParameterList?.map { param ->
-            TyTypeParameter.named(param) to (arguments.find { arg -> arg.name == param.identifier.text }?.rustType?.let {
-                RsPsiFactory(project).createType(it).run {
-                    setContext(expandedElementContext)
-
-                    inferenceContext.fullyResolve(type)
-                }
-            } ?: TyUnit)
-        }.orEmpty().toMap().toTypeSubst()
-
     companion object {
         fun identity(params: LpNonterminalParams?): LpMacroArguments =
-            LpMacroArguments(params?.nonterminalParamList?.map {
-                val name = it.name!!
-                LpMacroArgument(name, name)
-            }.orEmpty())
+            LpMacroArguments(params?.nonterminalParamList?.mapNotNull { it.name }?.map { LpMacroArgument(it, it) }
+                .orEmpty())
     }
 }
+
+fun LpMacroArguments.getSubstitution(
+    params: RsTypeParameterList?,
+    project: Project,
+    inferenceContext: RsInferenceContext,
+    expandedElementContext: RsElement
+): Substitution =
+    params?.typeParameterList?.map { param ->
+        TyTypeParameter.named(param) to (arguments.find { arg -> arg.name == param.identifier.text }?.rustType?.let {
+            RsPsiFactory(project).createType(it).run {
+                setContext(expandedElementContext)
+
+                inferenceContext.fullyResolve(type)
+            }
+        } ?: TyUnit)
+    }.orEmpty().toMap().toTypeSubst()
+
 
 data class LpTypeResolutionContext(
     val locationType: String = "usize",
     val errorType: String = "&'static str",
     val tokenType: String = "&str"
-) {
-    val errorRecovery = "::lalrpop_util::ErrorRecovery<$locationType, $tokenType, $errorType>"
-    val parseError = "::lalrpop_util::ParseError<$locationType, $tokenType, $errorType>"
-}
+)
+
+val LpTypeResolutionContext.errorRecovery
+    get() = "::lalrpop_util::ErrorRecovery<$locationType, $tokenType, $errorType>"
+val LpTypeResolutionContext.parseError
+    get() = "::lalrpop_util::ParseError<$locationType, $tokenType, $errorType>"
 
 interface LpResolveType : PsiElement {
     /**
