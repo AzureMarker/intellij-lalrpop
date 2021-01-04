@@ -9,7 +9,7 @@ import com.mdrobnak.lalrpop.psi.util.lalrpopTypeResolutionContext
 import com.mdrobnak.lalrpop.psi.util.selected
 
 val LpAlternative.selected: List<LpSymbol>
-    get() = this.symbolList.selected
+    get() = symbolList.selected
 
 /**
  * The selected types, resolved with the 'context' resolution context, and
@@ -25,12 +25,14 @@ fun LpAlternative.selectedTypesInContext(
     context: LpTypeResolutionContext = containingFile.lalrpopTypeResolutionContext(),
     resolveTypes: Boolean = true
 ): List<LpSelectedType> =
-    this.selected.map { it.getSelectedType(context, resolveTypes) }
+    selected.map { it.getSelectedType(context, resolveTypes) }
 
 val LpAlternative.nonterminalParent: LpNonterminal
-    get() = this.parentOfType()!!
+    get() = parentOfType()!!
+
+fun LpAlternative.findAnnotationByName(name: String): LpAnnotation? = annotationList.find { it.annotationName.text == name }
 
 abstract class LpAlternativeMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpAlternative {
     override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
-        this.action?.resolveType(context, arguments) ?: this.symbolList.computeType(context, arguments)
+        action?.resolveType(context, arguments) ?: symbolList.computeType(context, arguments)
 }

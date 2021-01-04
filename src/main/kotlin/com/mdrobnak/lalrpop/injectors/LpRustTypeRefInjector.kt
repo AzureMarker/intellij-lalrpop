@@ -8,9 +8,9 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
 import com.mdrobnak.lalrpop.psi.LpGrammarDecl
 import com.mdrobnak.lalrpop.psi.LpNonterminal
+import com.mdrobnak.lalrpop.psi.LpTypeRef
 import com.mdrobnak.lalrpop.psi.ext.importCode
 import com.mdrobnak.lalrpop.psi.ext.isTopLevel
-import com.mdrobnak.lalrpop.psi.impl.LpTypeRefImpl
 import org.rust.lang.RsLanguage
 
 /**
@@ -19,7 +19,7 @@ import org.rust.lang.RsLanguage
  */
 class LpRustTypeRefInjector : MultiHostInjector {
     override fun getLanguagesToInject(registrar: MultiHostRegistrar, context: PsiElement) {
-        if (!context.isValid || context !is LpTypeRefImpl || !context.isTopLevel) {
+        if (!context.isValid || context !is LpTypeRef || !context.isTopLevel) {
             return
         }
 
@@ -36,10 +36,12 @@ class LpRustTypeRefInjector : MultiHostInjector {
             grammarDecl?.grammarTypeParams?.typeParamList?.joinToString(separator = ",", postfix = ",") { it.text }
                 ?: ""
 
-        val prefix = "mod __intellij_lalrpop {\n" +
-                "$imports\n" +
-                "type __intellij_lalrpop<$grammarTypeParamsString $nonterminalTypeParamsString> = "
-        val suffix = ";\n}"
+        val prefix = """
+            mod __intellij_lalrpop {
+                $imports
+                type __intellij_lalrpop<$grammarTypeParamsString $nonterminalTypeParamsString> = """.trimIndent()
+        val suffix = """;
+            |}""".trimMargin()
 
         registrar
             .startInjecting(RsLanguage)
@@ -50,5 +52,5 @@ class LpRustTypeRefInjector : MultiHostInjector {
     }
 
     override fun elementsToInjectIn(): List<Class<out PsiElement>> =
-        listOf(LpTypeRefImpl::class.java)
+        listOf(LpTypeRef::class.java)
 }

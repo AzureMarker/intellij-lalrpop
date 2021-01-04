@@ -12,35 +12,28 @@ import com.mdrobnak.lalrpop.psi.LpTypeResolutionContext
 
 fun LpNonterminal.setType(type: String) {
     val typePsi = LpElementFactory(project).createNonterminalType(type)
-    val typeRef = typeRef
-
-    if (typeRef != null)
-        typeRef.replace(typePsi.second)
-    else
-        addRangeAfter(typePsi.first, typePsi.second, nonterminalName)
+    typeRef?.apply { replace(typePsi.second) }
+        ?: addRangeAfter(typePsi.first, typePsi.second, nonterminalName)
 }
 
 fun LpNonterminal.rustGenericUnitStructs(): String =
     this.containingFile.lalrpopFindGrammarDecl().typeParamsRustUnitStructs() +
-            this.nonterminalName.nonterminalParams?.nonterminalParamList?.joinToString(
+            (this.nonterminalName.nonterminalParams?.nonterminalParamList?.joinToString(
                 separator = "\n",
                 postfix = "\n"
-            ) { "struct ${it.id.text}();" }
+            ) { "struct ${it.id.text}();" } ?: "")
 
 
 abstract class LpNonterminalMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpNonterminal {
     override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
-        if (this.nonterminalName.nonterminalParams != null) {
-            internallyResolveType(context, arguments)
-        } else {
-            // Isn't a lalrpop macro and therefore can be cached
-            CachedValuesManager.getCachedValue(this) {
+        this.nonterminalName.nonterminalParams?.let { internallyResolveType(context, arguments) }
+            ?: CachedValuesManager.getCachedValue(this) {
+                // Isn't a lalrpop macro and therefore can be cached
                 return@getCachedValue CachedValueProvider.Result<String>(
                     internallyResolveType(context, LpMacroArguments()),
                     PsiModificationTracker.MODIFICATION_COUNT
                 )
             }
-        }
 
     private fun internallyResolveType(
         context: LpTypeResolutionContext,

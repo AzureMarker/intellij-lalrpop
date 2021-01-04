@@ -8,7 +8,7 @@ import com.mdrobnak.lalrpop.psi.LpMacroArguments
 
 abstract class LpTupleMixin(node: ASTNode): ASTWrapperPsiElement(node), LpTuple {
     override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
-        this.typeRefList.joinToString(prefix = "(", separator = ", ", postfix = ")") {
+        typeRefList.joinToString(prefix = "(", separator = ", ", postfix = ")") {
             it.resolveType(context, arguments)
         }
 }

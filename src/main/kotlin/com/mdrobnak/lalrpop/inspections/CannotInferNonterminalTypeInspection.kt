@@ -13,19 +13,17 @@ import com.mdrobnak.lalrpop.psi.ext.setType
 import com.mdrobnak.lalrpop.psi.getContextAndResolveType
 
 object CannotInferNonterminalTypeInspection : LocalInspectionTool() {
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
-        return object : LpVisitor() {
-            override fun visitNonterminal(nonterminal: LpNonterminal) {
-                if (nonterminal.typeRef == null &&
-                    nonterminal.alternatives.alternativeList.isNotEmpty() &&
-                    nonterminal.alternatives.alternativeList.all { it.action != null }
-                ) {
-                    holder.registerProblem(
-                        nonterminal,
-                        "Cannot infer type of nonterminal",
-                        InferFromRustPluginQuickFix,
-                    )
-                }
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = object : LpVisitor() {
+        override fun visitNonterminal(nonterminal: LpNonterminal) {
+            if (nonterminal.typeRef == null &&
+                nonterminal.alternatives.alternativeList.isNotEmpty() &&
+                nonterminal.alternatives.alternativeList.all { it.action != null }
+            ) {
+                holder.registerProblem(
+                    nonterminal,
+                    "Cannot infer type of nonterminal",
+                    InferFromRustPluginQuickFix,
+                )
             }
         }
     }
@@ -34,9 +32,8 @@ object CannotInferNonterminalTypeInspection : LocalInspectionTool() {
 object InferFromRustPluginQuickFix : LocalQuickFix {
     override fun getFamilyName(): String = "Get from action code"
 
-    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-        (descriptor.psiElement as LpNonterminal).apply {
+    override fun applyFix(project: Project, descriptor: ProblemDescriptor) =
+        (descriptor.psiElement as LpNonterminal).run {
             setType(getContextAndResolveType(LpMacroArguments.identity(nonterminalName.nonterminalParams)))
         }
-    }
 }

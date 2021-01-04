@@ -13,8 +13,10 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 val unresolvedKey = Key.create<ConcurrentLinkedQueue<PsiElement>>("missingTerminals.unresolved")
 val terminalDefsKey = Key.create<ConcurrentLinkedQueue<PsiElement>>("missingTerminals.terminalDefs")
+
 // true if it found an enum / match token
 val checkKey = Key.create<AtomicBoolean>("missingTerminals.check")
+
 // true if the match has a _
 val matchHasWildcardKey = Key.create<AtomicBoolean>("missingTerminals.matchHasWildcard")
 
@@ -57,39 +59,29 @@ object MissingTerminalsInspection : LocalInspectionTool() {
         holder: ProblemsHolder,
         isOnTheFly: Boolean,
         session: LocalInspectionToolSession
-    ): PsiElementVisitor {
-        return object : LpVisitor() {
-            override fun visitMatchToken(o: LpMatchToken) {
-                session.dataNotNull(checkKey).set(true)
-            }
+    ): PsiElementVisitor = object : LpVisitor() {
+        override fun visitMatchToken(o: LpMatchToken) = session.dataNotNull(checkKey).set(true)
 
-            override fun visitEnumToken(o: LpEnumToken) {
-                session.dataNotNull(checkKey).set(true)
-            }
+        override fun visitEnumToken(o: LpEnumToken) = session.dataNotNull(checkKey).set(true)
 
-            override fun visitMatchItem(element: LpMatchItem) {
-                val terminal = element.matchSymbol?.quotedLiteral
-                if (terminal != null) {
-                    session.dataNotNull(terminalDefsKey).add(terminal)
-                } else {
-                    // is _ => there cannot be any unresolved terminals, so don't check.
-                    session.dataNotNull(matchHasWildcardKey).set(true)
-                }
+        override fun visitMatchItem(element: LpMatchItem) {
+            val terminal = element.matchSymbol?.quotedLiteral
+            if (terminal != null) {
+                session.dataNotNull(terminalDefsKey).add(terminal)
+            } else {
+                // is _ => there cannot be any unresolved terminals, so don't check.
+                session.dataNotNull(matchHasWildcardKey).set(true)
             }
+        }
 
-            override fun visitTerminal(element: LpTerminal) {
-                if (element.parent is LpConversion) {
-                    val terminal = element.quotedTerminal
-                    if (terminal != null) {
-                        session.dataNotNull(terminalDefsKey).add(terminal)
-                    }
-                }
-            }
+        override fun visitTerminal(element: LpTerminal) {
+            if (element.parent !is LpConversion) return
+            element.quotedTerminal?.let { session.dataNotNull(terminalDefsKey).add(it) }
+        }
 
-            override fun visitQuotedTerminal(element: LpQuotedTerminal) {
-                if (element.parent !is LpTerminal)
-                    session.dataNotNull(unresolvedKey).add(element)
-            }
+        override fun visitQuotedTerminal(element: LpQuotedTerminal) {
+            if (element.parent is LpTerminal) return
+            session.dataNotNull(unresolvedKey).add(element)
         }
     }
 }

@@ -11,10 +11,10 @@ import org.rust.lang.core.psi.ext.descendantOfTypeStrict
 import org.rust.lang.core.psi.ext.elementType
 
 class LpElementFactory(val project: Project) {
-    fun createPsiFile(text: CharSequence): PsiFile =
+    private fun createPsiFile(text: CharSequence): PsiFile =
         PsiFileFactory
             .getInstance(project)
-            .createFileFromText("dummy.lalrpop", LpLanguage, text)
+            .createFileFromText(LpLanguage, text)
 
     private inline fun <reified T : PsiElement> createFromText(code: CharSequence): T? =
         createPsiFile(code).descendantOfTypeStrict()

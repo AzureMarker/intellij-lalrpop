@@ -8,4 +8,7 @@ import com.mdrobnak.lalrpop.psi.LpNonterminalParam
 class LpRefactoringSupportProvider : RefactoringSupportProvider() {
     override fun isSafeDeleteAvailable(element: PsiElement): Boolean =
         element is LpNonterminalName || element is LpNonterminalParam
+
+    override fun isInplaceRenameAvailable(element: PsiElement, context: PsiElement?): Boolean =
+        element is LpNonterminalName || element is LpNonterminalParam
 }

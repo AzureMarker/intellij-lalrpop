@@ -67,7 +67,7 @@ fun LpAction.actionCodeFunctionHeader(withReturnType: Boolean = true): String {
 
     val genericParamsString =
         (grammarTypeParams?.typeParamList?.map { it.text }.orEmpty() + genericParameters?.map { it.text }.orEmpty())
-            .let { if (it.isEmpty()) "" else it.joinToString(prefix = "<", postfix = ">", separator = ", ") }
+            .takeUnless { it.isEmpty() }?.joinToString(prefix = "<", postfix = ">", separator = ", ") ?: ""
 
     val arguments = inputs.mapIndexed { index, it ->
         when (it) {
@@ -81,8 +81,10 @@ fun LpAction.actionCodeFunctionHeader(withReturnType: Boolean = true): String {
         grammarWhereClauses?.grammarWhereClauseList?.joinToString(prefix = "where ", separator = ", ") { it.text }
             ?: ""
 
-    return "fn __intellij_lalrpop $genericParamsString ($grammarParametersString $arguments) $arrowReturnType\n" +
-            "$grammarWhereClausesString\n"
+    return """
+        fn __intellij_lalrpop $genericParamsString ($grammarParametersString $arguments) $arrowReturnType
+        $grammarWhereClausesString
+        """.trimIndent()
 }
 
 abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpAction {
@@ -111,19 +113,22 @@ abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpActi
 
         val code = actionCodeEscape(code.text, this.alternativeParent.selectedTypesInContext(context))
 
-        val fnCode = actionCodeFunctionHeader(false) +
-                "{\n" +
-                "   $code\n" +
-                "}\n"
         val genericUnitStructs = this.alternativeParent.nonterminalParent.rustGenericUnitStructs()
 
-        val fileText = "mod __intellij_lalrpop {\n$importCode\n $genericUnitStructs\n $fnCode \n}"
+        val fileText = """
+            mod __intellij_lalrpop {
+                $importCode
+                $genericUnitStructs
+                ${actionCodeFunctionHeader(false)} {
+                    $code
+                }
+            }
+            """.trimIndent()
         val file = PsiFileFactory.getInstance(project)
             .createFileFromText(RsLanguage, fileText)
 
         val fn = PsiTreeUtil.findChildOfType(file, RsFunction::class.java) ?: return "()"
-        val block = fn.block ?: return "()"
-        val expr = block.expr ?: return "()"
+        val expr = fn.block?.expr ?: return "()"
 
         val moduleDefinition = findModuleDefinition(project, this.containingFile) ?: return "()"
 

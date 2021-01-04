@@ -6,36 +6,32 @@ import com.intellij.psi.util.parentOfType
 import com.mdrobnak.lalrpop.psi.*
 
 val LpSymbol.isExplicitlySelected: Boolean
-    get() = this.lessthan != null
+    get() = lessthan != null
 
 val LpSymbol.isNamed: Boolean
-    get() = this.symbolName != null
+    get() = symbolName != null
 
 val LpSymbol.isMutable: Boolean
-    get() = this.symbolName?.mut != null
+    get() = symbolName?.mut != null
 
 val LpSymbol.symbolNameString: String?
-    get() = this.symbolName?.id?.text
+    get() = symbolName?.id?.text
 
-fun LpSymbol.removeName() {
-    this.symbolName?.delete()
+fun LpSymbol.removeName() = apply {
+    symbolName?.delete()
 }
 
 fun LpSymbol.getSelectedType(context: LpTypeResolutionContext, resolveTypes: Boolean = true): LpSelectedType {
     val isMutable = this.isMutable
     val name = this.symbolNameString
     val type = if (resolveTypes)
-        this.resolveType(
+        resolveType(
             context,
-            LpMacroArguments.identity(this.parentOfType<LpNonterminal>()?.nonterminalName?.nonterminalParams)
+            LpMacroArguments.identity(parentOfType<LpNonterminal>()?.nonterminalName?.nonterminalParams)
         )
     else ""
 
-    return if (name != null) {
-        LpSelectedType.WithName(name, type, isMutable)
-    } else {
-        LpSelectedType.WithoutName(type)
-    }
+    return name?.let { LpSelectedType.WithName(it, type, isMutable) } ?: LpSelectedType.WithoutName(type)
 }
 
 abstract class LpSymbolMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSymbol {

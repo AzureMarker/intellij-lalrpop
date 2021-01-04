@@ -8,9 +8,9 @@ import com.mdrobnak.lalrpop.psi.LpTypeRef
 import com.mdrobnak.lalrpop.psi.LpTypeResolutionContext
 
 abstract class LpRustTypeMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpRustType {
-    override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String {
-        return (path.pathId?.resolveType(context, arguments) ?: path.text) +
-                (this.typeGenericArguments?.let { genericArguments ->
+    override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
+        (path.pathId?.resolveType(context, arguments) ?: path.text) +
+                (typeGenericArguments?.let { genericArguments ->
                     genericArguments.typeRefOrLifetimeList
                         .joinToString(prefix = "<", separator = ", ", postfix = ">") {
                             when (val child = it.firstChild) {
@@ -19,5 +19,4 @@ abstract class LpRustTypeMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpRu
                             }
                         }
                 } ?: "")
-    }
 }

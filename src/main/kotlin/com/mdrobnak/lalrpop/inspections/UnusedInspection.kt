@@ -35,15 +35,13 @@ class UnusedInspection : LocalInspectionTool() {
 object DeleteNonterminal : LocalQuickFix {
     override fun getFamilyName(): String = "Delete"
 
-    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+    override fun applyFix(project: Project, descriptor: ProblemDescriptor) =
         (descriptor.psiElement as LpNonterminalName).nonterminalParent.delete()
-    }
 }
 
 object DeleteMacroParameter : LocalQuickFix {
     override fun getFamilyName(): String = "Delete macro parameter"
 
-    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+    override fun applyFix(project: Project, descriptor: ProblemDescriptor) =
         (descriptor.psiElement as LpNonterminalParam).delete()
-    }
 }

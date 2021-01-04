@@ -25,10 +25,10 @@ data class LpMacroArguments(val arguments: List<LpMacroArgument> = listOf()) : L
     ): Substitution =
         params?.typeParameterList?.map { param ->
             TyTypeParameter.named(param) to (arguments.find { arg -> arg.name == param.identifier.text }?.rustType?.let {
-                RsPsiFactory(project).createType(it).let { typeRef ->
-                    typeRef.setContext(expandedElementContext)
+                RsPsiFactory(project).createType(it).run {
+                    setContext(expandedElementContext)
 
-                    inferenceContext.fullyResolve(typeRef.type)
+                    inferenceContext.fullyResolve(type)
                 }
             } ?: TyUnit)
         }.orEmpty().toMap().toTypeSubst()
@@ -74,4 +74,4 @@ interface LpResolveType : PsiElement {
 }
 
 fun LpResolveType.getContextAndResolveType(arguments: LpMacroArguments): String =
-    this.resolveType(this.containingFile.lalrpopTypeResolutionContext(), arguments)
+    resolveType(containingFile.lalrpopTypeResolutionContext(), arguments)

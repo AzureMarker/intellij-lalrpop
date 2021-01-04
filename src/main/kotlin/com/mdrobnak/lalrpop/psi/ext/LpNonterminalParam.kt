@@ -12,18 +12,13 @@ import com.mdrobnak.lalrpop.psi.LpNonterminalParams
 import org.toml.lang.psi.ext.elementType
 
 abstract class LpNonterminalParamMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpNonterminalParam {
-    override fun getNameIdentifier(): PsiElement {
-        return node.findChildByType(LpElementTypes.ID)!!.psi
-    }
+    override fun getNameIdentifier(): PsiElement = node.findChildByType(LpElementTypes.ID)!!.psi
 
-    override fun getName(): String {
-        return nameIdentifier.text
-    }
+    override fun getName(): String = nameIdentifier.text
 
-    override fun setName(name: String): PsiElement {
+    override fun setName(name: String): PsiElement = apply {
         val newNode = LpElementFactory(project).createIdentifier(name)
         nameIdentifier.replace(newNode)
-        return this
     }
 
     override fun delete() {

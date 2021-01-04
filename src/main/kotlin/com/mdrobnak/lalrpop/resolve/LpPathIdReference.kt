@@ -14,10 +14,9 @@ class LpPathIdReference(element: LpPathId) :
         PsiTreeUtil.getParentOfType(element, LpNonterminal::class.java)
             ?.let { LpResolveUtil.findNonterminalParameter(it, element.text).firstOrNull() }
 
-    override fun handleElementRename(newElementName: String): PsiElement {
+    override fun handleElementRename(newElementName: String): PsiElement = element.apply {
         val newNode = LpElementFactory(element.project).createIdentifier(newElementName)
         element.firstChild.replace(newNode)
-        return element
     }
 
     override fun getVariants(): Array<Any> =
