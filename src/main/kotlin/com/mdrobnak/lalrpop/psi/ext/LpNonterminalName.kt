@@ -10,11 +10,11 @@ import com.mdrobnak.lalrpop.psi.LpNonterminalName
 import org.rust.lang.core.psi.ext.childrenWithLeaves
 
 val LpNonterminalName.nonterminalParent: LpNonterminal
-    get() = this.parentOfType()!!
+    get() = parentOfType()!!
 
 fun LpNonterminalName.addParam(name: String) {
     val factory = LpElementFactory(project)
-    this.nonterminalParams?.let { params ->
+    nonterminalParams?.let { params ->
         val comma = factory.createComma()
         val newParam = factory.createNonterminalParam(name)
         val lastParam = params.nonterminalParamList.lastOrNull()
@@ -25,7 +25,7 @@ fun LpNonterminalName.addParam(name: String) {
             // add after the `<`
             params.addAfter(newParam, params.childrenWithLeaves.first())
         }
-    } ?: this.add(factory.createNonterminalParamsFromSingle(name))
+    } ?: add(factory.createNonterminalParamsFromSingle(name))
 }
 
 abstract class LpNonterminalNameMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpNonterminalName {
