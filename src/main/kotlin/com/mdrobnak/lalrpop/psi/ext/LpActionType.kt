@@ -4,7 +4,6 @@ import com.intellij.psi.util.elementType
 import com.mdrobnak.lalrpop.psi.LpActionType
 import com.mdrobnak.lalrpop.psi.LpElementTypes
 import com.mdrobnak.lalrpop.psi.LpTypeResolutionContext
-import com.mdrobnak.lalrpop.psi.parseError
 import org.rust.ide.presentation.render
 import org.rust.lang.core.psi.ext.childrenWithLeaves
 import org.rust.lang.core.psi.ext.qualifiedName
