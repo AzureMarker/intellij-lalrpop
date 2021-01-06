@@ -9,4 +9,4 @@ fun PsiFile.lalrpopFindGrammarDecl(): LpGrammarDecl = findDescendantOfType()!!
 
 fun LpGrammarDecl.typeParamsRustUnitStructs(): String =
     grammarTypeParams?.typeParamList?.filter { it.id != null }
-        ?.joinToString(separator = "\n", postfix = "\n") { "struct ${it.id!!.text}();" } ?: ""
+        ?.joinToString(separator = "\n", postfix = "\n") { "struct ${it.id!!.text};" } ?: ""

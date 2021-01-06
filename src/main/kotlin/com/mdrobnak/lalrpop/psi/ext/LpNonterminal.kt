@@ -21,7 +21,7 @@ fun LpNonterminal.rustGenericUnitStructs(): String =
             (nonterminalName.nonterminalParams?.nonterminalParamList?.joinToString(
                 separator = "\n",
                 postfix = "\n"
-            ) { "struct ${it.id.text}();" } ?: "")
+            ) { "struct ${it.id.text};" } ?: "")
 
 
 abstract class LpNonterminalMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpNonterminal {
