@@ -84,6 +84,12 @@
                          enabledByDefault="true"
                          level="ERROR"/>
 
+        <localInspection language="LALRPOP" id="RedundantAction" groupName="LALRPOP"
+                         displayName="Redundant action"
+                         implementationClass="com.mdrobnak.lalrpop.inspections.RedundantActionInspection"
+                         enabledByDefault="true"
+                         level="WARNING"/>
+
         <intentionAction>
             <className>com.mdrobnak.lalrpop.intentions.AddExplicitTypeIntention</className>
             <category>LALRPOP</category>

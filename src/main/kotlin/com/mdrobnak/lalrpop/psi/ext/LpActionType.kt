@@ -10,6 +10,9 @@ import org.rust.lang.core.psi.ext.qualifiedName
 import org.rust.lang.core.types.ty.Ty
 import org.rust.lang.core.types.ty.TyAdt
 
+val LpActionType.isUserAction: Boolean
+    get() = userAction != null
+
 /**
  * The type an action of this type returns, given the nonterminal type.
  *
