@@ -8,5 +8,5 @@ import com.mdrobnak.lalrpop.psi.LpMacroArguments
 
 abstract class LpArrayMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpArray {
     override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
-        "[" + this.typeRef.resolveType(context, arguments) + "]"
+        "[" + typeRef.resolveType(context, arguments) + "]"
 }

@@ -6,7 +6,7 @@ import org.rust.lang.core.psi.ext.childrenWithLeaves
 import org.rust.lang.core.psi.ext.elementType
 
 fun <T> LpRepeatOp.switch(question: T, plus: T, multiply: T): T =
-    when (this.childrenWithLeaves.first().elementType) {
+    when (childrenWithLeaves.first().elementType) {
         LpElementTypes.QUESTION -> question
         LpElementTypes.PLUS -> plus
         LpElementTypes.MULTIPLY -> multiply

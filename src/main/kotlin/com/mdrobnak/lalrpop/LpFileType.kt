@@ -11,5 +11,5 @@ object LpFileType : LanguageFileType(LpLanguage) {
 
     override fun getDefaultExtension(): String = "lalrpop"
 
-    override fun getIcon(): Icon? = AllIcons.FileTypes.Custom
+    override fun getIcon(): Icon = AllIcons.FileTypes.Custom
 }

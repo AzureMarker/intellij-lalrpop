@@ -4,6 +4,7 @@ import com.intellij.lang.BracePair
 import com.intellij.lang.PairedBraceMatcher
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IElementType
+import com.intellij.psi.util.parentOfTypes
 import com.mdrobnak.lalrpop.psi.*
 import org.rust.lang.core.psi.ext.startOffset
 
@@ -17,21 +18,14 @@ object LpBraceMatcher : PairedBraceMatcher {
 
     override fun getPairs(): Array<BracePair> = pairsArray
 
-    override fun isPairedBracesAllowedBeforeType(lbraceType: IElementType, contextType: IElementType?): Boolean {
-        return true
-    }
+    override fun isPairedBracesAllowedBeforeType(lbraceType: IElementType, contextType: IElementType?): Boolean = true
 
-    override fun getCodeConstructStart(file: PsiFile, openingBraceOffset: Int): Int {
-        // walk up the tree and look for a LpGrammarItem or an LpEnumToken
-        // which cover the only constructs(aside action code) in a lalrpop file that may have braces.
-        var element = file.findElementAt(openingBraceOffset)
-        while (element != null) {
-            when (element) {
-                is LpUseStmt, is LpNonterminal, is LpMatchToken, is LpExternToken, is LpEnumToken -> return element.startOffset
-            }
-
-            element = element.parent
-        }
-        return openingBraceOffset
-    }
+    override fun getCodeConstructStart(file: PsiFile, openingBraceOffset: Int): Int =
+        file.findElementAt(openingBraceOffset)?.parentOfTypes(
+            LpUseStmt::class,
+            LpNonterminal::class,
+            LpMatchToken::class,
+            LpExternToken::class,
+            LpEnumToken::class
+        )?.startOffset ?: openingBraceOffset
 }

@@ -9,41 +9,32 @@ import com.mdrobnak.lalrpop.LpLexerAdaptor
 import com.mdrobnak.lalrpop.psi.LpElementTypes
 import com.mdrobnak.lalrpop.psi.LpNamedElement
 import com.mdrobnak.lalrpop.psi.LpNonterminalName
+import com.mdrobnak.lalrpop.psi.LpNonterminalParam
 
 class LpFindUsagesProvider : FindUsagesProvider {
-    override fun getWordsScanner(): WordsScanner? {
-        return DefaultWordsScanner(
-            LpLexerAdaptor(),
-            TokenSet.create(LpElementTypes.ID),
-            TokenSet.create(LpElementTypes.COMMENT),
-            TokenSet.EMPTY,
-            TokenSet.create(LpElementTypes.CODE)
-        )
-    }
+    override fun getWordsScanner(): WordsScanner = DefaultWordsScanner(
+        LpLexerAdaptor(),
+        TokenSet.create(LpElementTypes.ID),
+        TokenSet.create(LpElementTypes.COMMENT),
+        TokenSet.EMPTY,
+        TokenSet.create(LpElementTypes.CODE)
+    )
 
-    override fun canFindUsagesFor(psiElement: PsiElement): Boolean {
-        return psiElement is LpNamedElement
-    }
+    override fun canFindUsagesFor(psiElement: PsiElement): Boolean = psiElement is LpNamedElement
 
     override fun getHelpId(psiElement: PsiElement): String? = null
 
-    override fun getType(element: PsiElement): String {
-        return if (element is LpNonterminalName) {
-            "Nonterminal"
-        } else {
-            ""
-        }
+    override fun getType(element: PsiElement): String = when (element) {
+        is LpNonterminalName -> "Nonterminal"
+        is LpNonterminalParam -> "Macro parameter"
+        else -> ""
     }
 
-    override fun getDescriptiveName(element: PsiElement): String {
-        return if (element is LpNonterminalName) {
-            element.name!!
-        } else {
-            ""
-        }
+    override fun getDescriptiveName(element: PsiElement): String = when (element) {
+        is LpNonterminalName -> element.name!!
+        is LpNonterminalParam -> element.name!!
+        else -> ""
     }
 
-    override fun getNodeText(element: PsiElement, useFullName: Boolean): String {
-        return getDescriptiveName(element)
-    }
+    override fun getNodeText(element: PsiElement, useFullName: Boolean): String = getDescriptiveName(element)
 }

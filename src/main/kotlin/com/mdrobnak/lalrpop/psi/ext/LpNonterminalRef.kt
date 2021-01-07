@@ -25,12 +25,10 @@ fun LpNonterminalRef.createNonterminal() {
 }
 
 abstract class LpNonterminalRefMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpNonterminalRef {
-    override fun getReference(): PsiReference {
-        return LpNonterminalReference(this)
-    }
+    override fun getReference(): PsiReference = LpNonterminalReference(this)
 
     override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String {
-        return when (val ref = this.reference.resolve()) {
+        return when (val ref = reference.resolve()) {
             is LpNonterminalName -> {
                 val nonterminalParams = ref.nonterminalParams
                     ?: return ref.nonterminalParent.resolveType(context, LpMacroArguments())
@@ -49,9 +47,7 @@ abstract class LpNonterminalRefMixin(node: ASTNode) : ASTWrapperPsiElement(node)
                     LpMacroArgument("()", it.id.text)
                 }))
             }
-            is LpNonterminalParam -> {
-                arguments.find { it.name == ref.id.text }?.rustType ?: ref.text
-            }
+            is LpNonterminalParam -> arguments.find { it.name == ref.id.text }?.rustType ?: ref.text
             else -> "()"
         }
     }

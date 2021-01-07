@@ -15,19 +15,21 @@ import java.util.*
  * The ranges also contain the braces themselves.
  */
 fun braceMatcherFoldDescriptors(element: PsiElement): List<FoldingDescriptor> {
-    val iter = element.childrenWithLeaves.iterator()
-    val braces: Stack<Int> = Stack()
+    val braces = Stack<Int>()
     val descriptors = mutableListOf<FoldingDescriptor>()
-    while (iter.hasNext()) {
-        val it = iter.next()
-        if (it.elementType == LpElementTypes.LBRACE) {
-            braces.push(it.startOffset)
-        } else if (it.elementType == LpElementTypes.RBRACE) {
-            if (braces.empty()) {
+    element.childrenWithLeaves.iterator().forEach {
+        when (it.elementType) {
+            LpElementTypes.LBRACE -> {
+                braces.push(it.startOffset)
+            }
+            LpElementTypes.RBRACE -> {
+                if (braces.isNotEmpty()) {
+                    descriptors.add(FoldingDescriptor(element, TextRange(braces.pop(), element.endOffset)))
+                }
+                //else {
                 // There are more closing braces than opening braces.
                 // We will just ignore them (IntelliJ will do the right thing).
-            } else {
-                descriptors.add(FoldingDescriptor(element, TextRange(braces.pop(), element.endOffset)))
+                //}
             }
         }
     }

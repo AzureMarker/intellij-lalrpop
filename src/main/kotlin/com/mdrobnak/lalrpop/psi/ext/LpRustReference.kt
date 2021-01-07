@@ -10,13 +10,12 @@ import org.rust.lang.core.psi.ext.childrenWithLeaves
 import org.rust.lang.core.psi.ext.elementType
 
 val LpRustReference.lifetimeOrInfer: String
-    get() = this.lifetime?.text ?: "'_"
+    get() = lifetime?.text ?: "'_"
 
 val LpRustReference.isRefMut: Boolean
-    get() = this.mut != null
+    get() = mut != null
 
 abstract class LpRustReferenceMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpRustReference {
-    override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String {
-        return "&${this.lifetimeOrInfer} ${if (this.isRefMut) "mut" else ""} ${this.typeRef.resolveType(context, arguments)}"
-    }
+    override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
+        "&${lifetimeOrInfer} ${if (isRefMut) "mut" else ""} ${typeRef.resolveType(context, arguments)}"
 }

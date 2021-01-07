@@ -16,9 +16,7 @@ import com.mdrobnak.lalrpop.psi.LpMacroArguments
  * If this type ref is not a child of another type ref.
  */
 val LpTypeRef.isTopLevel: Boolean
-    get() {
-        return this.parentOfType<LpTypeRef>(false) == null
-    }
+    get() = parentOfType<LpTypeRef>(false) == null
 
 abstract class LpTypeRefMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpTypeRef {
     override fun isValidHost(): Boolean = true
@@ -30,9 +28,8 @@ abstract class LpTypeRefMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpTyp
         return this
     }
 
-    override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> {
-        return SimpleMultiLineTextEscaper(this)
-    }
+    override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> =
+        SimpleMultiLineTextEscaper(this)
 
     override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
         when (val child = firstChild) {
