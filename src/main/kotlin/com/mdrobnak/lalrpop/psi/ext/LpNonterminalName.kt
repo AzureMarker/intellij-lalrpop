@@ -33,9 +33,10 @@ abstract class LpNonterminalNameMixin(node: ASTNode) : ASTWrapperPsiElement(node
 
     override fun getName(): String = nameIdentifier.text
 
-    override fun setName(name: String): PsiElement = apply {
+    override fun setName(name: String): PsiElement {
         val newNode = LpElementFactory(project).createIdentifier(name)
         nameIdentifier.replace(newNode)
+        return this
     }
 
     // delete the name = delete the nonterminal

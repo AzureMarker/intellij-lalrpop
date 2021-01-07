@@ -90,10 +90,11 @@ fun LpAction.actionCodeFunctionHeader(withReturnType: Boolean = true): String {
 abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpAction {
     override fun isValidHost(): Boolean = true
 
-    override fun updateText(text: String): PsiLanguageInjectionHost = apply {
+    override fun updateText(text: String): PsiLanguageInjectionHost {
         val valueNode = node.lastChildNode
         assert(valueNode is LeafElement)
         (valueNode as LeafElement).replaceWithText(text)
+        return this
     }
 
     override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> =

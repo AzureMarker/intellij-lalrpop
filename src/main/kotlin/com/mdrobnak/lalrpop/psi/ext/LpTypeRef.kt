@@ -21,10 +21,11 @@ val LpTypeRef.isTopLevel: Boolean
 abstract class LpTypeRefMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpTypeRef {
     override fun isValidHost(): Boolean = true
 
-    override fun updateText(text: String): PsiLanguageInjectionHost = apply {
+    override fun updateText(text: String): PsiLanguageInjectionHost {
         val valueNode = node.lastChildNode
         assert(valueNode is LeafElement)
         (valueNode as LeafElement).replaceWithText(text)
+        return this
     }
 
     override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> =

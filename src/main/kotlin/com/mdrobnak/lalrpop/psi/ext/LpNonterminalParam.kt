@@ -16,9 +16,10 @@ abstract class LpNonterminalParamMixin(node: ASTNode) : ASTWrapperPsiElement(nod
 
     override fun getName(): String = nameIdentifier.text
 
-    override fun setName(name: String): PsiElement = apply {
+    override fun setName(name: String): PsiElement {
         val newNode = LpElementFactory(project).createIdentifier(name)
         nameIdentifier.replace(newNode)
+        return this
     }
 
     override fun delete() {
