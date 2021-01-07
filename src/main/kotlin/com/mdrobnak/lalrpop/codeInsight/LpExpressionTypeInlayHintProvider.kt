@@ -51,6 +51,8 @@ class LpExpressionTypeInlayHintProvider : InlayHintsProvider<NoSettings> {
         settings: NoSettings,
         sink: InlayHintsSink
     ): InlayHintsCollector = object : FactoryInlayHintsCollector(editor) {
+        val typeHintsPresentationFactory = RsTypeHintsPresentationFactory(factory, false)
+
         override fun collect(element: PsiElement, editor: Editor, sink: InlayHintsSink): Boolean {
             if (file.project.service<DumbService>().isDumb) return true
 
@@ -73,7 +75,6 @@ class LpExpressionTypeInlayHintProvider : InlayHintsProvider<NoSettings> {
                 modDecl
             ) ?: return
 
-            val typeHintsPresentationFactory = RsTypeHintsPresentationFactory(factory, false)
             val inlayPresentation = typeHintsPresentationFactory.typeHint(rustType)
 
             @Suppress("Deprecation")
