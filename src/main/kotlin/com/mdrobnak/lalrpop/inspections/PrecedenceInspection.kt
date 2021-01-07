@@ -59,7 +59,8 @@ object PrecedenceInspection : LocalInspectionTool() {
         }
 
         override fun visitAlternatives(alternatives: LpAlternatives) {
-            val (withPrecedence, withoutPrecedence) = alternatives.alternativeList.partition { it.findAnnotationByName("precedence") != null }
+            val (withPrecedence, withoutPrecedence) = alternatives.alternativeList
+                .partition { it.findAnnotationByName("precedence") != null }
 
             if (withPrecedence.isNotEmpty()) {
                 withoutPrecedence.forEach { alternative ->
