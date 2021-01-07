@@ -43,7 +43,7 @@ object PrecedenceInspection : LocalInspectionTool() {
             }
 
             if (assocAnnotation != null) {
-                assocAnnotation.annotationArg.takeUnless { it != null && it.annotationArgName.text == "side" }
+                assocAnnotation.annotationArg.takeIf { it == null || it.annotationArgName.text != "side" }
                     ?.let {
                         holder.registerProblem(assocAnnotation, """Missing side="..." on #[assoc] annotation""")
                     }
