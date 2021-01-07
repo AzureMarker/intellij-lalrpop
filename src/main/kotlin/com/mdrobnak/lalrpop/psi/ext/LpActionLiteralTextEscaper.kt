@@ -97,7 +97,7 @@ private fun String.findAllMappings(text: String, replacements: List<LpSelectedTy
 
     while (index != -1) {
         val toStartFrom = if (prevIndex >= 0) prevIndex else 0
-        for (i in toStartFrom until index) {
+        for (i in toStartFrom..index) {
             when (this[i]) {
                 '(', '[' -> parens.push(Context.Parentheses)
                 '{' -> parens.push(Context.Braces)

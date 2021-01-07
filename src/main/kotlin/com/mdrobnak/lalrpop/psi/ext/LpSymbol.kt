@@ -17,7 +17,7 @@ val LpSymbol.isMutable: Boolean
 val LpSymbol.symbolNameString: String?
     get() = symbolName?.id?.text
 
-fun LpSymbol.removeName() = apply {
+fun LpSymbol.removeName() {
     symbolName?.delete()
 }
 
@@ -31,7 +31,10 @@ fun LpSymbol.getSelectedType(context: LpTypeResolutionContext, resolveTypes: Boo
         )
     else ""
 
-    return name?.let { LpSelectedType.WithName(it, type, isMutable) } ?: LpSelectedType.WithoutName(type)
+    return if (name != null)
+        LpSelectedType.WithName(name, type, isMutable)
+    else
+        LpSelectedType.WithoutName(type)
 }
 
 abstract class LpSymbolMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSymbol {

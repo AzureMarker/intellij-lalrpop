@@ -21,12 +21,12 @@ val List<LpSymbol>.selected: List<LpSymbol>
         this
     }
 
-fun List<LpSymbol>.computeType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String {
-    val sel = selected
-    val joined = sel.joinToString(separator = ", ") { it.resolveType(context, arguments) }
-    return if (sel.size != 1) "($joined)"
-    else joined
-}
+fun List<LpSymbol>.computeType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
+    selected.let { selected ->
+        val joined = selected.joinToString(separator = ", ") { it.resolveType(context, arguments) }
+        if (selected.size != 1) "($joined)"
+        else joined
+    }
 
 fun PsiFile.lalrpopTypeResolutionContext(): LpTypeResolutionContext = CachedValuesManager.getCachedValue(this) {
     val externTokens = descendantsOfType<LpExternToken>()

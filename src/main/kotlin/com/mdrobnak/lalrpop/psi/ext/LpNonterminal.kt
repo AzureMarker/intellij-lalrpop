@@ -26,14 +26,15 @@ fun LpNonterminal.rustGenericUnitStructs(): String =
 
 abstract class LpNonterminalMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpNonterminal {
     override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
-        nonterminalName.nonterminalParams?.let { internallyResolveType(context, arguments) }
-            ?: CachedValuesManager.getCachedValue(this) {
-                // Isn't a lalrpop macro and therefore can be cached
-                return@getCachedValue CachedValueProvider.Result<String>(
-                    internallyResolveType(context, LpMacroArguments()),
-                    PsiModificationTracker.MODIFICATION_COUNT
-                )
-            }
+        if (nonterminalName.nonterminalParams != null)
+            internallyResolveType(context, arguments)
+        else CachedValuesManager.getCachedValue(this) {
+            // Isn't a lalrpop macro and therefore can be cached
+            return@getCachedValue CachedValueProvider.Result<String>(
+                internallyResolveType(context, LpMacroArguments()),
+                PsiModificationTracker.MODIFICATION_COUNT
+            )
+        }
 
     private fun internallyResolveType(
         context: LpTypeResolutionContext,

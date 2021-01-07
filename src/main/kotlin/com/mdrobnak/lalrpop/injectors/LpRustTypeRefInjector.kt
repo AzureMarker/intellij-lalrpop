@@ -40,8 +40,7 @@ class LpRustTypeRefInjector : MultiHostInjector {
             mod __intellij_lalrpop {
                 $imports
                 type __intellij_lalrpop<$grammarTypeParamsString $nonterminalTypeParamsString> = """.trimIndent()
-        val suffix = """;
-            |}""".trimMargin()
+        val suffix = ";\n}"
 
         registrar
             .startInjecting(RsLanguage)
