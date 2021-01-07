@@ -23,7 +23,9 @@ abstract class LpNonterminalParamMixin(node: ASTNode) : ASTWrapperPsiElement(nod
 
     override fun delete() {
         // if it is alone, just delete the parent `<...>`
-        parentOfType<LpNonterminalParams>()?.takeIf { it.nonterminalParamList.size == 1 }?.apply { delete(); return }
+        parentOfType<LpNonterminalParams>()
+            ?.takeIf { it.nonterminalParamList.size == 1 }
+            ?.apply { delete(); return }
 
         // on refactoring(safe-delete), also delete the comma that follows this param
         if (nextSibling?.elementType == LpElementTypes.COMMA) nextSibling.delete()

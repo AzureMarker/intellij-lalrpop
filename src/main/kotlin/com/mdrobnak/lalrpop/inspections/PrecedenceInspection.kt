@@ -43,7 +43,7 @@ object PrecedenceInspection : LocalInspectionTool() {
             }
 
             if (assocAnnotation != null) {
-                assocAnnotation.annotationArg.takeUnless { it != null && it.annotationArgName.text == "side" }
+                assocAnnotation.annotationArg.takeIf { it == null || it.annotationArgName.text != "side" }
                     ?.let {
                         holder.registerProblem(assocAnnotation, """Missing side="..." on #[assoc] annotation""")
                     }
@@ -59,7 +59,8 @@ object PrecedenceInspection : LocalInspectionTool() {
         }
 
         override fun visitAlternatives(alternatives: LpAlternatives) {
-            val (withPrecedence, withoutPrecedence) = alternatives.alternativeList.partition { it.findAnnotationByName("precedence") != null }
+            val (withPrecedence, withoutPrecedence) = alternatives.alternativeList
+                .partition { it.findAnnotationByName("precedence") != null }
 
             if (withPrecedence.isNotEmpty()) {
                 withoutPrecedence.forEach { alternative ->

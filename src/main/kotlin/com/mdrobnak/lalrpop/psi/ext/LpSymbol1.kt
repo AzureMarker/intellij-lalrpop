@@ -16,7 +16,7 @@ abstract class LpSymbol1Mixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSym
             return "&str"
         }
 
-        parenthesesExprSymbol?.let { return (it.exprSymbol.symbolList.computeType(context, arguments)) }
+        parenthesesExprSymbol?.let { return it.exprSymbol.symbolList.computeType(context, arguments) }
 
         return when (childrenWithLeaves.first().elementType) {
             LpElementTypes.LOOKAHEAD, LpElementTypes.LOOKBEHIND -> context.locationType
