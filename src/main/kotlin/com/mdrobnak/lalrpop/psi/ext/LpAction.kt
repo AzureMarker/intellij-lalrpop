@@ -28,6 +28,14 @@ val LpAction.alternativeParent: LpAlternative
 val Int.lalrpopNoNameParameterByIndex
     get() = "__intellij_lalrpop_noname_$this"
 
+val LpGrammarDecl.grammarParametersString: String
+    get() = this.grammarParams?.grammarParamList?.joinToString(separator = "") { "${it.name}: ${it.typeRef.text}," } ?: ""
+
+val LpNonterminal.genericParams: String
+    get() = (containingFile.lalrpopFindGrammarDecl().grammarTypeParams?.typeParamList?.map { it.text }
+        .orEmpty() + nonterminalName.nonterminalParams?.nonterminalParamList?.map { it.text }.orEmpty())
+        .takeUnless { it.isEmpty() }?.joinToString(prefix = "<", postfix = ">", separator = ", ") ?: ""
+
 /**
  * The action code function header / definition (<code>fn __intellij_lalrpop <type_params>(params) where where_clauses</code>),
  * without the opening brace.
@@ -56,18 +64,8 @@ fun LpAction.actionCodeFunctionHeader(withReturnType: Boolean = true): String {
         else ""
 
     val grammarDecl = containingFile.lalrpopFindGrammarDecl()
-
-    val grammarParams = grammarDecl.grammarParams
-    val grammarParametersString =
-        grammarParams?.grammarParamList?.joinToString(separator = "") { "${it.name}: ${it.typeRef.text}," }
-            ?: ""
-
-    val grammarTypeParams = grammarDecl.grammarTypeParams
-    val genericParameters = nonterminal.nonterminalName.nonterminalParams?.nonterminalParamList
-
-    val genericParamsString =
-        (grammarTypeParams?.typeParamList?.map { it.text }.orEmpty() + genericParameters?.map { it.text }.orEmpty())
-            .takeUnless { it.isEmpty() }?.joinToString(prefix = "<", postfix = ">", separator = ", ") ?: ""
+    val genericParamsString = nonterminal.genericParams
+    val grammarParametersString = grammarDecl.grammarParametersString
 
     val arguments = inputs.mapIndexed { index, it ->
         when (it) {

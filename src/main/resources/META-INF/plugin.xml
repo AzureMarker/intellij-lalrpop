@@ -40,12 +40,16 @@
                 language="LALRPOP"
                 implementationClass="com.mdrobnak.lalrpop.resolve.LpFindUsagesProvider"/>
 
-        <lang.refactoringSupport language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpRefactoringSupportProvider" />
+        <lang.refactoringSupport language="LALRPOP"
+                                 implementationClass="com.mdrobnak.lalrpop.LpRefactoringSupportProvider"/>
 
         <lang.braceMatcher language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpBraceMatcher"/>
         <lang.commenter language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpCommenter"/>
         <lang.quoteHandler language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpQuoteHandler"/>
         <lang.foldingBuilder language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.LpFoldingBuilder"/>
+
+        <codeInsight.inlayProvider language="LALRPOP" implementationClass="com.mdrobnak.lalrpop.codeInsight.LpExpressionTypeInlayHintProvider"/>
+
         <localInspection language="LALRPOP" id="MissingTerminals" groupName="LALRPOP" displayName="Missing terminals"
                          implementationClass="com.mdrobnak.lalrpop.inspections.MissingTerminalsInspection"
                          enabledByDefault="true"
