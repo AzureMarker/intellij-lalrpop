@@ -31,7 +31,7 @@ abstract class LpNonterminalMixin(node: ASTNode) : ASTWrapperPsiElement(node), L
         else CachedValuesManager.getCachedValue(this) {
             // Isn't a lalrpop macro and therefore can be cached
             return@getCachedValue CachedValueProvider.Result<String>(
-                internallyResolveType(context, LpMacroArguments()),
+                internallyResolveType(context, LpMacroArguments(listOf(), listOf())),
                 PsiModificationTracker.MODIFICATION_COUNT
             )
         }

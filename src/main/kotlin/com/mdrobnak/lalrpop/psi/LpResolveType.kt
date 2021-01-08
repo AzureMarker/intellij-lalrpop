@@ -16,7 +16,7 @@ import org.rust.lang.core.types.ty.TyUnit
 import org.rust.lang.core.types.type
 
 data class LpMacroArgument(val rustType: String, val name: String)
-data class LpMacroArguments(val arguments: List<LpMacroArgument> = listOf()) : List<LpMacroArgument> by arguments {
+data class LpMacroArguments(val rootArguments: List<LpMacroArgument>, val arguments: List<LpMacroArgument>) : List<LpMacroArgument> by arguments {
     fun getSubstitution(
         params: RsTypeParameterList?,
         project: Project,
@@ -35,8 +35,8 @@ data class LpMacroArguments(val arguments: List<LpMacroArgument> = listOf()) : L
 
     companion object {
         fun identity(params: LpNonterminalParams?): LpMacroArguments =
-            LpMacroArguments(params?.nonterminalParamList?.mapNotNull { it.name }?.map { LpMacroArgument(it, it) }
-                .orEmpty())
+                params?.nonterminalParamList?.mapNotNull { it.name }?.map { LpMacroArgument(it, it) }
+                        .orEmpty().let { LpMacroArguments(it, it) }
     }
 }
 

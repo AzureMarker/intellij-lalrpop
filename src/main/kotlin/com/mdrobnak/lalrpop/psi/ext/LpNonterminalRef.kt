@@ -31,7 +31,7 @@ abstract class LpNonterminalRefMixin(node: ASTNode) : ASTWrapperPsiElement(node)
         return when (val ref = reference.resolve()) {
             is LpNonterminalName -> {
                 val nonterminalParams = ref.nonterminalParams
-                    ?: return ref.nonterminalParent.resolveType(context, LpMacroArguments())
+                    ?: return ref.nonterminalParent.resolveType(context, LpMacroArguments(listOf(), listOf()))
 
                 val nonterminal = ref.nonterminalParent
 
@@ -39,11 +39,12 @@ abstract class LpNonterminalRefMixin(node: ASTNode) : ASTWrapperPsiElement(node)
                     nonterminal.resolveType(
                         context,
                         LpMacroArguments(
+                            arguments.rootArguments,
                             nonterminalArguments.symbolList.zip(nonterminalParams.nonterminalParamList).map {
                                 LpMacroArgument(it.first.resolveType(context, arguments), it.second.id.text)
                             })
                     )
-                } ?: nonterminal.resolveType(context, LpMacroArguments(nonterminalParams.nonterminalParamList.map {
+                } ?: nonterminal.resolveType(context, LpMacroArguments(arguments.rootArguments, nonterminalParams.nonterminalParamList.map {
                     LpMacroArgument("()", it.id.text)
                 }))
             }
