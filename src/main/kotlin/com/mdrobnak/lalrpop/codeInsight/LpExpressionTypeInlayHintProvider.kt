@@ -26,22 +26,12 @@ class LpExpressionTypeInlayHintProvider : InlayHintsProvider<LpExpressionTypeInl
         var alternativeActionSymbols: Boolean = true,
     )
 
-    /**
-     * Used for persistance of settings
-     */
     override val key: SettingsKey<Settings>
         get() = KEY
 
-    /**
-     * Name of this kind of hints. It will be used in settings and in context menu.
-     * Please, do not use word "hints" to avoid duplication
-     */
     override val name: String
         get() = "Type hints"
 
-    /**
-     * Text, that will be used in the settings as a preview
-     */
     override val previewText: String
         get() = """
             // preview doesn't work because the types
@@ -56,15 +46,12 @@ class LpExpressionTypeInlayHintProvider : InlayHintsProvider<LpExpressionTypeInl
             Expression = r"[0-9]+";
         """.trimIndent()
 
-    /**
-     * Creates configurable, that immediately applies changes from UI to [settings]
-     */
     override fun createConfigurable(settings: Settings): ImmediateConfigurable = object : ImmediateConfigurable {
         override val cases: List<Case>
             get() = listOf(
                 Case("Show for nonterminals", "nonterminals", settings::showForNonterminals),
                 Case("Show for symbols", "symbols", settings::showForSymbols),
-                Case("Ignore unselected symbols", "unselected_sybmols", settings::ignoreUnselectedSymbols),
+                Case("Ignore unselected symbols", "unselected_symbols", settings::ignoreUnselectedSymbols),
                 Case(
                     "Only show for symbols where the alternative has an action",
                     "alternative_action_symbols",
@@ -72,11 +59,6 @@ class LpExpressionTypeInlayHintProvider : InlayHintsProvider<LpExpressionTypeInl
                 )
             )
 
-        /**
-         * Creates component, which listen to its components and immediately updates state of settings object
-         * This is required to make preview in settings works instantly
-         * Note, that if you need to express only cases of this provider, you should use [cases] instead
-         */
         override fun createComponent(listener: ChangeListener): JComponent = JPanel()
     }
 
