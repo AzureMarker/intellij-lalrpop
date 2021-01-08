@@ -47,6 +47,7 @@ intellij {
 compileKotlin {
     kotlinOptions.jvmTarget = "11"
     dependsOn(generateLexer, generateParser)
+    kotlinOptions.freeCompilerArgs = ["-Xjvm-default=enable"]
 }
 publishPlugin {
     token = System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken")
