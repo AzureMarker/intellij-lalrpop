@@ -24,7 +24,7 @@ val LpActionType.isUserAction: Boolean
 fun LpActionType.returnType(nonterminalType: String, context: LpTypeResolutionContext): String {
     return when (childrenWithLeaves.first().elementType) {
         LpElementTypes.USER_ACTION, LpElementTypes.LOOKAHEAD_ACTION, LpElementTypes.LOOKBEHIND_ACTION -> nonterminalType
-        LpElementTypes.FALLIBLE_ACTION -> "::std::result::Result<$nonterminalType, ${context.parseError}>"
+        LpElementTypes.FALLIBLE_ACTION -> "::core::result::Result<$nonterminalType, ${context.parseError}>"
         else -> throw IllegalStateException("Child other than =>, =>@L, =>@R, or =>? in an action_type rule")
     }
 }
