@@ -10,3 +10,6 @@ fun PsiFile.lalrpopFindGrammarDecl(): LpGrammarDecl = findDescendantOfType()!!
 fun LpGrammarDecl.typeParamsRustUnitStructs(): String =
     grammarTypeParams?.typeParamList?.filter { it.id != null }
         ?.joinToString(separator = "\n", postfix = "\n") { "struct ${it.id!!.text};" } ?: ""
+
+val LpGrammarDecl.grammarParametersString: String
+    get() = this.grammarParams?.grammarParamList?.joinToString(separator = "") { "${it.name}: ${it.typeRef.text}," } ?: ""

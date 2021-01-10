@@ -3,14 +3,24 @@ package com.mdrobnak.lalrpop.psi
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.util.findDescendantOfType
+import com.mdrobnak.lalrpop.psi.ext.rustGenericUnitStructs
 import com.mdrobnak.lalrpop.psi.util.lalrpopTypeResolutionContext
+import org.rust.lang.RsLanguage
+import org.rust.lang.core.macros.RsExpandedElement
 import org.rust.lang.core.macros.setContext
+import org.rust.lang.core.psi.RsModItem
 import org.rust.lang.core.psi.RsPsiFactory
+import org.rust.lang.core.psi.RsTypeAlias
 import org.rust.lang.core.psi.RsTypeParameterList
 import org.rust.lang.core.psi.ext.RsElement
+import org.rust.lang.core.psi.ext.childrenOfType
+import org.rust.lang.core.resolve.ImplLookup
 import org.rust.lang.core.types.Substitution
 import org.rust.lang.core.types.infer.RsInferenceContext
 import org.rust.lang.core.types.toTypeSubst
+import org.rust.lang.core.types.ty.Ty
 import org.rust.lang.core.types.ty.TyTypeParameter
 import org.rust.lang.core.types.ty.TyUnit
 import org.rust.lang.core.types.type
@@ -84,3 +94,29 @@ interface LpResolveType : PsiElement {
 
 fun LpResolveType.getContextAndResolveType(arguments: LpMacroArguments): String =
     resolveType(containingFile.lalrpopTypeResolutionContext(), arguments)
+
+fun String.lalrpopRustType(
+    project: Project,
+    importCode: String,
+    nonterminal: LpNonterminal,
+    modDefinition: RsModItem,
+): Ty? {
+    val genericUnitStructs = nonterminal.rustGenericUnitStructs()
+
+    val code = """
+        mod __intellij_lalrpop {
+            $importCode
+            $genericUnitStructs
+            
+            type ty = $this;
+        }
+    """.trimIndent()
+
+    val file = PsiFileFactory.getInstance(project).createFileFromText(RsLanguage, code)
+    for (child in file.childrenOfType<RsExpandedElement>())
+        child.setContext(modDefinition)
+
+    val tyAlias = file.findDescendantOfType<RsTypeAlias>() ?: return null
+    val ty = tyAlias.typeReference?.type ?: return null
+    return ImplLookup.relativeTo(tyAlias).ctx.fullyResolve(ty)
+}

@@ -23,6 +23,11 @@ fun LpNonterminal.rustGenericUnitStructs(): String =
                 postfix = "\n"
             ) { "struct ${it.id.text};" } ?: "")
 
+val LpNonterminal.genericParams: String
+    get() = (containingFile.lalrpopFindGrammarDecl().grammarTypeParams?.typeParamList?.map { it.text }
+        .orEmpty() + nonterminalName.nonterminalParams?.nonterminalParamList?.map { it.text }.orEmpty())
+        .takeUnless { it.isEmpty() }?.joinToString(prefix = "<", postfix = ">", separator = ", ") ?: ""
+
 
 abstract class LpNonterminalMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpNonterminal {
     override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
