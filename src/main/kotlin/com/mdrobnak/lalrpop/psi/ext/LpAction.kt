@@ -112,7 +112,7 @@ abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpActi
         val code = actionCodeEscape(code.text, alternativeParent.selectedTypesInContext(context))
 
         val grammarDecl = containingFile.lalrpopFindGrammarDecl()
-        val genericUnitStructs = grammarDecl.typeParamsRustUnitStructs() + arguments.rootArguments.joinToString { "struct ${it.name};\n" }
+        val genericUnitStructs = grammarDecl.typeParamsRustUnitStructs() + arguments.rootArguments.joinToString(separator = "") { "struct ${it.name};\n" }
 
         val fileText = """
             mod __intellij_lalrpop {
