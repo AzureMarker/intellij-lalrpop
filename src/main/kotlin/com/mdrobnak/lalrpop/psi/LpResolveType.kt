@@ -16,7 +16,17 @@ import org.rust.lang.core.types.ty.TyUnit
 import org.rust.lang.core.types.type
 
 data class LpMacroArgument(val rustType: String, val name: String)
-data class LpMacroArguments(val arguments: List<LpMacroArgument> = listOf()) : List<LpMacroArgument> by arguments {
+
+/**
+ * A class to hold the types of macro parameters
+ * @param rootArguments The identity parameters of the nonterminal on which resolveType was called initially,
+ * and with which we derive the other types. See
+ * [#37 (comment)](https://github.com/Mcat12/intellij-lalrpop/issues/37#issuecomment-757442682) for why this is needed.
+ * @see LpMacroArguments.identity
+ * @param arguments the list of arguments and their types. May also use types from [rootArguments][rootArguments]
+ */
+data class LpMacroArguments(val rootArguments: List<LpMacroArgument>, val arguments: List<LpMacroArgument>) :
+    List<LpMacroArgument> by arguments {
     fun getSubstitution(
         params: RsTypeParameterList?,
         project: Project,
@@ -35,8 +45,8 @@ data class LpMacroArguments(val arguments: List<LpMacroArgument> = listOf()) : L
 
     companion object {
         fun identity(params: LpNonterminalParams?): LpMacroArguments =
-            LpMacroArguments(params?.nonterminalParamList?.mapNotNull { it.name }?.map { LpMacroArgument(it, it) }
-                .orEmpty())
+            params?.nonterminalParamList?.mapNotNull { it.name }?.map { LpMacroArgument(it, it) }
+                .orEmpty().let { LpMacroArguments(it, it) }
     }
 }
 

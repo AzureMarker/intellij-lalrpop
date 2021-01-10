@@ -21,13 +21,12 @@ val LpActionType.isUserAction: Boolean
  *
  * @return String-version of the rust type
  */
-fun LpActionType.returnType(nonterminalType: String, context: LpTypeResolutionContext): String {
-    return when (childrenWithLeaves.first().elementType) {
+fun LpActionType.returnType(nonterminalType: String, context: LpTypeResolutionContext): String =
+    when (childrenWithLeaves.first().elementType) {
         LpElementTypes.USER_ACTION, LpElementTypes.LOOKAHEAD_ACTION, LpElementTypes.LOOKBEHIND_ACTION -> nonterminalType
         LpElementTypes.FALLIBLE_ACTION -> "::std::result::Result<$nonterminalType, ${context.parseError}>"
         else -> throw IllegalStateException("Child other than =>, =>@L, =>@R, or =>? in an action_type rule")
     }
-}
 
 /**
  * The inverse of LpActionType.returnType. Given the return type of the action code, return the type the nonterminal has to be.
@@ -38,13 +37,11 @@ fun LpActionType.returnType(nonterminalType: String, context: LpTypeResolutionCo
  *
  * @see LpActionType.returnType
  */
-fun LpActionType.nonterminalTypeFromReturn(ty: Ty): Ty {
-    return when (childrenWithLeaves.first().elementType) {
-        LpElementTypes.USER_ACTION, LpElementTypes.LOOKAHEAD_ACTION, LpElementTypes.LOOKBEHIND_ACTION -> ty
-        LpElementTypes.FALLIBLE_ACTION ->
-            ty.takeIf { (it as? TyAdt)?.item?.qualifiedName == "core::result::Result" }
-                ?.typeParameterValues?.typeByName("T")
-                ?: error("Inferred type from fallible action code(${ty.render()}) is not Result")
-        else -> throw IllegalStateException("Child other than =>, =>@L, =>@R, or =>? in an action_type rule")
-    }
+fun LpActionType.nonterminalTypeFromReturn(ty: Ty): Ty = when (childrenWithLeaves.first().elementType) {
+    LpElementTypes.USER_ACTION, LpElementTypes.LOOKAHEAD_ACTION, LpElementTypes.LOOKBEHIND_ACTION -> ty
+    LpElementTypes.FALLIBLE_ACTION ->
+        ty.takeIf { (it as? TyAdt)?.item?.qualifiedName == "core::result::Result" }
+            ?.typeParameterValues?.typeByName("T")
+            ?: error("Inferred type from fallible action code(${ty.render()}) is not Result")
+    else -> throw IllegalStateException("Child other than =>, =>@L, =>@R, or =>? in an action_type rule")
 }
