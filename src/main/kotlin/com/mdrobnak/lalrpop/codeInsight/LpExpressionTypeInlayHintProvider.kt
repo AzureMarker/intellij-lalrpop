@@ -19,9 +19,9 @@ import javax.swing.JPanel
 
 @Suppress("UnstableApiUsage")
 class LpExpressionTypeInlayHintProvider : InlayHintsProvider<LpExpressionTypeInlayHintProvider.Settings> {
-    class Settings(
+    data class Settings(
         var showForNonterminals: Boolean = true,
-        var showForSymbols: Boolean = true,
+        var showForSymbols: Boolean = false,
         var ignoreUnselectedSymbols: Boolean = true,
         var alternativeActionSymbols: Boolean = true,
     )
@@ -32,19 +32,7 @@ class LpExpressionTypeInlayHintProvider : InlayHintsProvider<LpExpressionTypeInl
     override val name: String
         get() = "Type hints"
 
-    override val previewText: String
-        get() = """
-            // preview doesn't work because the types
-            // need context about the rust project around
-            // them, which this preview is not able to provide
-            grammar;
-            
-            Comma<Rule> = (<Rule> ",")+ Rule?;
-            
-            FunctionArgs = Comma<Expression>;
-            
-            Expression = r"[0-9]+";
-        """.trimIndent()
+    override val previewText: String? = null
 
     override fun createConfigurable(settings: Settings): ImmediateConfigurable = object : ImmediateConfigurable {
         override val cases: List<Case>
@@ -102,8 +90,7 @@ class LpExpressionTypeInlayHintProvider : InlayHintsProvider<LpExpressionTypeInl
 
             val inlayPresentation = typeHintsPresentationFactory.typeHint(rustType)
 
-            @Suppress("Deprecation")
-            sink.addInlineElement(anchor.endOffset, false, inlayPresentation)
+            sink.addInlineElement(anchor.endOffset, false, inlayPresentation, false)
         }
 
         private fun presentTypeForSymbol(element: LpSymbol) {
