@@ -90,7 +90,11 @@ class LpExpressionTypeInlayHintProvider : InlayHintsProvider<LpExpressionTypeInl
 
             val inlayPresentation = typeHintsPresentationFactory.typeHint(rustType)
 
-            sink.addInlineElement(anchor.endOffset, false, inlayPresentation, false)
+            // FIXME: Change to this
+            // sink.addInlineElement(anchor.endOffset, false, inlayPresentation, false)
+            // after dropping support for 2020.2
+            @Suppress("Deprecation")
+            sink.addInlineElement(anchor.endOffset, false, inlayPresentation)
         }
 
         private fun presentTypeForSymbol(element: LpSymbol) {
