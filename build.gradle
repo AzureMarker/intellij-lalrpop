@@ -45,9 +45,16 @@ intellij {
     plugins = ['PsiViewer:203-SNAPSHOT', 'org.rust.lang:0.3.136.3514-203', 'org.toml.lang:0.2.136.3514-203']
 }
 compileKotlin {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions {
+        jvmTarget = "11"
+        apiVersion = "1.3"
+        freeCompilerArgs = ["-Xjvm-default=enable"]
+    }
+
     dependsOn(generateLexer, generateParser)
-    kotlinOptions.freeCompilerArgs = ["-Xjvm-default=enable"]
+}
+runPluginVerifier {
+    ideVersions = ["IIC-2020.3.1", "IIC-2020.2.4"]
 }
 publishPlugin {
     token = System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken")
