@@ -5,7 +5,6 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.LiteralTextEscaper
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiLanguageInjectionHost
-import com.intellij.psi.impl.source.tree.LeafElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
 import com.mdrobnak.lalrpop.injectors.findModuleDefinition
@@ -81,10 +80,9 @@ abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpActi
     override fun isValidHost(): Boolean = true
 
     override fun updateText(text: String): PsiLanguageInjectionHost {
-        val valueNode = node.lastChildNode
-        assert(valueNode is LeafElement)
-        (valueNode as LeafElement).replaceWithText(text)
-        return this
+        val newNode = LpElementFactory(project).createAction(text);
+        replace(newNode)
+        return newNode
     }
 
     override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> =

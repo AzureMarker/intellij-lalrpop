@@ -73,6 +73,10 @@ class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracke
     }
 
     override fun isOneLine(): Boolean = false
+
+    override fun getRelevantTextRange(): TextRange {
+        return myHost.code.textRangeInParent
+    }
 }
 
 /**

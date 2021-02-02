@@ -62,4 +62,7 @@ class LpElementFactory(val project: Project) {
 
     fun createTypeRef(type: String): LpTypeRef =
         createFromText("grammar; dummy: $type = {};") ?: error("Failed to create type ref from `$type`")
+
+    fun createAction(text: String): LpAction =
+        createFromText("grammar; dummy = \" \" $text;") ?: error("Failed to create action from `$text`")
 }
