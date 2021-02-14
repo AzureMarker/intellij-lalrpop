@@ -8,7 +8,7 @@ plugins {
 import org.jetbrains.grammarkit.tasks.*
 
 group 'com.mdrobnak'
-version '0.2.1'
+version '0.2.2'
 
 repositories {
     mavenCentral()
@@ -64,6 +64,14 @@ patchPluginXml {
     sinceBuild "202.6397.94"
 
     changeNotes """
+      <b>0.2.2</b><br>
+      * Remove trailing newlines from user code<br>
+      * Give color to commas<br>
+      * Fix exception when refactoring affects injected Rust type references<br>
+      * Fix refactoring in Rust code adding a duplicate action type in affected LALRPOP code<br>
+      * Support 2021.1 EAP<br>
+      <br>
+
       <b>0.2.1</b><br>
       * Inject Rust into type references (e.g. explicit nonterminal types)<br>
       * Handle fallible user actions (@dblanovschi)<br>
