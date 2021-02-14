@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
-import com.intellij.psi.util.findDescendantOfType
+import com.intellij.psi.util.PsiTreeUtil
 import com.mdrobnak.lalrpop.psi.ext.rustGenericUnitStructs
 import com.mdrobnak.lalrpop.psi.util.lalrpopTypeResolutionContext
 import org.rust.lang.RsLanguage
@@ -116,7 +116,7 @@ fun String.lalrpopRustType(
     for (child in file.childrenOfType<RsExpandedElement>())
         child.setContext(modDefinition)
 
-    val tyAlias = file.findDescendantOfType<RsTypeAlias>() ?: return null
+    val tyAlias = PsiTreeUtil.findChildOfType(file, RsTypeAlias::class.java) ?: return null
     val ty = tyAlias.typeReference?.type ?: return null
     return ImplLookup.relativeTo(tyAlias).ctx.fullyResolve(ty)
 }

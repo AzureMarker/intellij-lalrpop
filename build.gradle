@@ -40,9 +40,9 @@ task generateParser(type: GenerateParser) {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    // Test with 2020.3
-    version '2020.3'
-    plugins = ['PsiViewer:203-SNAPSHOT', 'org.rust.lang:0.3.136.3514-203', 'org.toml.lang:0.2.136.3514-203']
+    // Test with the latest EAP
+    version 'LATEST-EAP-SNAPSHOT'
+    plugins = ['PsiViewer:211-SNAPSHOT', 'org.rust.lang:0.3.140.3644-203', 'org.toml.lang:0.2.140.3644-203']
 }
 compileKotlin {
     kotlinOptions {
