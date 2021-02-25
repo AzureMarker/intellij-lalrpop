@@ -23,6 +23,15 @@ import static com.mdrobnak.lalrpop.psi.LpElementTypes.*;
   public LalrpopLexer() {
     this((java.io.Reader)null);
   }
+
+  /**
+   * Remove trailing newlines from the token
+   */
+  private void pushbackNewlines() {
+      while (yycharat(yylength()-1) == '\n') {
+          yypushback(1);
+      }
+  }
 %}
 
 %public
@@ -54,6 +63,8 @@ RustImport = [^;]+
 // Eat everything except for brackets and punctuation, which are matched by the
 // other RUST_CODE rules.
 RustCode = [^(\[{)\]},;]+
+RustCodeCloseBracket = [^(\[{)\]},;]*(\)|\]|\})
+RustCodeEnd = [^(\[{)\]},;]*(;|,)
 
 %%
 <YYINITIAL> {
@@ -129,23 +140,25 @@ RustCode = [^(\[{)\]},;]+
 
 <RUST_CODE> {
   "(" | "[" | "{"    { rust_bracket_count++; }
-  ")" | "]" | "}"    {
+  {RustCodeCloseBracket} {
           if (rust_bracket_count == 0) {
               // There were no opening brackets in the Rust code, so this
               // character is part of the LALRPOP code.
-              yybegin(YYINITIAL);
               yypushback(1);
+              pushbackNewlines();
+              yybegin(YYINITIAL);
               return CODE;
           }
 
           rust_bracket_count--;
       }
-  "," | ";"          {
+  {RustCodeEnd} {
           if (rust_bracket_count == 0) {
               // There were no opening brackets in the Rust code, so this
               // character is part of the LALRPOP code.
-              yybegin(YYINITIAL);
               yypushback(1);
+              pushbackNewlines();
+              yybegin(YYINITIAL);
               return CODE;
           }
       }

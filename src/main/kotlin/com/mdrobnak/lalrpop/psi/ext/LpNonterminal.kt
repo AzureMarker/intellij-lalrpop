@@ -12,34 +12,33 @@ import com.mdrobnak.lalrpop.psi.LpTypeResolutionContext
 
 fun LpNonterminal.setType(type: String) {
     val typePsi = LpElementFactory(project).createNonterminalType(type)
-    val typeRef = typeRef
-
-    if (typeRef != null)
-        typeRef.replace(typePsi.second)
-    else
-        addRangeAfter(typePsi.first, typePsi.second, nonterminalName)
+    typeRef?.apply { replace(typePsi.second) }
+        ?: addRangeAfter(typePsi.first, typePsi.second, nonterminalName)
 }
 
 fun LpNonterminal.rustGenericUnitStructs(): String =
-    this.containingFile.lalrpopFindGrammarDecl().typeParamsRustUnitStructs() +
-            this.nonterminalName.nonterminalParams?.nonterminalParamList?.joinToString(
+    containingFile.lalrpopFindGrammarDecl().typeParamsRustUnitStructs() +
+            (nonterminalName.nonterminalParams?.nonterminalParamList?.joinToString(
                 separator = "\n",
                 postfix = "\n"
-            ) { "struct ${it.id.text}();" }
+            ) { "struct ${it.id.text};" } ?: "")
+
+val LpNonterminal.genericParams: String
+    get() = (containingFile.lalrpopFindGrammarDecl().grammarTypeParams?.typeParamList?.map { it.text }
+        .orEmpty() + nonterminalName.nonterminalParams?.nonterminalParamList?.map { it.text }.orEmpty())
+        .takeUnless { it.isEmpty() }?.joinToString(prefix = "<", postfix = ">", separator = ", ") ?: ""
 
 
 abstract class LpNonterminalMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpNonterminal {
     override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
-        if (this.nonterminalName.nonterminalParams != null) {
+        if (nonterminalName.nonterminalParams != null)
             internallyResolveType(context, arguments)
-        } else {
+        else CachedValuesManager.getCachedValue(this) {
             // Isn't a lalrpop macro and therefore can be cached
-            CachedValuesManager.getCachedValue(this) {
-                return@getCachedValue CachedValueProvider.Result<String>(
-                    internallyResolveType(context, LpMacroArguments()),
-                    PsiModificationTracker.MODIFICATION_COUNT
-                )
-            }
+            return@getCachedValue CachedValueProvider.Result<String>(
+                internallyResolveType(context, LpMacroArguments(listOf(), listOf())),
+                PsiModificationTracker.MODIFICATION_COUNT
+            )
         }
 
     private fun internallyResolveType(
@@ -47,11 +46,11 @@ abstract class LpNonterminalMixin(node: ASTNode) : ASTWrapperPsiElement(node), L
         arguments: LpMacroArguments
     ): String =
         // get directly from the type_ref if available
-        this.typeRef?.resolveType(context, arguments) ?:
+        typeRef?.resolveType(context, arguments) ?:
         // or try to infer from the first alternative that doesn't have action code
-        this.alternatives.alternativeList.firstOrNull { it.action == null }?.resolveType(context, arguments) ?:
+        alternatives.alternativeList.firstOrNull { it.action == null }?.resolveType(context, arguments) ?:
         // or as a last resort try to infer from the action code with intellij-rust
-        this.alternatives.alternativeList.firstOrNull()?.resolveType(context, arguments) ?:
+        alternatives.alternativeList.firstOrNull()?.resolveType(context, arguments) ?:
         // or if we get here, it means the nonterminal looks like `A = {};`, e.g. there are no alternatives and no type_ref
         "()"
 }

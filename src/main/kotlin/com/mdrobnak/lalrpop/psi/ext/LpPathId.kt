@@ -14,5 +14,5 @@ abstract class LpPathIdMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpPath
     override fun getReference(): PsiReference? = LpPathIdReference(this)
 
     override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
-        this.id.text.let { id -> arguments.find { it.name == id }?.rustType ?: id }
+        id.text.let { id -> arguments.find { it.name == id }?.rustType ?: id }
 }

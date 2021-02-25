@@ -25,15 +25,13 @@ fun LpNonterminalRef.createNonterminal() {
 }
 
 abstract class LpNonterminalRefMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpNonterminalRef {
-    override fun getReference(): PsiReference {
-        return LpNonterminalReference(this)
-    }
+    override fun getReference(): PsiReference = LpNonterminalReference(this)
 
     override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String {
-        return when (val ref = this.reference.resolve()) {
+        return when (val ref = reference.resolve()) {
             is LpNonterminalName -> {
                 val nonterminalParams = ref.nonterminalParams
-                    ?: return ref.nonterminalParent.resolveType(context, LpMacroArguments())
+                    ?: return ref.nonterminalParent.resolveType(context, LpMacroArguments(listOf(), listOf()))
 
                 val nonterminal = ref.nonterminalParent
 
@@ -41,17 +39,16 @@ abstract class LpNonterminalRefMixin(node: ASTNode) : ASTWrapperPsiElement(node)
                     nonterminal.resolveType(
                         context,
                         LpMacroArguments(
+                            arguments.rootArguments,
                             nonterminalArguments.symbolList.zip(nonterminalParams.nonterminalParamList).map {
                                 LpMacroArgument(it.first.resolveType(context, arguments), it.second.id.text)
                             })
                     )
-                } ?: nonterminal.resolveType(context, LpMacroArguments(nonterminalParams.nonterminalParamList.map {
+                } ?: nonterminal.resolveType(context, LpMacroArguments(arguments.rootArguments, nonterminalParams.nonterminalParamList.map {
                     LpMacroArgument("()", it.id.text)
                 }))
             }
-            is LpNonterminalParam -> {
-                arguments.find { it.name == ref.id.text }?.rustType ?: ref.text
-            }
+            is LpNonterminalParam -> arguments.find { it.name == ref.id.text }?.rustType ?: ref.text
             else -> "()"
         }
     }

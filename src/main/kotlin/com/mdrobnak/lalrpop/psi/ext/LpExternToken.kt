@@ -10,17 +10,18 @@ import com.mdrobnak.lalrpop.psi.LpTypeResolutionContext
 import com.mdrobnak.lalrpop.psi.util.braceMatcherFoldDescriptors
 
 fun LpExternToken.resolveErrorType(): String? =
-    this.associatedTypeList.find { it.id.text == "Error" }?.typeRef?.resolveType(
-        LpTypeResolutionContext(), LpMacroArguments()
+    associatedTypeList.find { it.id.text == "Error" }?.typeRef?.resolveType(
+        LpTypeResolutionContext(),
+        LpMacroArguments(listOf(), listOf())
     )
 
 fun LpExternToken.resolveLocationType(): String? =
-    this.associatedTypeList.find { it.id.text == "Location" }?.typeRef?.resolveType(
-        LpTypeResolutionContext(), LpMacroArguments()
+    associatedTypeList.find { it.id.text == "Location" }?.typeRef?.resolveType(
+        LpTypeResolutionContext(), LpMacroArguments(listOf(), listOf())
     )
 
 fun LpExternToken.resolveTokenType(): String? =
-    this.enumToken?.typeRef?.resolveType(LpTypeResolutionContext(), LpMacroArguments())
+    enumToken?.typeRef?.resolveType(LpTypeResolutionContext(), LpMacroArguments(listOf(), listOf()))
 
 abstract class LpExternTokenMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpExternToken {
     override fun getFoldRegions(document: Document, quick: Boolean): List<FoldingDescriptor> =

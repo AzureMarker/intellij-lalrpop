@@ -17,13 +17,7 @@ object LpFoldingBuilder : FoldingBuilderEx(), DumbAware {
             .toArray { arrayOfNulls(it) }
     }
 
-    override fun getPlaceholderText(node: ASTNode): String? = when (val nodePsi = node.psi) {
-        is LpFoldable -> nodePsi.getFoldReplacement()
-        else -> null
-    }
+    override fun getPlaceholderText(node: ASTNode): String? = (node.psi as? LpFoldable)?.getFoldReplacement()
 
-    override fun isCollapsedByDefault(node: ASTNode): Boolean = when (val nodePsi = node.psi) {
-        is LpFoldable -> nodePsi.getFoldCollapsedByDefault()
-        else -> false
-    }
+    override fun isCollapsedByDefault(node: ASTNode): Boolean = (node.psi as? LpFoldable)?.getFoldCollapsedByDefault() ?: false
 }

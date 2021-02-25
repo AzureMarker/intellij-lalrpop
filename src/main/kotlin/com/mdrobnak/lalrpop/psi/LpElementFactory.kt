@@ -11,10 +11,10 @@ import org.rust.lang.core.psi.ext.descendantOfTypeStrict
 import org.rust.lang.core.psi.ext.elementType
 
 class LpElementFactory(val project: Project) {
-    fun createPsiFile(text: CharSequence): PsiFile =
+    private fun createPsiFile(text: CharSequence): PsiFile =
         PsiFileFactory
             .getInstance(project)
-            .createFileFromText("dummy.lalrpop", LpLanguage, text)
+            .createFileFromText(LpLanguage, text)
 
     private inline fun <reified T : PsiElement> createFromText(code: CharSequence): T? =
         createPsiFile(code).descendantOfTypeStrict()
@@ -50,7 +50,8 @@ class LpElementFactory(val project: Project) {
      * where a type doesn't exist already.
      */
     fun createNonterminalType(type: String): Pair<PsiElement, LpTypeRef> {
-        val nonterminal = createFromText<LpNonterminal>("grammar;\n Nonterminal: $type = {};") ?: error("Failed to create nonterminal, type = $type")
+        val nonterminal = createFromText<LpNonterminal>("grammar;\n Nonterminal: $type = {};")
+            ?: error("Failed to create nonterminal, type = $type")
 
         val typeRef = nonterminal.typeRef!!
         val whitespace = typeRef.prevSibling
@@ -58,4 +59,10 @@ class LpElementFactory(val project: Project) {
 
         return colon to typeRef
     }
+
+    fun createTypeRef(type: String): LpTypeRef =
+        createFromText("grammar; dummy: $type = {};") ?: error("Failed to create type ref from `$type`")
+
+    fun createAction(text: String): LpAction =
+        createFromText("grammar; dummy = \" \" $text;") ?: error("Failed to create action from `$text`")
 }

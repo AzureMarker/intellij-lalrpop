@@ -13,19 +13,17 @@ import com.mdrobnak.lalrpop.psi.ext.setType
 import com.mdrobnak.lalrpop.psi.getContextAndResolveType
 
 object CannotInferNonterminalTypeInspection : LocalInspectionTool() {
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
-        return object : LpVisitor() {
-            override fun visitNonterminal(nonterminal: LpNonterminal) {
-                if (nonterminal.typeRef == null &&
-                    nonterminal.alternatives.alternativeList.isNotEmpty() &&
-                    nonterminal.alternatives.alternativeList.all { it.action != null }
-                ) {
-                    holder.registerProblem(
-                        nonterminal,
-                        "Cannot infer type of nonterminal",
-                        InferFromRustPluginQuickFix,
-                    )
-                }
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = object : LpVisitor() {
+        override fun visitNonterminal(nonterminal: LpNonterminal) {
+            if (nonterminal.typeRef == null &&
+                nonterminal.alternatives.alternativeList.isNotEmpty() &&
+                nonterminal.alternatives.alternativeList.all { it.action != null }
+            ) {
+                holder.registerProblem(
+                    nonterminal,
+                    "Cannot infer type of nonterminal",
+                    InferFromRustPluginQuickFix,
+                )
             }
         }
     }

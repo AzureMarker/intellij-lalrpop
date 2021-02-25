@@ -17,39 +17,35 @@ import com.mdrobnak.lalrpop.psi.ext.removeName
  * Suggests removing the name if there are issues.
  */
 object NamedSymbolsInspection : LocalInspectionTool() {
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
-        return object : LpVisitor() {
-            override fun visitSymbol(symbol: LpSymbol) {
-                if (!symbol.isNamed) return
-                val parent = PsiTreeUtil.findFirstParent(symbol) {
-                    it is LpAlternative || it is LpExprSymbol || it is LpNonterminalArguments || it is LpTypeOfSymbol
-                }
-                if (parent is LpAlternative) {
-                    // if there is at least one explicitly selected, unnamed symbol
-                    if (parent.symbolList.any { it.isExplicitlySelected && !it.isNamed }) {
-                        // then it is an error
-                        holder.registerProblem(
-                            symbol,
-                            "Usage of named symbol in an alternative where an unnamed symbol was also used",
-                            RemoveNameQuickFix
-                        )
-                    }
-                } else {
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = object : LpVisitor() {
+        override fun visitSymbol(symbol: LpSymbol) {
+            if (!symbol.isNamed) return
+            val parent = PsiTreeUtil.findFirstParent(symbol) {
+                it is LpAlternative || it is LpExprSymbol || it is LpNonterminalArguments || it is LpTypeOfSymbol
+            }
+            if (parent is LpAlternative) {
+                // if there is at least one explicitly selected, unnamed symbol
+                if (parent.symbolList.any { it.isExplicitlySelected && !it.isNamed }) {
+                    // then it is an error
                     holder.registerProblem(
                         symbol,
-                        "Usage of named symbol in a context that doesn't allow it",
+                        "Usage of named symbol in an alternative where an unnamed symbol was also used",
                         RemoveNameQuickFix
                     )
                 }
+            } else {
+                holder.registerProblem(
+                    symbol,
+                    "Usage of named symbol in a context that doesn't allow it",
+                    RemoveNameQuickFix
+                )
             }
         }
     }
 }
 
 object RemoveNameQuickFix : LocalQuickFix {
-    override fun getFamilyName(): String {
-        return "Remove name"
-    }
+    override fun getFamilyName(): String = "Remove name"
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         (descriptor.psiElement as LpSymbol).removeName()

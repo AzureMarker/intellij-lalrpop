@@ -4,7 +4,10 @@ import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase
 import com.intellij.psi.tree.IElementType
-import com.mdrobnak.lalrpop.psi.*
+import com.mdrobnak.lalrpop.psi.LP_KEYWORDS
+import com.mdrobnak.lalrpop.psi.LP_OPERATORS
+import com.mdrobnak.lalrpop.psi.LP_PREDEFINED_SYMBOLS
+import com.mdrobnak.lalrpop.psi.LpElementTypes
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors as Default
 
 enum class LpColor(default: TextAttributesKey) {
@@ -12,6 +15,7 @@ enum class LpColor(default: TextAttributesKey) {
     ANNOTATION(Default.METADATA),
     BRACES(Default.BRACES),
     BRACKETS(Default.BRACKETS),
+    COMMA(Default.COMMA),
     PARENTHESIS(Default.PARENTHESES),
     OPERATION_SIGN(Default.OPERATION_SIGN),
     KEYWORD(Default.KEYWORD),
@@ -35,6 +39,7 @@ class LpSyntaxHighlighter : SyntaxHighlighterBase() {
                 LpElementTypes.ID -> LpColor.IDENTIFIER
                 LpElementTypes.LIFETIME -> LpColor.IDENTIFIER
                 LpElementTypes.COMMENT -> LpColor.LINE_COMMENT
+                LpElementTypes.COMMA -> LpColor.COMMA
                 LpElementTypes.LBRACE, LpElementTypes.RBRACE -> LpColor.BRACES
                 LpElementTypes.LBRACKET, LpElementTypes.RBRACKET -> LpColor.BRACKETS
                 LpElementTypes.LPAREN, LpElementTypes.RPAREN -> LpColor.PARENTHESIS

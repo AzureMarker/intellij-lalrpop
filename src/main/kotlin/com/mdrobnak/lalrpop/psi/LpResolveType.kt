@@ -3,20 +3,40 @@ package com.mdrobnak.lalrpop.psi
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.util.PsiTreeUtil
+import com.mdrobnak.lalrpop.psi.ext.rustGenericUnitStructs
 import com.mdrobnak.lalrpop.psi.util.lalrpopTypeResolutionContext
+import org.rust.lang.RsLanguage
+import org.rust.lang.core.macros.RsExpandedElement
 import org.rust.lang.core.macros.setContext
+import org.rust.lang.core.psi.RsModItem
 import org.rust.lang.core.psi.RsPsiFactory
+import org.rust.lang.core.psi.RsTypeAlias
 import org.rust.lang.core.psi.RsTypeParameterList
 import org.rust.lang.core.psi.ext.RsElement
+import org.rust.lang.core.psi.ext.childrenOfType
+import org.rust.lang.core.resolve.ImplLookup
 import org.rust.lang.core.types.Substitution
 import org.rust.lang.core.types.infer.RsInferenceContext
 import org.rust.lang.core.types.toTypeSubst
+import org.rust.lang.core.types.ty.Ty
 import org.rust.lang.core.types.ty.TyTypeParameter
 import org.rust.lang.core.types.ty.TyUnit
 import org.rust.lang.core.types.type
 
 data class LpMacroArgument(val rustType: String, val name: String)
-data class LpMacroArguments(val arguments: List<LpMacroArgument> = listOf()) : List<LpMacroArgument> by arguments {
+
+/**
+ * A class to hold the types of macro parameters
+ * @param rootArguments The identity parameters of the nonterminal on which resolveType was called initially,
+ * and with which we derive the other types. See
+ * [#37 (comment)](https://github.com/Mcat12/intellij-lalrpop/issues/37#issuecomment-757442682) for why this is needed.
+ * @see LpMacroArguments.identity
+ * @param arguments the list of arguments and their types. May also use types from [rootArguments][rootArguments]
+ */
+data class LpMacroArguments(val rootArguments: List<LpMacroArgument>, val arguments: List<LpMacroArgument>) :
+    List<LpMacroArgument> by arguments {
     fun getSubstitution(
         params: RsTypeParameterList?,
         project: Project,
@@ -25,22 +45,21 @@ data class LpMacroArguments(val arguments: List<LpMacroArgument> = listOf()) : L
     ): Substitution =
         params?.typeParameterList?.map { param ->
             TyTypeParameter.named(param) to (arguments.find { arg -> arg.name == param.identifier.text }?.rustType?.let {
-                RsPsiFactory(project).createType(it).let { typeRef ->
-                    typeRef.setContext(expandedElementContext)
+                RsPsiFactory(project).createType(it).run {
+                    setContext(expandedElementContext)
 
-                    inferenceContext.fullyResolve(typeRef.type)
+                    inferenceContext.fullyResolve(type)
                 }
             } ?: TyUnit)
         }.orEmpty().toMap().toTypeSubst()
 
     companion object {
         fun identity(params: LpNonterminalParams?): LpMacroArguments =
-            LpMacroArguments(params?.nonterminalParamList?.map {
-                val name = it.name!!
-                LpMacroArgument(name, name)
-            }.orEmpty())
+            params?.nonterminalParamList?.mapNotNull { it.name }?.map { LpMacroArgument(it, it) }
+                .orEmpty().let { LpMacroArguments(it, it) }
     }
 }
+
 
 data class LpTypeResolutionContext(
     val locationType: String = "usize",
@@ -74,4 +93,30 @@ interface LpResolveType : PsiElement {
 }
 
 fun LpResolveType.getContextAndResolveType(arguments: LpMacroArguments): String =
-    this.resolveType(this.containingFile.lalrpopTypeResolutionContext(), arguments)
+    resolveType(containingFile.lalrpopTypeResolutionContext(), arguments)
+
+fun String.lalrpopRustType(
+    project: Project,
+    importCode: String,
+    nonterminal: LpNonterminal,
+    modDefinition: RsModItem,
+): Ty? {
+    val genericUnitStructs = nonterminal.rustGenericUnitStructs()
+
+    val code = """
+        mod __intellij_lalrpop {
+            $importCode
+            $genericUnitStructs
+            
+            type ty = $this;
+        }
+    """.trimIndent()
+
+    val file = PsiFileFactory.getInstance(project).createFileFromText(RsLanguage, code)
+    for (child in file.childrenOfType<RsExpandedElement>())
+        child.setContext(modDefinition)
+
+    val tyAlias = PsiTreeUtil.findChildOfType(file, RsTypeAlias::class.java) ?: return null
+    val ty = tyAlias.typeReference?.type ?: return null
+    return ImplLookup.relativeTo(tyAlias).ctx.fullyResolve(ty)
+}

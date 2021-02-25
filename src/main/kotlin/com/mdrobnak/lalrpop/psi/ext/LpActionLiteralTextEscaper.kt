@@ -68,6 +68,10 @@ class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracke
     }
 
     override fun isOneLine(): Boolean = false
+
+    override fun getRelevantTextRange(): TextRange {
+        return myHost.code.textRangeInParent
+    }
 }
 
 /**
@@ -84,7 +88,7 @@ class LpActionLiteralTextEscaper(action: LpAction, private val evalOfAngleBracke
  */
 private fun String.findAllMappings(text: String, replacements: List<LpSelectedType>): List<Mapping> {
     var prevIndex = -text.length
-    var index = this.indexOf(text)
+    var index = indexOf(text)
     val mappings = mutableListOf<Mapping>()
     var decodedOffset = 0
 
@@ -100,7 +104,7 @@ private fun String.findAllMappings(text: String, replacements: List<LpSelectedTy
         )
         decodedOffset = decodedStart + replacements.lengthFor()
         prevIndex = index
-        index = this.indexOf(text, index + text.length)
+        index = indexOf(text, index + text.length)
     }
 
 
@@ -110,8 +114,8 @@ private fun String.findAllMappings(text: String, replacements: List<LpSelectedTy
 /**
  * Given a list of selected types, find what the <> should be replaced by.
  */
-private fun List<LpSelectedType>.replacement(): String =
-    this.mapIndexed { index, it ->
+private fun List<LpSelectedType>.replacement(context: Context): String =
+    mapIndexed { index, it ->
         when (it) {
             is LpSelectedType.WithName -> it.name
             is LpSelectedType.WithoutName -> index.lalrpopNoNameParameterByIndex
@@ -121,4 +125,4 @@ private fun List<LpSelectedType>.replacement(): String =
 /**
  * Find the length of the replacement of <>, in a given list of selected symbols.
  */
-private fun List<LpSelectedType>.lengthFor() = this.replacement().length
+private fun List<LpSelectedType>.lengthFor() = replacement().length

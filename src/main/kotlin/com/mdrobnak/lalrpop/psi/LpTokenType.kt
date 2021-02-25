@@ -5,9 +5,7 @@ import com.intellij.psi.tree.TokenSet
 import com.mdrobnak.lalrpop.LpLanguage
 
 class LpTokenType(debugName: String) : IElementType(debugName, LpLanguage) {
-    override fun toString(): String {
-        return "LALRPOP." + super.toString()
-    }
+    override fun toString(): String = "LALRPOP." + super.toString()
 }
 
 val LP_KEYWORDS = TokenSet.create(

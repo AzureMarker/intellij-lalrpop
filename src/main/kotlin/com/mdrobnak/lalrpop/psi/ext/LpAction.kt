@@ -5,7 +5,6 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.LiteralTextEscaper
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiLanguageInjectionHost
-import com.intellij.psi.impl.source.tree.LeafElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.parentOfType
 import com.mdrobnak.lalrpop.injectors.findModuleDefinition
@@ -23,7 +22,7 @@ import org.rust.lang.core.resolve.ImplLookup
 import org.rust.lang.core.types.infer.substitute
 
 val LpAction.alternativeParent: LpAlternative
-    get() = this.parentOfType()!!
+    get() = parentOfType()!!
 
 val Int.lalrpopNoNameParameterByIndex
     get() = "__intellij_lalrpop_noname_$this"
@@ -37,8 +36,8 @@ val Int.lalrpopNoNameParameterByIndex
  * infer it with the rust plugin, but to infer it we need the header, and this would lead to infinite indirect recursion.
  */
 fun LpAction.actionCodeFunctionHeader(withReturnType: Boolean = true): String {
-    val alternative = parentOfType<LpAlternative>()!!
-    val nonterminal = parentOfType<LpNonterminal>()!!
+    val alternative = alternativeParent
+    val nonterminal = alternative.nonterminalParent
 
     val typeResolutionContext = containingFile.lalrpopTypeResolutionContext()
 
@@ -55,19 +54,9 @@ fun LpAction.actionCodeFunctionHeader(withReturnType: Boolean = true): String {
             )
         else ""
 
-    val grammarDecl = this.containingFile.lalrpopFindGrammarDecl()
-
-    val grammarParams = grammarDecl.grammarParams
-    val grammarParametersString =
-        grammarParams?.grammarParamList?.joinToString(separator = "") { "${it.name}: ${it.typeRef.text}," }
-            ?: ""
-
-    val grammarTypeParams = grammarDecl.grammarTypeParams
-    val genericParameters = nonterminal.nonterminalName.nonterminalParams?.nonterminalParamList
-
-    val genericParamsString =
-        (grammarTypeParams?.typeParamList?.map { it.text }.orEmpty() + genericParameters?.map { it.text }.orEmpty())
-            .let { if (it.isEmpty()) "" else it.joinToString(prefix = "<", postfix = ">", separator = ", ") }
+    val grammarDecl = containingFile.lalrpopFindGrammarDecl()
+    val genericParamsString = nonterminal.genericParams
+    val grammarParametersString = grammarDecl.grammarParametersString
 
     val arguments = inputs.mapIndexed { index, it ->
         when (it) {
@@ -81,51 +70,54 @@ fun LpAction.actionCodeFunctionHeader(withReturnType: Boolean = true): String {
         grammarWhereClauses?.grammarWhereClauseList?.joinToString(prefix = "where ", separator = ", ") { it.text }
             ?: ""
 
-    return "fn __intellij_lalrpop $genericParamsString ($grammarParametersString $arguments) $arrowReturnType\n" +
-            "$grammarWhereClausesString\n"
+    return """
+        fn __intellij_lalrpop $genericParamsString ($grammarParametersString $arguments) $arrowReturnType
+        $grammarWhereClausesString
+        """.trimIndent()
 }
 
 abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpAction {
     override fun isValidHost(): Boolean = true
 
     override fun updateText(text: String): PsiLanguageInjectionHost {
-        val valueNode = node.lastChildNode
-        assert(valueNode is LeafElement)
-        (valueNode as LeafElement).replaceWithText(text)
-        return this
+        val newNode = LpElementFactory(project).createAction(text);
+        replace(newNode)
+        return newNode
     }
 
-    override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> {
-        val context = this.containingFile.lalrpopTypeResolutionContext()
-        return LpActionLiteralTextEscaper(
+    override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> =
+        LpActionLiteralTextEscaper(
             this,
-            this.alternativeParent.selectedTypesInContext(
-                context,
+            alternativeParent.selectedTypesInContext(
+                containingFile.lalrpopTypeResolutionContext(),
                 resolveTypes = false // no need to know the types of the selected symbols for expanding `<>`s
             )
         )
-    }
 
     override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String {
-        val importCode = this.containingFile.importCode
+        val importCode = containingFile.importCode
 
-        val code = actionCodeEscape(code.text, this.alternativeParent.selectedTypesInContext(context))
+        val code = actionCodeEscape(code.text, alternativeParent.selectedTypesInContext(context))
 
-        val fnCode = actionCodeFunctionHeader(false) +
-                "{\n" +
-                "   $code\n" +
-                "}\n"
-        val genericUnitStructs = this.alternativeParent.nonterminalParent.rustGenericUnitStructs()
+        val grammarDecl = containingFile.lalrpopFindGrammarDecl()
+        val genericUnitStructs = grammarDecl.typeParamsRustUnitStructs() + arguments.rootArguments.joinToString(separator = "") { "struct ${it.name};\n" }
 
-        val fileText = "mod __intellij_lalrpop {\n$importCode\n $genericUnitStructs\n $fnCode \n}"
+        val fileText = """
+            mod __intellij_lalrpop {
+                $importCode
+                $genericUnitStructs
+                ${actionCodeFunctionHeader(false)} {
+                    $code
+                }
+            }
+            """.trimIndent()
         val file = PsiFileFactory.getInstance(project)
             .createFileFromText(RsLanguage, fileText)
 
         val fn = PsiTreeUtil.findChildOfType(file, RsFunction::class.java) ?: return "()"
-        val block = fn.block ?: return "()"
-        val expr = block.expr ?: return "()"
+        val expr = fn.block?.expr ?: return "()"
 
-        val moduleDefinition = findModuleDefinition(project, this.containingFile) ?: return "()"
+        val moduleDefinition = findModuleDefinition(project, containingFile) ?: return "()"
 
         for (child in file.childrenOfType<RsExpandedElement>()) {
             child.setContext(moduleDefinition)

@@ -18,26 +18,23 @@ object CannotResolveNonterminalReferenceInspection : LocalInspectionTool() {
     override fun buildVisitor(
         holder: ProblemsHolder,
         isOnTheFly: Boolean
-    ): PsiElementVisitor {
-        return object : LpVisitor() {
-            override fun visitNonterminalRef(nonterminalRef: LpNonterminalRef) {
-                val ref = nonterminalRef.reference
-                if (ref != null && ref.resolve() == null) {
-                    if (nonterminalRef.arguments == null)
-                        holder.registerProblem(
-                            nonterminalRef,
-                            "Cannot resolve ${ref.canonicalText}",
-                            AddToMacroParamsQuickFix,
-                            CreateNonterminalQuickFix
-                        )
-                    else
-                        holder.registerProblem(
-                            nonterminalRef,
-                            "Cannot resolve ${ref.canonicalText}",
-                            CreateNonterminalQuickFix
-                        )
-                }
-            }
+    ): PsiElementVisitor = object : LpVisitor() {
+        override fun visitNonterminalRef(nonterminalRef: LpNonterminalRef) {
+            val ref = nonterminalRef.reference ?: return
+            if (ref.resolve() != null) return
+            if (nonterminalRef.arguments == null)
+                holder.registerProblem(
+                    nonterminalRef,
+                    "Cannot resolve ${ref.canonicalText}",
+                    AddToMacroParamsQuickFix,
+                    CreateNonterminalQuickFix
+                )
+            else
+                holder.registerProblem(
+                    nonterminalRef,
+                    "Cannot resolve ${ref.canonicalText}",
+                    CreateNonterminalQuickFix
+                )
         }
     }
 }
@@ -46,8 +43,7 @@ object AddToMacroParamsQuickFix : LocalQuickFix {
     override fun getFamilyName(): String = "Add to macro parameters"
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-        val nonterminal = descriptor.psiElement.parentOfType<LpNonterminal>() ?: return
-        nonterminal.nonterminalName.addParam(descriptor.psiElement.text)
+        descriptor.psiElement.parentOfType<LpNonterminal>()?.nonterminalName?.addParam(descriptor.psiElement.text)
     }
 }
 

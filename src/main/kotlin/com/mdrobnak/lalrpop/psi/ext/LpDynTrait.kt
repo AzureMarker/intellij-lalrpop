@@ -7,7 +7,6 @@ import com.mdrobnak.lalrpop.psi.LpTypeResolutionContext
 import com.mdrobnak.lalrpop.psi.LpMacroArguments
 
 abstract class LpDynTraitMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpDynTrait {
-    override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String {
-        return "dyn " + this.rustType.resolveType(context, arguments)
-    }
+    override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
+        "dyn " + rustType.resolveType(context, arguments)
 }

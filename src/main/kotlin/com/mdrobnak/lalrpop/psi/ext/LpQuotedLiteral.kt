@@ -9,6 +9,8 @@ import com.intellij.psi.util.elementType
 import com.mdrobnak.lalrpop.psi.LpElementTypes
 import com.mdrobnak.lalrpop.psi.LpQuotedLiteral
 
+fun LpQuotedLiteral.isRegex(): Boolean = regexLiteral != null
+
 abstract class LpQuotedLiteralMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpQuotedLiteral {
     override fun isValidHost(): Boolean = true
 
@@ -19,9 +21,6 @@ abstract class LpQuotedLiteralMixin(node: ASTNode) : ASTWrapperPsiElement(node),
         return this
     }
 
-    override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> {
-        return LiteralTextEscaper.createSimple(this)
-    }
-
-    fun isRegex(): Boolean = regexLiteral != null
+    override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> =
+        LiteralTextEscaper.createSimple(this)
 }

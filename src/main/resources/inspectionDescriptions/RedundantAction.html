@@ -1,0 +1,14 @@
+<html>
+<body>
+<p>Detects actions like <code>=> &lt;&gt;</code>
+</p>
+<!-- tooltip end -->
+<p>
+    Lalrpop already supplies action code like <code>=> &lt;&gt;</code>
+    or <code>=> (&lt;&gt;)</code> depending on the number of selected
+    symbols in the alternative. They also break lalrpop's type
+    inference algorithm, because it cannot deal with action code,
+    forcing you to put explicit types on your nonterminals.
+</p>
+</body>
+</html>

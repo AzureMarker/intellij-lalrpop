@@ -8,7 +8,7 @@ plugins {
 import org.jetbrains.grammarkit.tasks.*
 
 group 'com.mdrobnak'
-version '0.2.0'
+version '0.2.2'
 
 repositories {
     mavenCentral()
@@ -40,13 +40,21 @@ task generateParser(type: GenerateParser) {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    // Test with 2020.3
-    version '2020.3'
-    plugins = ['PsiViewer:203-SNAPSHOT', 'org.rust.lang:0.3.136.3514-203', 'org.toml.lang:0.2.136.3514-203']
+    // Test with the latest EAP
+    version 'LATEST-EAP-SNAPSHOT'
+    plugins = ['PsiViewer:211-SNAPSHOT', 'org.rust.lang:0.3.140.3644-203', 'org.toml.lang:0.2.140.3644-203']
 }
 compileKotlin {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions {
+        jvmTarget = "11"
+        apiVersion = "1.3"
+        freeCompilerArgs = ["-Xjvm-default=enable"]
+    }
+
     dependsOn(generateLexer, generateParser)
+}
+runPluginVerifier {
+    ideVersions = ["IIC-2020.3.1", "IIC-2020.2.4"]
 }
 publishPlugin {
     token = System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken")
@@ -56,6 +64,23 @@ patchPluginXml {
     sinceBuild "202.6397.94"
 
     changeNotes """
+      <b>0.2.2</b><br>
+      * Remove trailing newlines from user code<br>
+      * Give color to commas<br>
+      * Fix exception when refactoring affects injected Rust type references<br>
+      * Fix refactoring in Rust code adding a duplicate action type in affected LALRPOP code<br>
+      * Support 2021.1 EAP<br>
+      <br>
+
+      <b>0.2.1</b><br>
+      * Inject Rust into type references (e.g. explicit nonterminal types)<br>
+      * Handle fallible user actions (@dblanovschi)<br>
+      * Add an intention to explicitly write the inferred the type of a nonterminal (@dblanovschi)<br>
+      * Add an inspection for redundant user action code, such as <code>=> &lt;&gt;</code> (@dblanovschi)<br>
+      * Support in-place renaming (@dblanovschi)<br>
+      * Add type hints to nonterminals and (optionally) symbols (@dblanovschi)<br>
+      <br>
+
       <b>0.2.0</b><br>
       * Handle <> expressions in action code (@dblanovschi)<br>
       * Infer nonterminal types and perform type resolution (@dblanovschi)<br>
