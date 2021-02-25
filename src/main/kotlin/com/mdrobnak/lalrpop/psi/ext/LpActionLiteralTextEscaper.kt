@@ -114,7 +114,7 @@ private fun String.findAllMappings(text: String, replacements: List<LpSelectedTy
 /**
  * Given a list of selected types, find what the <> should be replaced by.
  */
-private fun List<LpSelectedType>.replacement(context: Context): String =
+private fun List<LpSelectedType>.replacement(): String =
     mapIndexed { index, it ->
         when (it) {
             is LpSelectedType.WithName -> it.name
