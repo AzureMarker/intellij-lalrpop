@@ -94,15 +94,15 @@ private fun String.findAllMappings(text: String, replacements: List<LpSelectedTy
 
     while (index != -1) {
         val decodedStart = decodedOffset + index - (prevIndex + text.length)
+        decodedOffset = decodedStart + replacements.lengthFor()
         mappings.add(
             Mapping(
                 TextRange(index, index + text.length), TextRange(
                     decodedStart,
-                    decodedStart + replacements.lengthFor()
+                    decodedOffset
                 ),
             )
         )
-        decodedOffset = decodedStart + replacements.lengthFor()
         prevIndex = index
         index = indexOf(text, index + text.length)
     }
