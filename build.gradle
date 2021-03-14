@@ -1,6 +1,6 @@
 plugins {
-    id 'org.jetbrains.intellij' version '0.6.5'
-    id 'org.jetbrains.kotlin.jvm' version '1.4.10'
+    id 'org.jetbrains.intellij' version '0.7.2'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.31'
     id 'org.jetbrains.grammarkit' version '2020.3.2'
     id 'idea'
 }
@@ -42,7 +42,7 @@ task generateParser(type: GenerateParser) {
 intellij {
     // Test with the latest EAP
     version 'LATEST-EAP-SNAPSHOT'
-    plugins = ['PsiViewer:211-SNAPSHOT', 'org.rust.lang:0.3.140.3644-203', 'org.toml.lang:0.2.140.3644-203']
+    plugins = ['PsiViewer:211-SNAPSHOT', 'org.rust.lang:0.3.142.3705-211', 'org.toml.lang:0.2.142.3705-211']
 }
 compileKotlin {
     kotlinOptions {
