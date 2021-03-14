@@ -40,13 +40,13 @@ fun findModuleDefinition(project: Project, lalrpopFile: PsiFile): RsModItem? {
     val virtualFiles = FileTypeIndex.getFiles(RsFileType, GlobalSearchScope.projectScope(project))
     val psiManager = PsiManager.getInstance(project)
     val moduleName = lalrpopFile.name.removeSuffix(".lalrpop")
-    val cargoPackage = lalrpopFile.findCargoPackage()
+    val cargoPackage = lalrpopFile.findCargoPackage() ?: return null
 
     return virtualFiles
         // Find Rust files
         .mapNotNull { psiManager.findFile(it) as RsFile? }
         // Only look at files in the same package
-        .filter { it.containingCargoPackage == cargoPackage }
+        .filter { it.containingCargoPackage?.id == cargoPackage.id }
         // Look at module declarations, including those created via macros (ex. lalrpop_mod macro)
         .flatMap { it.expandedItemsExceptImplsAndUses }
         .filterIsInstance<RsModItem>()
