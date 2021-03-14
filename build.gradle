@@ -8,7 +8,7 @@ plugins {
 import org.jetbrains.grammarkit.tasks.*
 
 group 'com.mdrobnak'
-version '0.2.2'
+version '0.2.3'
 
 repositories {
     mavenCentral()
@@ -64,6 +64,12 @@ patchPluginXml {
     sinceBuild "202.6397.94"
 
     changeNotes """
+      <b>0.2.3</b><br>
+      * (internal) Simplify the expansion of `<>` (@dblanovschi)<br>
+      * (internal) Update dependencies and Gradle<br>
+      * Fix finding the parser module declaration (this caused many weird issues)<br>
+      <br>
+
       <b>0.2.2</b><br>
       * Remove trailing newlines from user code<br>
       * Give color to commas<br>
