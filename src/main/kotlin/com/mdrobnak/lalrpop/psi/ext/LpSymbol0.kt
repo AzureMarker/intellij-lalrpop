@@ -10,9 +10,9 @@ abstract class LpSymbol0Mixin(node: ASTNode) : ASTWrapperPsiElement(node), LpSym
     override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
         repeatOpList.fold(symbol1.resolveType(context, arguments)) { tp, repeatOp ->
             repeatOp.switch(
-                question = "::std::option::Option<$tp>",
-                multiply = "::std::vec::Vec<$tp>",
-                plus = "::std::vec::Vec<$tp>"
+                question = "::core::option::Option<$tp>",
+                multiply = "::alloc::vec::Vec<$tp>",
+                plus = "::alloc::vec::Vec<$tp>"
             )
         }
 }
