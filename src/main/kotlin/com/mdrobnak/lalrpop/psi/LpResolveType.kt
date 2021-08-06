@@ -22,7 +22,6 @@ import org.rust.lang.core.types.infer.RsInferenceContext
 import org.rust.lang.core.types.toTypeSubst
 import org.rust.lang.core.types.ty.Ty
 import org.rust.lang.core.types.ty.TyTypeParameter
-import org.rust.lang.core.types.ty.TyUnit
 import org.rust.lang.core.types.type
 
 data class LpMacroArgument(val rustType: String, val name: String)
@@ -43,14 +42,16 @@ data class LpMacroArguments(val rootArguments: List<LpMacroArgument>, val argume
         inferenceContext: RsInferenceContext,
         expandedElementContext: RsElement
     ): Substitution =
-        params?.typeParameterList?.map { param ->
-            TyTypeParameter.named(param) to (arguments.find { arg -> arg.name == param.identifier.text }?.rustType?.let {
+        params?.typeParameterList?.mapNotNull { param ->
+            val argumentType = arguments.find { arg -> arg.name == param.identifier.text }?.rustType?.let {
                 RsPsiFactory(project).createType(it).run {
                     setContext(expandedElementContext)
 
                     inferenceContext.fullyResolve(type)
                 }
-            } ?: TyUnit)
+            } ?: return@mapNotNull null
+
+            TyTypeParameter.named(param) to argumentType
         }.orEmpty().toMap().toTypeSubst()
 
     companion object {
