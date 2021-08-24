@@ -45,6 +45,7 @@ import static com.mdrobnak.lalrpop.psi.LpElementTypes.*;
 %x PRE_RUST_CODE
 %x RUST_CODE
 %x IN_REGEX_LITERAL
+%x RUST_STR
 
 WHITE_SPACE=\s+
 
@@ -140,6 +141,7 @@ RustCodeEnd = [^(\[{)\]},;]*(;|,)
 
 <RUST_CODE> {
   "(" | "[" | "{"    { rust_bracket_count++; }
+  "\""               { yybegin(RUST_STR); }
   {RustCodeCloseBracket} {
           if (rust_bracket_count == 0) {
               // There were no opening brackets in the Rust code, so this
@@ -164,6 +166,12 @@ RustCodeEnd = [^(\[{)\]},;]*(;|,)
       }
 
   {RustCode}         { }
+}
+
+<RUST_STR> {
+  \\.               { } // Ignore escape sequences, and only handle one-char sequences
+  "\""              { yybegin(RUST_CODE); }
+  .                 { }
 }
 
 <IN_REGEX_LITERAL> {
