@@ -65,8 +65,10 @@ patchPluginXml {
 
     changeNotes = """
       <b>0.2.4</b><br>
+      * Improve parentheses counting in Rust code blocks to handle strings (fixes #45)<br>
       * Add support for 2021.2 IDEs<br>
       * Drop support for 2020 IDEs<br>
+      * (internal) Update dependencies and Gradle<br>
       <br>
 
       <b>0.2.3</b><br>
