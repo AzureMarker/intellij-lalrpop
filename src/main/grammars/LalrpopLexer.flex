@@ -61,11 +61,11 @@ Lifetime = \' {Id}
 ShebangAttribute = #\!\[.*\]
 
 RustImport = [^;]+
-// Eat everything except for brackets and punctuation, which are matched by the
-// other RUST_CODE rules.
-RustCode = [^(\[{)\]},;]+
-RustCodeCloseBracket = [^(\[{)\]},;]*(\)|\]|\})
-RustCodeEnd = [^(\[{)\]},;]*(;|,)
+// Eat everything except for brackets, punctuation, and strings, which are matched by the
+// other rules.
+RustCode = [^(\[{)\]},;\"]+
+RustCodeCloseBracket = [^(\[{)\]},;\"]*(\)|\]|\})
+RustCodeEnd = [^(\[{)\]},;\"]*(;|,)
 
 %%
 <YYINITIAL> {
@@ -169,7 +169,7 @@ RustCodeEnd = [^(\[{)\]},;]*(;|,)
 }
 
 <RUST_STR> {
-  \\.               { } // Ignore escape sequences, and only handle one-char sequences
+  \\\"              { } // Ignore escaped double quotes
   "\""              { yybegin(RUST_CODE); }
   .                 { }
 }
