@@ -8,7 +8,7 @@ plugins {
 import org.jetbrains.grammarkit.tasks.*
 
 group 'com.mdrobnak'
-version '0.2.4'
+version '0.2.5'
 
 repositories {
     mavenCentral()
@@ -64,6 +64,11 @@ patchPluginXml {
     sinceBuild = "211.7142"
 
     changeNotes = """
+      <b>0.2.5</b><br>
+      * Fix some cases of parentheses/brackets/braces in Rust strings breaking the lexer<br>
+      * Remove a deprecated function usage<br>
+      <br>
+
       <b>0.2.4</b><br>
       * Improve parentheses counting in Rust code blocks to handle strings (fixes #45)<br>
       * Add support for 2021.2 IDEs<br>
