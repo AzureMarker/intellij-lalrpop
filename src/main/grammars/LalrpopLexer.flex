@@ -50,8 +50,8 @@ import static com.mdrobnak.lalrpop.psi.LpElementTypes.*;
 WHITE_SPACE=\s+
 
 Comment = {TraditionalComment} | {EndOfLineComment}
-TraditionalComment   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
-EndOfLineComment     = "//" .* [^\r\n]*
+TraditionalComment   = "/*" ~"*/"
+EndOfLineComment     = "//" [^\r\n]*
 
 StrLiteral = \" ([^\\\"] | \\. )* \"
 
