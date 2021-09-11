@@ -171,7 +171,7 @@ RustCodeEnd = [^(\[{)\]},;\"]*(;|,)
 <RUST_STR> {
   \\\"              { } // Ignore escaped double quotes
   "\""              { yybegin(RUST_CODE); }
-  . | \n            { }
+  [^]            { }
 }
 
 <IN_REGEX_LITERAL> {
