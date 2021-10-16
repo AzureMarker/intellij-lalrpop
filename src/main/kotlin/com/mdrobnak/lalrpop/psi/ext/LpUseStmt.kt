@@ -2,12 +2,12 @@ package com.mdrobnak.lalrpop.psi.ext
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
-import com.intellij.lang.psi.SimpleMultiLineTextEscaper
 import com.intellij.psi.LiteralTextEscaper
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiLanguageInjectionHost
 import com.intellij.psi.impl.source.tree.LeafElement
 import com.mdrobnak.lalrpop.psi.LpUseStmt
+import com.mdrobnak.lalrpop.psi.SimpleMultiLineTextEscaper
 import org.rust.lang.core.psi.ext.childrenOfType
 
 val PsiFile.importCode: String
