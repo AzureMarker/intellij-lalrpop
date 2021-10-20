@@ -99,5 +99,6 @@
             <category>LALRPOP</category>
         </intentionAction>
 
+        <errorHandler implementation="com.mdrobnak.lalrpop.LpErrorReporter"/>
     </extensions>
 </idea-plugin>
