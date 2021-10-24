@@ -65,4 +65,7 @@ class LpElementFactory(val project: Project) {
 
     fun createAction(text: String): LpAction =
         createFromText("grammar; dummy = \" \" $text;") ?: error("Failed to create action from `$text`")
+
+    fun createUseStmt(text: String): LpUseStmt =
+        createFromText("use $text; grammar;") ?: error("Failed to create use statement from `$text`")
 }

@@ -5,7 +5,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.LiteralTextEscaper
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiLanguageInjectionHost
-import com.intellij.psi.impl.source.tree.LeafElement
+import com.mdrobnak.lalrpop.psi.LpElementFactory
 import com.mdrobnak.lalrpop.psi.LpUseStmt
 import com.mdrobnak.lalrpop.psi.SimpleMultiLineTextEscaper
 import org.rust.lang.core.psi.ext.childrenOfType
@@ -17,10 +17,9 @@ abstract class LpUseStmtMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpUse
     override fun isValidHost(): Boolean = true
 
     override fun updateText(text: String): PsiLanguageInjectionHost {
-        val valueNode = importCode
-        assert(valueNode is LeafElement)
-        (valueNode as LeafElement).replaceWithText(text)
-        return this
+        val newNode = LpElementFactory(project).createUseStmt(text);
+        replace(newNode)
+        return newNode
     }
 
     override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> =
