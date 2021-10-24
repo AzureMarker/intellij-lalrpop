@@ -8,7 +8,7 @@ plugins {
 import org.jetbrains.grammarkit.tasks.*
 
 group 'com.mdrobnak'
-version '0.2.6'
+version '0.2.7'
 
 repositories {
     mavenCentral()
@@ -50,7 +50,7 @@ task generateParser(type: GenerateParser) {
 intellij {
     // Test with the latest EAP
     version = 'LATEST-EAP-SNAPSHOT'
-    plugins = ['PsiViewer:213-SNAPSHOT', 'org.rust.lang:0.4.157.4174-213', 'org.toml.lang:213.4928.7']
+    plugins = ['PsiViewer:213-SNAPSHOT', 'org.rust.lang:0.4.157.4174-213', 'org.toml.lang:213.5281.15']
 }
 compileKotlin {
     kotlinOptions {
@@ -72,6 +72,13 @@ patchPluginXml {
     sinceBuild = "211.7142"
 
     changeNotes = """
+      <b>0.2.7</b><br>
+      * Add error reporter for plugin crashes<br>
+      * Support 2021.3 IDEs/EAP<br>
+      * Possible fix for duplicate use/semicolon tokens after renaming item used in import<br>
+      * Small improvements to the lexer<br>
+      <br>
+
       <b>0.2.6</b><br>
       * Fix multi-line Rust string handling<br>
       <br>
