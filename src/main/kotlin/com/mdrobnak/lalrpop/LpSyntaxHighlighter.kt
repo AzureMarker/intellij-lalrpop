@@ -29,7 +29,7 @@ enum class LpColor(default: TextAttributesKey) {
     PATH(Default.CLASS_REFERENCE),
     STRING(Default.STRING);
 
-    val textAttributesKey = TextAttributesKey.createTextAttributesKey(name, default)
+    val textAttributesKey = TextAttributesKey.createTextAttributesKey("LALRPOP.${name}", default)
 }
 
 class LpSyntaxHighlighter : SyntaxHighlighterBase() {
