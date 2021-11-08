@@ -96,9 +96,13 @@ alternatives ::= alternative SEMICOLON | LBRACE <<comma alternative>> RBRACE SEM
 
 alternative ::= annotation* symbol+ (IF cond)? action?
     | (IF cond)? action {
+    recoverWhile=alternative_recover
+    pin=2
     implements = "com.mdrobnak.lalrpop.psi.LpResolveType"
     mixin = "com.mdrobnak.lalrpop.psi.ext.LpAlternativeMixin"
 }
+
+private alternative_recover ::= !(SEMICOLON | COMMA | RBRACE)
 
 action ::= action_type CODE {
     implements = ["com.intellij.psi.PsiLanguageInjectionHost" "com.mdrobnak.lalrpop.psi.LpResolveType"]
