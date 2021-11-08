@@ -16,6 +16,12 @@ import static com.mdrobnak.lalrpop.psi.LpElementTypes.*;
   int rust_bracket_count = 0;
 
   /**
+   * Keeps track of the offset where the Rust code starts.
+   * This is used to determine if the code we matched is empty.
+   */
+  int rust_code_start = 0;
+
+  /**
    * Count hashs in regex literals, i.e. r##""## has two hashes
    */
   int regex_hash_count = 0;
@@ -31,6 +37,25 @@ import static com.mdrobnak.lalrpop.psi.LpElementTypes.*;
       while (yycharat(yylength()-1) == '\n') {
           yypushback(1);
       }
+  }
+
+  private IElementType handleRustCodeEnd() {
+      if (rust_bracket_count == 0) {
+          // There were no opening brackets in the Rust code, so this
+          // character is part of the LALRPOP code.
+          yypushback(1);
+          pushbackNewlines();
+          yybegin(YYINITIAL);
+
+          if (zzMarkedPos - rust_code_start != 0) {
+              return CODE;
+          }
+
+          // This is an empty token. It will be thrown out when building the AST.
+          // Just don't emit the token.
+      }
+
+      return null;
   }
 %}
 
@@ -103,7 +128,7 @@ RustCodeEnd = [^(\[{)\]},;\"]*(;|,)
   "<"                { return LESSTHAN; }
   ">"                { return GREATERTHAN; }
   "->"               { return RSINGLEARROW; }
-  "=>@L"             { return LOOKAHEAD_ACTION; }
+  "=>@L"             { return LOOKAHEAD_ACTION; } // TODO: expect rust code here?
   "=>@R"             { return LOOKBEHIND_ACTION; }
   "=>?"              { yybegin(PRE_RUST_CODE); return FALLIBLE_ACTION; }
   "=>"               { yybegin(PRE_RUST_CODE); return USER_ACTION; }
@@ -136,32 +161,24 @@ RustCodeEnd = [^(\[{)\]},;\"]*(;|,)
 // This small state handles the whitespace between the =>/=>? and the Rust code
 <PRE_RUST_CODE> {
   {WHITE_SPACE}      { return WHITE_SPACE; }
-  .                  { yybegin(RUST_CODE); yypushback(1); }
+  .                  { yybegin(RUST_CODE); yypushback(1); rust_code_start = zzMarkedPos; }
 }
 
 <RUST_CODE> {
   "(" | "[" | "{"    { rust_bracket_count++; }
   "\""               { yybegin(RUST_STR); }
   {RustCodeCloseBracket} {
-          if (rust_bracket_count == 0) {
-              // There were no opening brackets in the Rust code, so this
-              // character is part of the LALRPOP code.
-              yypushback(1);
-              pushbackNewlines();
-              yybegin(YYINITIAL);
-              return CODE;
+          IElementType result = handleRustCodeEnd();
+          if (result != null) {
+              return result;
           }
 
           rust_bracket_count--;
       }
   {RustCodeEnd} {
-          if (rust_bracket_count == 0) {
-              // There were no opening brackets in the Rust code, so this
-              // character is part of the LALRPOP code.
-              yypushback(1);
-              pushbackNewlines();
-              yybegin(YYINITIAL);
-              return CODE;
+          IElementType result = handleRustCodeEnd();
+          if (result != null) {
+              return result;
           }
       }
 
