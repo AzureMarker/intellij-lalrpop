@@ -34,7 +34,7 @@ import static com.mdrobnak.lalrpop.psi.LpElementTypes.*;
    * Remove trailing newlines from the token
    */
   private void pushbackNewlines() {
-      while (yycharat(yylength()-1) == '\n') {
+      while (yycharat(yylength()-1) == '\n' && yylength() > 0) {
           yypushback(1);
       }
   }
@@ -128,7 +128,7 @@ RustCodeEnd = [^(\[{)\]},;\"]*(;|,)
   "<"                { return LESSTHAN; }
   ">"                { return GREATERTHAN; }
   "->"               { return RSINGLEARROW; }
-  "=>@L"             { return LOOKAHEAD_ACTION; } // TODO: expect rust code here?
+  "=>@L"             { return LOOKAHEAD_ACTION; }
   "=>@R"             { return LOOKBEHIND_ACTION; }
   "=>?"              { yybegin(PRE_RUST_CODE); return FALLIBLE_ACTION; }
   "=>"               { yybegin(PRE_RUST_CODE); return USER_ACTION; }
