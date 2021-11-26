@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'io.sentry:sentry:5.3.0'
+    implementation 'io.sentry:sentry:5.4.0'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
@@ -49,8 +49,8 @@ task generateParser(type: GenerateParser) {
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     // Test with a recent EAP
-    version = 'IU-213.5449-EAP-CANDIDATE-SNAPSHOT'
-    plugins = ['PsiViewer:213-SNAPSHOT', 'org.rust.lang:0.4.158.4203-213', 'org.toml.lang:213.5449.24']
+    version = 'IU-213.5744-EAP-CANDIDATE-SNAPSHOT'
+    plugins = ['PsiViewer:213-SNAPSHOT', 'org.rust.lang:0.4.160.4261-213', 'org.toml.lang:213.5744.190']
 }
 compileKotlin {
     kotlinOptions {
