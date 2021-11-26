@@ -28,15 +28,20 @@ fun List<LpSymbol>.computeType(context: LpTypeResolutionContext, arguments: LpMa
         else joined
     }
 
-fun PsiFile.lalrpopTypeResolutionContext(): LpTypeResolutionContext = CachedValuesManager.getCachedValue(this) {
-    val externTokens = descendantsOfType<LpExternToken>()
+fun PsiFile.lalrpopTypeResolutionContext(): LpTypeResolutionContext {
+    val (locationType, errorType, tokenType) = CachedValuesManager.getCachedValue(this) {
+        val externTokens = descendantsOfType<LpExternToken>()
 
-    val locationType = externTokens.mapNotNull { it.resolveLocationType() }.firstOrNull() ?: "usize"
-    val errorType = externTokens.mapNotNull { it.resolveErrorType() }.firstOrNull() ?: "&'static str"
-    val tokenType = externTokens.mapNotNull { it.resolveTokenType() }.firstOrNull() ?: "&str"
+        val locationType = externTokens.mapNotNull { it.resolveLocationType() }.firstOrNull() ?: "usize"
+        val errorType = externTokens.mapNotNull { it.resolveErrorType() }.firstOrNull() ?: "&'static str"
+        val tokenType = externTokens.mapNotNull { it.resolveTokenType() }.firstOrNull() ?: "&str"
 
-    return@getCachedValue CachedValueProvider.Result<LpTypeResolutionContext>(
-        LpTypeResolutionContext(locationType, errorType, tokenType),
-        PsiModificationTracker.MODIFICATION_COUNT
-    )
+        return@getCachedValue CachedValueProvider.Result(
+            Triple(locationType, errorType, tokenType),
+            PsiModificationTracker.MODIFICATION_COUNT
+        )
+    }
+
+    // Need to create a fresh context each time since the stack set gets mutated during type resolution
+    return LpTypeResolutionContext(locationType, errorType, tokenType)
 }

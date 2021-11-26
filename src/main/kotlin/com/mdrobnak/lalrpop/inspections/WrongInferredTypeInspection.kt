@@ -12,6 +12,7 @@ import com.mdrobnak.lalrpop.psi.LpNonterminal
 import com.mdrobnak.lalrpop.psi.LpVisitor
 import com.mdrobnak.lalrpop.psi.ext.importCode
 import com.mdrobnak.lalrpop.psi.ext.rustGenericUnitStructs
+import com.mdrobnak.lalrpop.psi.getContextAndResolveType
 import com.mdrobnak.lalrpop.psi.util.lalrpopTypeResolutionContext
 import org.rust.lang.RsLanguage
 import org.rust.lang.core.macros.RsExpandedElement
@@ -32,9 +33,7 @@ object WrongInferredTypeInspection : LocalInspectionTool() {
         isOnTheFly: Boolean,
     ): PsiElementVisitor = object : LpVisitor() {
         override fun visitNonterminal(nonterminal: LpNonterminal) {
-            val context = nonterminal.containingFile.lalrpopTypeResolutionContext()
-
-            val explicitType = nonterminal.typeRef?.resolveType(context, LpMacroArguments.identity(nonterminal.nonterminalName.nonterminalParams))
+            val explicitType = nonterminal.typeRef?.getContextAndResolveType(LpMacroArguments.identity(nonterminal.nonterminalName.nonterminalParams))
 
             // LALRPOP will automatically supply action code of (), so we don't need to worry about inferring the wrong type.
             // https://github.com/lalrpop/lalrpop/blob/8a96e9646b3d00c2226349efed832c4c25631c53/lalrpop/src/normalize/lower/mod.rs#L351-L354
@@ -45,7 +44,7 @@ object WrongInferredTypeInspection : LocalInspectionTool() {
             val unitStructsGenerics by lazy { nonterminal.rustGenericUnitStructs() }
 
             nonterminal.alternatives.alternativeList.filter { it.action == null }.forEach { alternative ->
-                val alternativeType = alternative.resolveType(context, LpMacroArguments.identity(nonterminal.nonterminalName.nonterminalParams))
+                val alternativeType = alternative.getContextAndResolveType(LpMacroArguments.identity(nonterminal.nonterminalName.nonterminalParams))
 
                 if (seenType == null) {
                     seenType = alternativeType

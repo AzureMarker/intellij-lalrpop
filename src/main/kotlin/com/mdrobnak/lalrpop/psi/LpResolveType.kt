@@ -65,7 +65,9 @@ data class LpMacroArguments(val rootArguments: List<LpMacroArgument>, val argume
 data class LpTypeResolutionContext(
     val locationType: String = "usize",
     val errorType: String = "&'static str",
-    val tokenType: String = "&str"
+    val tokenType: String = "&str",
+    val nonterminalStack: MutableSet<String> = mutableSetOf(),
+    val nonterminalTypeCache: MutableMap<String, String> = mutableMapOf()
 ) {
     val errorRecovery = "::lalrpop_util::ErrorRecovery<$locationType, $tokenType, $errorType>"
     val parseError = "::lalrpop_util::ParseError<$locationType, $tokenType, $errorType>"

@@ -30,16 +30,35 @@ val LpNonterminal.genericParams: String
 
 
 abstract class LpNonterminalMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpNonterminal {
-    override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String =
-        if (nonterminalName.nonterminalParams != null)
-            internallyResolveType(context, arguments)
-        else CachedValuesManager.getCachedValue(this) {
-            // Isn't a lalrpop macro and therefore can be cached
-            return@getCachedValue CachedValueProvider.Result<String>(
-                internallyResolveType(context, LpMacroArguments(listOf(), listOf())),
-                PsiModificationTracker.MODIFICATION_COUNT
-            )
+    override fun resolveType(context: LpTypeResolutionContext, arguments: LpMacroArguments): String {
+        // Non-null, see LpNonterminalNameMixin
+        val name = nonterminalName.name!!
+
+        // Use the cached type if available
+        val cachedType = context.nonterminalTypeCache[name]
+        if (cachedType != null) {
+            return cachedType
         }
+
+        // Make sure we aren't in a loop
+        if (context.nonterminalStack.contains(name)) {
+            // TODO: make an error?
+            return "()"
+        }
+        context.nonterminalStack.add(name)
+
+        val type: String
+        if (nonterminalName.nonterminalParams != null)
+            type = internallyResolveType(context, arguments)
+        else  {
+            // Isn't a lalrpop macro and therefore can be cached
+            type = internallyResolveType(context, LpMacroArguments(listOf(), listOf()))
+            context.nonterminalTypeCache[name] = type
+        }
+
+        context.nonterminalStack.remove(name)
+        return type
+    }
 
     private fun internallyResolveType(
         context: LpTypeResolutionContext,
