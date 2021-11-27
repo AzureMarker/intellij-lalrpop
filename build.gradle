@@ -77,7 +77,7 @@ patchPluginXml {
       * Fix an exception due to lexer emitting empty CODE tokens (reported via Sentry)<br>
       * Fix stack overflow when inferring type of self-referential nonterminal (reported via Sentry)<br>
       * Improve parser recovery when alternative fails to parse<br>
-      * Fix possible lexer exception when Rust code block is empty.
+      * Fix possible lexer exception when Rust code block is empty<br>
       * Update dependencies<br>
       <br>
 
