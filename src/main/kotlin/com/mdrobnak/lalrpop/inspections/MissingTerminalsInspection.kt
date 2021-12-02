@@ -11,14 +11,14 @@ import com.mdrobnak.lalrpop.psi.*
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
 
-val unresolvedKey = Key.create<ConcurrentLinkedQueue<PsiElement>>("missingTerminals.unresolved")
-val terminalDefsKey = Key.create<ConcurrentLinkedQueue<PsiElement>>("missingTerminals.terminalDefs")
+val unresolvedKey = Key.create<ConcurrentLinkedQueue<PsiElement>>("LALRPOP.missingTerminals.unresolved")
+val terminalDefsKey = Key.create<ConcurrentLinkedQueue<PsiElement>>("LALRPOP.missingTerminals.terminalDefs")
 
 // true if it found an enum / match token
-val checkKey = Key.create<AtomicBoolean>("missingTerminals.check")
+val checkKey = Key.create<AtomicBoolean>("LALRPOP.missingTerminals.check")
 
 // true if the match has a _
-val matchHasWildcardKey = Key.create<AtomicBoolean>("missingTerminals.matchHasWildcard")
+val matchHasWildcardKey = Key.create<AtomicBoolean>("LALRPOP.missingTerminals.matchHasWildcard")
 
 /**
  * Gets the user data from the holder and asserts it is not null.
