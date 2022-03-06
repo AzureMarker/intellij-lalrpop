@@ -13,28 +13,43 @@ import com.mdrobnak.lalrpop.psi.ext.setType
 import com.mdrobnak.lalrpop.psi.getContextAndResolveType
 
 object CannotInferNonterminalTypeInspection : LocalInspectionTool() {
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor = object : LpVisitor() {
+    override fun buildVisitor(
+        holder: ProblemsHolder,
+        isOnTheFly: Boolean
+    ): PsiElementVisitor = object : LpVisitor() {
         override fun visitNonterminal(nonterminal: LpNonterminal) {
             if (nonterminal.typeRef == null &&
                 nonterminal.alternatives.alternativeList.isNotEmpty() &&
                 nonterminal.alternatives.alternativeList.all { it.action != null }
             ) {
+                // Try to resolve the type
+                val type = nonterminal.getContextAndResolveType(
+                    LpMacroArguments.identity(nonterminal.nonterminalName.nonterminalParams)
+                )
+
+                val quickFix = when (type) {
+                    // IntelliJ-Rust was unable to resolve the type, so don't
+                    // suggest the quick fix.
+                    "_" -> null
+                    else -> InferFromRustPluginQuickFix(type)
+                }
+
                 holder.registerProblem(
                     nonterminal,
                     "Cannot infer type of nonterminal",
-                    InferFromRustPluginQuickFix,
+                    quickFix,
                 )
             }
         }
     }
 }
 
-object InferFromRustPluginQuickFix : LocalQuickFix {
+class InferFromRustPluginQuickFix(val type: String) : LocalQuickFix {
     override fun getFamilyName(): String = "Get from action code"
 
+    override fun getName(): String = "Get from action code ($type)"
+
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-        (descriptor.psiElement as LpNonterminal).apply {
-            setType(getContextAndResolveType(LpMacroArguments.identity(nonterminalName.nonterminalParams)))
-        }
+        (descriptor.psiElement as LpNonterminal).setType(type)
     }
 }
