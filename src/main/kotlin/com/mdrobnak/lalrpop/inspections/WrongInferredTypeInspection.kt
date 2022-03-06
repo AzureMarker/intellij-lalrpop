@@ -13,7 +13,6 @@ import com.mdrobnak.lalrpop.psi.LpVisitor
 import com.mdrobnak.lalrpop.psi.ext.importCode
 import com.mdrobnak.lalrpop.psi.ext.rustGenericUnitStructs
 import com.mdrobnak.lalrpop.psi.getContextAndResolveType
-import com.mdrobnak.lalrpop.psi.util.lalrpopTypeResolutionContext
 import org.rust.lang.RsLanguage
 import org.rust.lang.core.macros.RsExpandedElement
 import org.rust.lang.core.macros.setContext
