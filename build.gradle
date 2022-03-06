@@ -49,8 +49,8 @@ task generateParser(type: GenerateParser) {
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     // Test with a recent EAP or release
-    version = '2021.3'
-    plugins = ['PsiViewer:213-SNAPSHOT', 'org.rust.lang:0.4.160.4276-213', 'org.toml.lang:213.5744.224']
+    version = '2021.3.2'
+    plugins = ['PsiViewer:213-SNAPSHOT', 'org.rust.lang:0.4.165.4438-213', 'org.toml.lang:213.5744.224']
 }
 compileKotlin {
     kotlinOptions {
@@ -62,14 +62,14 @@ compileKotlin {
     dependsOn(generateLexer, generateParser)
 }
 runPluginVerifier {
-    ideVersions = ["IIC-2021.1", "IIC-2021.2", "IIC-2021.3"]
+    ideVersions = ["IIC-2021.3.2"]
 }
 publishPlugin {
     token = System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken")
 }
 patchPluginXml {
-    // Support 2021.1
-    sinceBuild = "211.7142"
+    // Support 2021.3
+    sinceBuild = "213.6461"
 
     changeNotes = """
       <b>0.2.8</b><br>

@@ -15,9 +15,7 @@ import org.rust.lang.RsLanguage
 import org.rust.lang.core.macros.RsExpandedElement
 import org.rust.lang.core.macros.setContext
 import org.rust.lang.core.psi.RsFunction
-import org.rust.lang.core.psi.ext.RsElement
-import org.rust.lang.core.psi.ext.block
-import org.rust.lang.core.psi.ext.childrenOfType
+import org.rust.lang.core.psi.ext.*
 import org.rust.lang.core.resolve.ImplLookup
 import org.rust.lang.core.types.infer.substitute
 
@@ -115,7 +113,7 @@ abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpActi
             .createFileFromText(RsLanguage, fileText)
 
         val fn = PsiTreeUtil.findChildOfType(file, RsFunction::class.java) ?: return "()"
-        val expr = fn.block?.expr ?: return "()"
+        val expr = fn.block?.expandedTailExpr ?: return "()"
 
         val moduleDefinition = findModuleDefinition(project, containingFile) ?: return "()"
 
