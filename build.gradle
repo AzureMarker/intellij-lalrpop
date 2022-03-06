@@ -8,7 +8,7 @@ plugins {
 import org.jetbrains.grammarkit.tasks.*
 
 group 'com.mdrobnak'
-version '0.2.8'
+version '0.2.9'
 
 repositories {
     mavenCentral()
@@ -72,6 +72,14 @@ patchPluginXml {
     sinceBuild = "213.6461"
 
     changeNotes = """
+      <b>0.2.9</b><br>
+      * Fix an error when using the plugin with IntelliJ-Rust >= 165 (reported via Sentry)<br>
+      * Fix an error in InferFromRustPluginQuickFix when the type isn't known<br>
+      * More accurately match the supported RegExp functionality in LALRPOP<br>
+      * Fix a possible issue with non-unique keys in MissingTerminalsInspection (reported via Sentry)<br>
+      * Drop support for < 2021.3 IDEs<br>
+      <br>
+
       <b>0.2.8</b><br>
       * Fix an exception due to using non-unique text attribute keys (reported via Sentry)<br>
       * Fix an exception due to lexer emitting empty CODE tokens (reported via Sentry)<br>
