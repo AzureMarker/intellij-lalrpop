@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'com.mdrobnak'
-version '0.2.9'
+version '0.2.10'
 
 repositories {
     mavenCentral()
@@ -72,6 +72,11 @@ patchPluginXml {
     sinceBuild = "221"
 
     changeNotes = """
+      <b>0.2.10</b><br>
+      * Update to support 2022.1 IDEs (and drop 2021.3)<br>
+      * Update dependencies<br>
+      <br>
+
       <b>0.2.9</b><br>
       * Fix an error when using the plugin with IntelliJ-Rust >= 165 (reported via Sentry)<br>
       * Fix an error in InferFromRustPluginQuickFix when the type isn't known<br>
