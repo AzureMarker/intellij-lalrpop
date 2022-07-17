@@ -41,8 +41,8 @@ generateParser {
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     // Test with a recent EAP or release
-    version = '2022.1'
-    plugins = ['PsiViewer:221-SNAPSHOT', 'org.rust.lang:0.4.168.4555-221', 'org.toml.lang:221.5080.126']
+    version = '2022.1.3'
+    plugins = ['PsiViewer:221-SNAPSHOT', 'org.rust.lang:0.4.174.4743-221', 'org.toml.lang:221.5921.15']
 
     // Don't limit the untilBuild value to the current major IDE version
     sameSinceUntilBuild = true
