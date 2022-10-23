@@ -19,10 +19,10 @@ import org.rust.lang.core.psi.ext.childrenOfType
 import org.rust.lang.core.resolve.ImplLookup
 import org.rust.lang.core.types.Substitution
 import org.rust.lang.core.types.infer.RsInferenceContext
+import org.rust.lang.core.types.rawType
 import org.rust.lang.core.types.toTypeSubst
 import org.rust.lang.core.types.ty.Ty
 import org.rust.lang.core.types.ty.TyTypeParameter
-import org.rust.lang.core.types.type
 
 data class LpMacroArgument(val rustType: String, val name: String)
 
@@ -47,7 +47,7 @@ data class LpMacroArguments(val rootArguments: List<LpMacroArgument>, val argume
                 RsPsiFactory(project).createType(it).run {
                     setContext(expandedElementContext)
 
-                    inferenceContext.fullyResolve(type)
+                    inferenceContext.fullyResolve(this.rawType)
                 }
             } ?: return@mapNotNull null
 
@@ -120,6 +120,6 @@ fun String.lalrpopRustType(
         child.setContext(modDefinition)
 
     val tyAlias = PsiTreeUtil.findChildOfType(file, RsTypeAlias::class.java) ?: return null
-    val ty = tyAlias.typeReference?.type ?: return null
+    val ty = tyAlias.typeReference?.rawType ?: return null
     return ImplLookup.relativeTo(tyAlias).ctx.fullyResolve(ty)
 }
