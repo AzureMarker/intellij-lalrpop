@@ -58,7 +58,7 @@ compileKotlin {
     dependsOn(generateLexer, generateParser)
 }
 runPluginVerifier {
-    ideVersions = ["IIC-2022.1"]
+    ideVersions = ["IIC-2022.2"]
 }
 publishPlugin {
     token = System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken")
