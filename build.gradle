@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'com.mdrobnak'
-version '0.2.11'
+version '0.2.12'
 
 repositories {
     mavenCentral()
@@ -72,6 +72,12 @@ patchPluginXml {
     sinceBuild = "222"
 
     changeNotes = """
+      <b>0.2.12</b><br>
+      * Update dependencies<br>
+      * Support recent intellij-rust changes<br>
+      * Fix Rust code injection (references in LALRPOP files work again!)<br>
+      <br>
+
       <b>0.2.11</b><br>
       * Fix "Failed to create use statement" bug (reported via Sentry)<br>
       <br>
