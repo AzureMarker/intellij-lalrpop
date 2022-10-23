@@ -16,7 +16,7 @@ class LpRustImportCodeInjector : MultiHostInjector {
         }
 
         val prefix = """
-            mod __intellij_lalrpop {
+            mod __tmp__ {
                 use """.trimIndent()
 
         val suffix = ";\n}"

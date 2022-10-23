@@ -37,7 +37,7 @@ class LpRustTypeRefInjector : MultiHostInjector {
                 ?: ""
 
         val prefix = """
-            mod __intellij_lalrpop {
+            mod __tmp__ {
                 $imports
                 type __intellij_lalrpop<$grammarTypeParamsString $nonterminalTypeParamsString> = """.trimIndent()
         val suffix = ";\n}"

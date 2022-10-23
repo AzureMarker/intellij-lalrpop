@@ -23,7 +23,7 @@ class LpRustActionCodeInjector : MultiHostInjector {
         val rustFunctionHeader = context.actionCodeFunctionHeader(true)
 
         val prefix = """
-            mod __intellij_lalrpop {
+            mod __tmp__ {
                 $imports
                 $rustFunctionHeader {
             """.trimIndent()
