@@ -41,7 +41,7 @@ fun LpActionType.nonterminalTypeFromReturn(ty: Ty): Ty = when (childrenWithLeave
     LpElementTypes.USER_ACTION, LpElementTypes.LOOKAHEAD_ACTION, LpElementTypes.LOOKBEHIND_ACTION -> ty
     LpElementTypes.FALLIBLE_ACTION ->
         ty.takeIf { (it as? TyAdt)?.item?.qualifiedName == "core::result::Result" }
-            ?.typeParameterValues?.typeByName("T")
+            ?.typeParameterValues?.typeParameterByName("T")
             ?: error("Inferred type from fallible action code(${ty.render()}) is not Result")
     else -> throw IllegalStateException("Child other than =>, =>@L, =>@R, or =>? in an action_type rule")
 }

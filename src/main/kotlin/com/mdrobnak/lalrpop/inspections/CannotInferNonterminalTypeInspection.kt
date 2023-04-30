@@ -27,17 +27,16 @@ object CannotInferNonterminalTypeInspection : LocalInspectionTool() {
                     LpMacroArguments.identity(nonterminal.nonterminalName.nonterminalParams)
                 )
 
-                val quickFix = when (type) {
+                if (type == "_") {
                     // IntelliJ-Rust was unable to resolve the type, so don't
                     // suggest the quick fix.
-                    "_" -> null
-                    else -> InferFromRustPluginQuickFix(type)
+                    return
                 }
 
                 holder.registerProblem(
                     nonterminal,
                     "Cannot infer type of nonterminal",
-                    quickFix,
+                    InferFromRustPluginQuickFix(type),
                 )
             }
         }
