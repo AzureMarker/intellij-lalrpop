@@ -1,7 +1,7 @@
 plugins {
-    id 'org.jetbrains.intellij' version '1.9.0'
-    id 'org.jetbrains.kotlin.jvm' version '1.7.20'
-    id 'org.jetbrains.grammarkit' version '2021.2.2'
+    id 'org.jetbrains.intellij' version '1.13.3'
+    id 'org.jetbrains.kotlin.jvm' version '1.8.20'
+    id 'org.jetbrains.grammarkit' version '2022.3.1'
     id 'idea'
 }
 
@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'io.sentry:sentry:6.5.0'
+    implementation 'io.sentry:sentry:6.18.1'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
@@ -24,14 +24,14 @@ sourceSets.main.java.srcDirs 'src/main/gen'
 idea.module.generatedSourceDirs.add(file('src/main/gen'))
 
 generateLexer {
-    source = "src/main/grammars/LalrpopLexer.flex"
+    sourceFile = file("src/main/grammars/LalrpopLexer.flex")
     targetDir = "src/main/gen/com/mdrobnak/lalrpop/lexer"
     targetClass = "LalrpopLexer"
     purgeOldFiles = true
 }
 
 generateParser {
-    source = "src/main/grammars/LalrpopParser.bnf"
+    sourceFile = file("src/main/grammars/LalrpopParser.bnf")
     targetRoot = "src/main/gen/"
     pathToParser = "/com/mdrobnak/lalrpop/parser/LalrpopParser.java"
     pathToPsiRoot = "/com/mdrobnak/lalrpop/psi"
@@ -41,24 +41,18 @@ generateParser {
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     // Test with a recent EAP or release
-    version = '2022.2.3'
-    plugins = ['PsiViewer:222-SNAPSHOT', 'org.rust.lang:0.4.180.4932-222', 'org.toml.lang:222.4345.14']
+    version = '2023.1.1'
+    plugins = ['PsiViewer:231-SNAPSHOT', 'org.rust.lang:0.4.193.5352-231', 'org.toml.lang:231.8109.91']
 
     // Don't limit the untilBuild value to the current major IDE version
     sameSinceUntilBuild = true
     updateSinceUntilBuild = false
 }
 compileKotlin {
-    kotlinOptions {
-        jvmTarget = "17"
-        apiVersion = "1.6"
-        freeCompilerArgs = ["-Xjvm-default=all"]
-    }
-
     dependsOn(generateLexer, generateParser)
 }
 runPluginVerifier {
-    ideVersions = ["IIC-2022.2"]
+    ideVersions = ["IIC-2023.1"]
 }
 publishPlugin {
     token = System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken")
@@ -68,8 +62,8 @@ buildSearchableOptions {
     enabled = false
 }
 patchPluginXml {
-    // Support 2022.2
-    sinceBuild = "222"
+    // Support 2023.1
+    sinceBuild = "231"
 
     changeNotes = """
       <b>0.2.12</b><br>
