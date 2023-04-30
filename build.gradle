@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'com.mdrobnak'
-version '0.2.12'
+version '0.2.13'
 
 repositories {
     mavenCentral()
@@ -66,6 +66,12 @@ patchPluginXml {
     sinceBuild = "231"
 
     changeNotes = """
+      <b>0.2.13</b><br>
+      * Update dependencies<br>
+      * Support recent intellij-rust changes<br>
+      * Update to support 2023.1 IDEs (and drop 2022 IDEs)<br>
+      <br>
+
       <b>0.2.12</b><br>
       * Update dependencies<br>
       * Support recent intellij-rust changes<br>
