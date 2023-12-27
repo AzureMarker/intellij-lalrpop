@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'com.mdrobnak'
-version '0.2.13'
+version '0.2.14'
 
 repositories {
     mavenCentral()
@@ -71,6 +71,10 @@ patchPluginXml {
     sinceBuild = "231"
 
     changeNotes = """
+      <b>0.2.14</b><br>
+      * Switch support from open source Rust plugin to new Jetbrains Rust plugin<br>
+      <br>
+
       <b>0.2.13</b><br>
       * Update dependencies<br>
       * Support recent intellij-rust changes<br>
