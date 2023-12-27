@@ -57,7 +57,7 @@ compileKotlin {
     dependsOn(generateLexer, generateParser)
 }
 runPluginVerifier {
-    ideVersions = ["CL-2023.1", "CL-2023.2", "CL-2023.3"]
+    ideVersions = ["CL-2023.2", "CL-2023.3"]
 }
 publishPlugin {
     token = System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken")
@@ -67,12 +67,13 @@ buildSearchableOptions {
     enabled = false
 }
 patchPluginXml {
-    // Support 2023 IDEs
-    sinceBuild = "231"
+    // Support 2023.2+ IDEs
+    sinceBuild = "232"
 
     changeNotes = """
       <b>0.2.14</b><br>
       * Switch support from open source Rust plugin to new Jetbrains Rust plugin<br>
+      * Dropped support for 2023.1 (support is available for 2023.2+)<br>
       * Note: There's a known false-positive error reported on &lt;&gt; in Rust action code<br>
       <br>
 
