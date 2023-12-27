@@ -107,7 +107,7 @@ fun String.lalrpopRustType(
     val genericUnitStructs = nonterminal.rustGenericUnitStructs()
 
     val code = """
-        mod __intellij_lalrpop {
+        mod __tmp__ {
             $importCode
             $genericUnitStructs
             

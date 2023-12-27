@@ -1,7 +1,7 @@
 plugins {
-    id 'org.jetbrains.intellij' version '1.13.3'
-    id 'org.jetbrains.kotlin.jvm' version '1.8.20'
-    id 'org.jetbrains.grammarkit' version '2022.3.1'
+    id 'org.jetbrains.intellij' version '1.16.1'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.22'
+    id 'org.jetbrains.grammarkit' version '2022.3.2'
     id 'idea'
 }
 
@@ -41,18 +41,23 @@ generateParser {
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     // Test with a recent EAP or release
-    version = '2023.1.1'
-    plugins = ['PsiViewer:231-SNAPSHOT', 'org.rust.lang:0.4.193.5352-231', 'org.toml.lang:231.8109.91']
+    version = 'CL-2023.3.2'
+    plugins = ['PsiViewer:233.2', 'com.jetbrains.rust:233.21799.284', 'org.toml.lang:233.13135.67']
 
     // Don't limit the untilBuild value to the current major IDE version
     sameSinceUntilBuild = true
     updateSinceUntilBuild = false
 }
+kotlin {
+    jvmToolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
 compileKotlin {
     dependsOn(generateLexer, generateParser)
 }
 runPluginVerifier {
-    ideVersions = ["IIC-2023.1"]
+    ideVersions = ["CL-2023.1", "CL-2023.2", "CL-2023.3"]
 }
 publishPlugin {
     token = System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken")
@@ -62,7 +67,7 @@ buildSearchableOptions {
     enabled = false
 }
 patchPluginXml {
-    // Support 2023.1
+    // Support 2023 IDEs
     sinceBuild = "231"
 
     changeNotes = """

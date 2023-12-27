@@ -80,7 +80,7 @@ object WrongInferredTypeInspection : LocalInspectionTool() {
             .createFileFromText(
                 RsLanguage,
                 """
-                    mod __intellij_lalrpop {
+                    mod __tmp__ {
                         $importCode
                         $unitStructsGenerics
                         type T1 = $type1;

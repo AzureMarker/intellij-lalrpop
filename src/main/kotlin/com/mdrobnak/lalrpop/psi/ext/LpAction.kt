@@ -101,7 +101,7 @@ abstract class LpActionMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpActi
         val genericUnitStructs = grammarDecl.typeParamsRustUnitStructs() + arguments.rootArguments.joinToString(separator = "") { "struct ${it.name};\n" }
 
         val fileText = """
-            mod __intellij_lalrpop {
+            mod __tmp__ {
                 $importCode
                 $genericUnitStructs
                 ${actionCodeFunctionHeader(false)} {

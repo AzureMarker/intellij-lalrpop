@@ -11,7 +11,7 @@
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
-    <depends>org.rust.lang</depends>
+    <depends>com.jetbrains.rust</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <fileType
