@@ -6,6 +6,7 @@ gen/
 
 ### Gradle
 .gradle
+.intellijPlatform
 /build/
 
 # Ignore Gradle GUI config

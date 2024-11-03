@@ -4,12 +4,12 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
+import com.intellij.psi.util.elementType
 import com.intellij.psi.util.parentOfType
 import com.mdrobnak.lalrpop.psi.LpElementFactory
 import com.mdrobnak.lalrpop.psi.LpElementTypes
 import com.mdrobnak.lalrpop.psi.LpNonterminalParam
 import com.mdrobnak.lalrpop.psi.LpNonterminalParams
-import org.toml.lang.psi.ext.elementType
 
 abstract class LpNonterminalParamMixin(node: ASTNode) : ASTWrapperPsiElement(node), LpNonterminalParam {
     override fun getNameIdentifier(): PsiElement = id

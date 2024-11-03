@@ -101,4 +101,112 @@
 
         <errorHandler implementation="com.mdrobnak.lalrpop.LpErrorReporter"/>
     </extensions>
+
+    <change-notes><![CDATA[
+        <b>0.2.14</b><br>
+        * Switch support from open source Rust plugin to new Jetbrains Rust plugin<br>
+        * Dropped support for 2023.1 (support is available for 2023.2+)<br>
+        * Note: There's a known false-positive error reported on &lt;&gt; in Rust action code<br>
+        <br>
+
+        <b>0.2.13</b><br>
+        * Update dependencies<br>
+        * Support recent intellij-rust changes<br>
+        * Update to support 2023.1 IDEs (and drop 2022 IDEs)<br>
+        <br>
+
+        <b>0.2.12</b><br>
+        * Update dependencies<br>
+        * Support recent intellij-rust changes<br>
+        * Fix Rust code injection (references in LALRPOP files work again!)<br>
+        <br>
+
+        <b>0.2.11</b><br>
+        * Fix "Failed to create use statement" bug (reported via Sentry)<br>
+        <br>
+
+        <b>0.2.10</b><br>
+        * Update to support 2022.1 IDEs (and drop 2021.3)<br>
+        * Update dependencies<br>
+        <br>
+
+        <b>0.2.9</b><br>
+        * Fix an error when using the plugin with IntelliJ-Rust >= 165 (reported via Sentry)<br>
+        * Fix an error in InferFromRustPluginQuickFix when the type isn't known<br>
+        * More accurately match the supported RegExp functionality in LALRPOP<br>
+        * Fix a possible issue with non-unique keys in MissingTerminalsInspection (reported via Sentry)<br>
+        * Drop support for < 2021.3 IDEs<br>
+        <br>
+
+        <b>0.2.8</b><br>
+        * Fix an exception due to using non-unique text attribute keys (reported via Sentry)<br>
+        * Fix an exception due to lexer emitting empty CODE tokens (reported via Sentry)<br>
+        * Fix stack overflow when inferring type of self-referential nonterminal (reported via Sentry)<br>
+        * Improve parser recovery when alternative fails to parse<br>
+        * Fix possible lexer exception when Rust code block is empty<br>
+        * Update dependencies<br>
+        <br>
+
+        <b>0.2.7</b><br>
+        * Add error reporter for plugin crashes<br>
+        * Support 2021.3 IDEs/EAP<br>
+        * Possible fix for duplicate use/semicolon tokens after renaming item used in import<br>
+        * Small improvements to the lexer<br>
+        <br>
+
+        <b>0.2.6</b><br>
+        * Fix multi-line Rust string handling<br>
+        <br>
+
+        <b>0.2.5</b><br>
+        * Fix some cases of parentheses/brackets/braces in Rust strings breaking the lexer<br>
+        * Remove a deprecated function usage<br>
+        <br>
+
+        <b>0.2.4</b><br>
+        * Improve parentheses counting in Rust code blocks to handle strings (fixes #45)<br>
+        * Add support for 2021.2 IDEs<br>
+        * Drop support for 2020 IDEs<br>
+        * (internal) Update dependencies and Gradle<br>
+        <br>
+
+        <b>0.2.3</b><br>
+        * (internal) Simplify the expansion of `<>` (@dblanovschi)<br>
+        * (internal) Update dependencies and Gradle<br>
+        * Fix finding the parser module declaration (this caused many weird issues)<br>
+        <br>
+
+        <b>0.2.2</b><br>
+        * Remove trailing newlines from user code<br>
+        * Give color to commas<br>
+        * Fix exception when refactoring affects injected Rust type references<br>
+        * Fix refactoring in Rust code adding a duplicate action type in affected LALRPOP code<br>
+        * Support 2021.1 EAP<br>
+        <br>
+
+        <b>0.2.1</b><br>
+        * Inject Rust into type references (e.g. explicit nonterminal types)<br>
+        * Handle fallible user actions (@dblanovschi)<br>
+        * Add an intention to explicitly write the inferred the type of a nonterminal (@dblanovschi)<br>
+        * Add an inspection for redundant user action code, such as <code>=> &lt;&gt;</code> (@dblanovschi)<br>
+        * Support in-place renaming (@dblanovschi)<br>
+        * Add type hints to nonterminals and (optionally) symbols (@dblanovschi)<br>
+        <br>
+
+        <b>0.2.0</b><br>
+        * Handle <> expressions in action code (@dblanovschi)<br>
+        * Infer nonterminal types and perform type resolution (@dblanovschi)<br>
+        * Fix "Unable to save plugin settings" error (@dblanovschi)<br>
+        * Add a bunch of inspections (@dblanovschi)<br>
+        <br>
+
+        <b>0.1.1</b><br>
+        * Add missing terminals inspection (@dblanovschi)<br>
+        * Add grammar params to injected action code (@dblanovschi)<br>
+        * Add some code highlighting (ex. nonterminals) (@dblanovschi)<br>
+        <br>
+
+        <b>0.1.0</b><br>
+        Initial release of the LALRPOP plugin
+    ]]></change-notes>
 </idea-plugin>
