@@ -103,6 +103,11 @@
     </extensions>
 
     <change-notes><![CDATA[
+        <b>0.2.15</b><br>
+        * Update dependencies<br>
+        * Fix "NoSuchMethodError" on 2024.2+ due to recent Rust plugin release (reported via Sentry)<br>
+        <br>
+
         <b>0.2.14</b><br>
         * Switch support from open source Rust plugin to new Jetbrains Rust plugin<br>
         * Dropped support for 2023.1 (support is available for 2023.2+)<br>
