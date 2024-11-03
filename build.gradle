@@ -1,3 +1,6 @@
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
+import org.jetbrains.intellij.platform.gradle.models.ProductRelease
+
 plugins {
     id 'org.jetbrains.intellij.platform' version '2.1.0'
     id 'org.jetbrains.kotlin.jvm' version '1.9.22'
@@ -24,8 +27,8 @@ dependencies {
 
     intellijPlatform {
         // Test with a recent EAP or release
-        clion("2024.2.3")
-        plugin 'com.jetbrains.rust:242.19890.39'
+        clion("243.20847.43")
+        plugin 'com.jetbrains.rust:243.20847.53'
 
         pluginVerifier()
         instrumentationTools()
@@ -69,7 +72,16 @@ intellijPlatform {
 
     pluginVerification {
         ides {
-            recommended()
+            select {
+                it.types = [
+                    IntelliJPlatformType.RustRover,
+                    IntelliJPlatformType.CLion,
+                    IntelliJPlatformType.IntellijIdeaUltimate
+                ]
+                it.sinceBuild = "242"
+                it.untilBuild = "243.*"
+                it.channels = [ProductRelease.Channel.RELEASE, ProductRelease.Channel.EAP]
+            }
         }
     }
 }
