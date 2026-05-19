@@ -1,9 +1,9 @@
 package com.mdrobnak.lalrpop.psi.ext
 
+import com.intellij.psi.util.elementType
 import com.mdrobnak.lalrpop.psi.LpElementTypes
 import com.mdrobnak.lalrpop.psi.LpRepeatOp
 import org.rust.lang.core.psi.ext.childrenWithLeaves
-import org.rust.lang.core.psi.ext.elementType
 
 fun <T> LpRepeatOp.switch(question: T, plus: T, multiply: T): T =
     when (childrenWithLeaves.first().elementType) {
