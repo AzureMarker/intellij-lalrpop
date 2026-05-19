@@ -5,10 +5,10 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.util.elementType
 import com.mdrobnak.lalrpop.LpLanguage
 import org.rust.lang.core.psi.ext.childrenWithLeaves
 import org.rust.lang.core.psi.ext.descendantOfTypeStrict
-import org.rust.lang.core.psi.ext.elementType
 
 class LpElementFactory(val project: Project) {
     private fun createPsiFile(text: CharSequence): PsiFile =
