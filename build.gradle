@@ -2,14 +2,14 @@ import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 
 plugins {
-    id 'org.jetbrains.intellij.platform' version '2.1.0'
-    id 'org.jetbrains.kotlin.jvm' version '1.9.22'
-    id 'org.jetbrains.grammarkit' version '2022.3.2.2'
+    id 'org.jetbrains.intellij.platform' version '2.16.0'
+    id 'org.jetbrains.kotlin.jvm' version '2.3.21'
+    id 'org.jetbrains.grammarkit' version '2023.3.0.3'
     id 'idea'
 }
 
-group 'com.mdrobnak'
-version '0.2.15'
+group = 'com.mdrobnak'
+version = '0.2.15'
 
 repositories {
     mavenCentral()
@@ -20,18 +20,18 @@ repositories {
 }
 
 dependencies {
-    implementation 'io.sentry:sentry:7.16.0'
+    implementation 'io.sentry:sentry:8.41.0'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:6.0.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:6.0.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:6.1.0'
 
     intellijPlatform {
         // Test with a recent EAP or release
-        clion("243.20847.43")
-        plugin 'com.jetbrains.rust:243.20847.53'
+        clion("2026.1.2")
+        plugin 'com.jetbrains.rust:261.24374.182'
 
         pluginVerifier()
-        instrumentationTools()
     }
 }
 
@@ -61,8 +61,8 @@ intellijPlatform {
 
     pluginConfiguration {
         ideaVersion {
-            // Support 2024.2+ IDEs
-            sinceBuild = "242"
+            // Support 2025.1+ IDEs
+            sinceBuild = "251"
         }
     }
 
@@ -78,8 +78,8 @@ intellijPlatform {
                     IntelliJPlatformType.CLion,
                     IntelliJPlatformType.IntellijIdeaUltimate
                 ]
-                it.sinceBuild = "242"
-                it.untilBuild = "243.*"
+                it.sinceBuild = "251"
+                it.untilBuild = "262.*"
                 it.channels = [ProductRelease.Channel.RELEASE, ProductRelease.Channel.EAP]
             }
         }
@@ -88,7 +88,7 @@ intellijPlatform {
 
 kotlin {
     jvmToolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(24)
     }
 }
 
