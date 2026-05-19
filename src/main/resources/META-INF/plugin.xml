@@ -103,6 +103,12 @@
     </extensions>
 
     <change-notes><![CDATA[
+        <b>0.2.16</b><br>
+        * Update dependencies<br>
+        * Update to support 2025.1+ IDEs (and drop 2024 and earlier)<br>
+        * Fix more potential "NoSuchMethodError" issues<br>
+        <br>
+
         <b>0.2.15</b><br>
         * Update dependencies<br>
         * Fix "NoSuchMethodError" on 2024.2+ due to recent Rust plugin release (reported via Sentry)<br>
