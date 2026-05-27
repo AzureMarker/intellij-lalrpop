@@ -105,7 +105,7 @@
     <change-notes><![CDATA[
         <b>0.2.16</b><br>
         * Update dependencies<br>
-        * Update to support 2025.1+ IDEs (and drop 2024 and earlier)<br>
+        * Update to support 2025.2 and 2025.3 IDEs. Note: 2025.1 is not supported due to Rust plugin issues<br>
         * Fix more potential "NoSuchMethodError" issues<br>
         <br>
 
