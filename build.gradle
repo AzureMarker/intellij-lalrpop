@@ -61,8 +61,10 @@ intellijPlatform {
 
     pluginConfiguration {
         ideaVersion {
-            // Support 2025.1+ IDEs
-            sinceBuild = "251"
+            // Support 2025.2-3 IDEs
+            // 2025.1 Rust plugin has a broken TypeRenderable class
+            sinceBuild = "252"
+            untilBuild = "253.*"
         }
     }
 
@@ -78,8 +80,8 @@ intellijPlatform {
                     IntelliJPlatformType.CLion,
                     IntelliJPlatformType.IntellijIdeaUltimate
                 ]
-                it.sinceBuild = "251"
-                it.untilBuild = "262.*"
+                it.sinceBuild = "252"
+                it.untilBuild = "253.*"
                 it.channels = [ProductRelease.Channel.RELEASE, ProductRelease.Channel.EAP]
             }
         }
