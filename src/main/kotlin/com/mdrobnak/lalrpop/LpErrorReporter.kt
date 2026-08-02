@@ -1,6 +1,5 @@
 package com.mdrobnak.lalrpop
 
-import com.intellij.diagnostic.AbstractMessage
 import com.intellij.idea.IdeaLogger
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.diagnostic.ErrorReportSubmitter
@@ -22,7 +21,18 @@ class LpErrorReporter : ErrorReportSubmitter() {
             Sentry.init { options: SentryOptions ->
                 options.dsn = "https://d561feacd9a344cbaf6c87f073a5ff24@o1040632.ingest.sentry.io/6009680"
                 options.isAttachServerName = false
+                options.beforeSend = SentryOptions.BeforeSendCallback(::beforeSend)
             }
+        }
+
+        fun beforeSend(event: SentryEvent, hint: Hint): SentryEvent? {
+            // Filter out events that are unrelated to this plugin
+            val hasPluginFrame = event.exceptions?.any { ex ->
+                ex.stacktrace?.frames?.any { frame ->
+                    frame.module?.startsWith("com.mdrobnak.lalrpop") == true
+                } == true
+            } == true
+            return if (hasPluginFrame) event else null
         }
     }
 
