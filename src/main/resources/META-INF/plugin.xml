@@ -103,6 +103,10 @@
     </extensions>
 
     <change-notes><![CDATA[
+        <b>0.2.17</b><br>
+        * Filter out unrelated exceptions when sending to Sentry<br>
+        <br>
+
         <b>0.2.16</b><br>
         * Update dependencies<br>
         * Update to support 2025.2 through 2026.1 IDEs. Note: 2025.1 is not supported due to Rust plugin issues<br>
